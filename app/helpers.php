@@ -187,9 +187,8 @@ if (! function_exists('gateway_info')) {
 if (! function_exists('plugin_active')) {
     function plugin_active($name)
     {
-        $plugin = \App\Models\Plugin::where('name', $name)->where('status', true)->first();
-
-        return $plugin;
+        return \App\Models\Plugin::getAllCached()
+            ->where('name', $name)->where('status', true)->first();
     }
 }
 
@@ -205,7 +204,8 @@ if (! function_exists('get_navigation_name')) {
 if (! function_exists('default_plugin')) {
     function default_plugin($type)
     {
-        return \App\Models\Plugin::where('type', $type)->where('status', 1)->first('name')?->name;
+        return \App\Models\Plugin::getAllCached()
+            ->where('type', $type)->where('status', 1)->first()?->name;
     }
 }
 
@@ -407,7 +407,7 @@ if (! function_exists('nextInstallment')) {
 if (! function_exists('defaultLocale')) {
     function defaultLocale()
     {
-        $language = Language::where('is_default', true)->first();
+        $language = Language::getAllCached()->where('is_default', true)->first();
 
         return $language->locale ?? 'en';
     }
@@ -425,7 +425,7 @@ if (! function_exists('getLandingData')) {
 if (! function_exists('isRtl')) {
     function isRtl($code)
     {
-        $language = Language::where('locale', $code)->first();
+        $language = Language::getAllCached()->where('locale', $code)->first();
 
         return $language->is_rtl ?? false;
     }

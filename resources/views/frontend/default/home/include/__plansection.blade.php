@@ -63,9 +63,9 @@ $active_tab = 'loan';
         </div>
 
         @php
-        $dps_plans = App\Models\DpsPlan::active()->get();
-        $fdr_plans = App\Models\FdrPlan::active()->get();
-        $loan_plans = App\Models\LoanPlan::active()->get();
+        $dps_plans = cache()->remember('dps_plans_active', 300, fn() => App\Models\DpsPlan::active()->get());
+        $fdr_plans = cache()->remember('fdr_plans_active', 300, fn() => App\Models\FdrPlan::active()->get());
+        $loan_plans = App\Models\LoanPlan::activeCached();
         @endphp
 
         <div class="tab-content" id="myTabContent">

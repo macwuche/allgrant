@@ -13,7 +13,7 @@ class HomeController extends Controller
 {
     public function home()
     {
-        $customLandingTheme = Theme::where('type', 'landing')->where('status', true)->first();
+        $customLandingTheme = cache()->remember('theme_landing', 300, fn() => Theme::where('type', 'landing')->where('status', true)->first());
         if ($customLandingTheme) {
             return view('landing_theme.'.$customLandingTheme->name);
         }

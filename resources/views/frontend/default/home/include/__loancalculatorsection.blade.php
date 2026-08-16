@@ -1,5 +1,5 @@
 @php
-    $loan_plans = App\Models\LoanPlan::active()->get();
+    $loan_plans = App\Models\LoanPlan::activeCached();
 @endphp
 
 <!-- Loan calculator area start -->

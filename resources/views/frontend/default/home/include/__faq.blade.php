@@ -1,5 +1,5 @@
 @php
-    $landingContent =\App\Models\LandingContent::where('type','faq')->where('locale',app()->getLocale())->get();
+    $landingContent =\App\Models\LandingContent::getByType('faq', app()->getLocale());
 @endphp
 <!-- FAQ area start -->
 <section class="faq-area fix position-relative section-space include-bg"

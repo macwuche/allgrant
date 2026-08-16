@@ -11,6 +11,16 @@ class Plugin extends Model
 
     protected $guarded = ['id'];
 
+    private static ?\Illuminate\Support\Collection $allPlugins = null;
+
+    public static function getAllCached(): \Illuminate\Support\Collection
+    {
+        if (self::$allPlugins === null) {
+            self::$allPlugins = cache()->remember('plugins_all', 300, fn() => self::all());
+        }
+        return self::$allPlugins;
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', 1);

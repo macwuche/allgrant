@@ -9,7 +9,7 @@
             </div>
         </div>
         <div class="row gy-5">
-            @foreach(\App\Models\Blog::where('locale',app()->getLocale())->latest()->take(3)->get() as $blog)
+            @foreach(cache()->remember('blog_home_'.app()->getLocale(), 300, fn() => \App\Models\Blog::where('locale',app()->getLocale())->latest()->take(3)->get()) as $blog)
             <div class="col-xxl-4 col-xl-4 col-lg-6">
                 <article class="blog-grid-item" data-aos="fade-up" data-aos-duration="1000">
                     <div class="blog-thumb">

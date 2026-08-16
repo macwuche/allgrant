@@ -1,5 +1,5 @@
 @php
-    $testimonials = App\Models\Testimonial::all();
+    $testimonials = cache()->remember('testimonials_all', 300, fn() => App\Models\Testimonial::all());
 @endphp
 
 <!-- Testimonial area start -->

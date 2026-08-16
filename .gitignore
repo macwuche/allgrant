@@ -17,3 +17,5 @@ yarn-error.log
 /node_modules
 /storage/dotenv-editor/backups
 /DB/*.sql
+!/DB/seed.sql
+work.md

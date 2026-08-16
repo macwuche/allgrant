@@ -1,5 +1,5 @@
 @php
-    $landingContent =\App\Models\LandingContent::where('type','bankingsolution')->where('locale',app()->getLocale())->get();
+    $landingContent =\App\Models\LandingContent::getByType('bankingsolution', app()->getLocale());
 @endphp
 
 <!-- Features area start -->

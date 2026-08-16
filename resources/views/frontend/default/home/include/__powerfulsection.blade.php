@@ -1,5 +1,5 @@
 @php
-    $landingContent =\App\Models\LandingContent::where('type','powerfulsection')->where('locale',app()->getLocale())->get();
+    $landingContent =\App\Models\LandingContent::getByType('powerfulsection', app()->getLocale());
 @endphp
 
 <!-- Our solutions area start -->

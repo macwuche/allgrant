@@ -1,5 +1,5 @@
 @php
-    $landingContent =\App\Models\LandingContent::where('type','card')->where('locale',app()->getLocale())->get();
+    $landingContent =\App\Models\LandingContent::getByType('card', app()->getLocale());
 @endphp
 
 <!-- Virtual card section start -->

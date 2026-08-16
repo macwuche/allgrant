@@ -108,7 +108,7 @@
                             <p>{{ $footerContent['copyright_text'] }}</p>
                         </div>
                         <div class="footer-social">
-                            @foreach(\App\Models\Social::all() as $social)
+                            @foreach($socials as $social)
                             <a href="{{ url($social->url) }}"><i class="{{ $social->class_name }}"></i></a>
                             @endforeach
                         </div>

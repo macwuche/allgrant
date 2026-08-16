@@ -44,29 +44,29 @@ class ViewServiceProvider extends ServiceProvider
 
             View::composer(['frontend::include.__header'], function ($view) {
                 $view->with([
-                    'navigations' => Navigation::where('status', 1)->where(function ($query) {
-                        $query->where('type', 'header')
-                            ->orWhere('type', 'both');
-
-                    })->orderBy('header_position')->get(),
+                    'navigations' => cache()->remember('nav_header', 300, fn() =>
+                        Navigation::where('status', 1)->where(function ($q) {
+                            $q->where('type', 'header')->orWhere('type', 'both');
+                        })->orderBy('header_position')->get()
+                    ),
                 ]);
             });
 
             View::composer(['frontend::include.__footer'], function ($view) {
                 $view->with([
-                    'navigations' => Navigation::where('status', 1)->where(function ($query) {
-                        $query->where('type', 'footer')
-                            ->orWhere('type', 'both');
-
-                    })->orderBy('footer_position')->get()->chunk(5),
+                    'navigations' => cache()->remember('nav_footer', 300, fn() =>
+                        Navigation::where('status', 1)->where(function ($q) {
+                            $q->where('type', 'footer')->orWhere('type', 'both');
+                        })->orderBy('footer_position')->get()->chunk(5)
+                    ),
                 ]);
             });
 
-            View::composer(['frontend::include.__footer', 'frontend::include.__header', 'frontend::home.include.__hero'], function ($view) {
-                $view->with([
-                    'socials' => \App\Models\Social::all(),
-                ]);
-            });
+            // Share socials once across all views — avoids 4 separate DB queries
+            \Illuminate\Support\Facades\View::share(
+                'socials',
+                cache()->remember('socials_all', 300, fn() => \App\Models\Social::all())
+            );
 
             View::composer(['*'], function ($view) {
                 $view->with([

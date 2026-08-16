@@ -41,6 +41,16 @@ class LoanPlan extends Model
         return $query->where('status', 1);
     }
 
+    private static ?\Illuminate\Support\Collection $activeCache = null;
+
+    public static function activeCached(): \Illuminate\Support\Collection
+    {
+        if (self::$activeCache === null) {
+            self::$activeCache = cache()->remember('loan_plans_active', 300, fn() => self::active()->get());
+        }
+        return self::$activeCache;
+    }
+
     public function getTotalAmountAttribute()
     {
         return $this->per_installment * $this->total_installment;

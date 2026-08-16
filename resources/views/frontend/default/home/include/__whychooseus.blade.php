@@ -1,5 +1,5 @@
 @php
-    $landingContent =\App\Models\LandingContent::where('type','whychooseus')->where('locale',app()->getLocale())->get();
+    $landingContent =\App\Models\LandingContent::getByType('whychooseus', app()->getLocale());
 @endphp
 
 <!-- Why Choose area start -->

@@ -11,6 +11,16 @@ class Language extends Model
 
     protected $guarded = ['id'];
 
+    private static ?\Illuminate\Support\Collection $allLanguages = null;
+
+    public static function getAllCached(): \Illuminate\Support\Collection
+    {
+        if (self::$allLanguages === null) {
+            self::$allLanguages = cache()->remember('languages_all', 300, fn() => self::all());
+        }
+        return self::$allLanguages;
+    }
+
     public function scopeOrder($query, string $order)
     {
         if ($order !== null) {

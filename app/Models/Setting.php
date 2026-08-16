@@ -12,12 +12,10 @@ class Setting extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * @var array
-     */
     protected $guarded = [];
+
+    // In-memory cache for the duration of the current request
+    private static ?Collection $requestCache = null;
 
     /**
      * Add a settings value
@@ -56,12 +54,18 @@ class Setting extends Model
     public static function getAllSettings()
     {
         if (! App::dbConnectionCheck()) {
-            return [];
+            return collect([]);
         }
 
-        return Cache::rememberForever('settings.all', function () {
+        if (self::$requestCache !== null) {
+            return self::$requestCache;
+        }
+
+        self::$requestCache = Cache::rememberForever('settings.all', function () {
             return self::all();
         });
+
+        return self::$requestCache;
     }
 
     /**
@@ -218,6 +222,7 @@ class Setting extends Model
      */
     public static function flushCache()
     {
+        self::$requestCache = null;
         Cache::forget('settings.all');
     }
 }

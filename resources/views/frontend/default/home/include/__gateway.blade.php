@@ -1,5 +1,5 @@
 @php
-    $gateways_list = \App\Models\Gateway::where('status',true)->pluck('logo','name')->chunk(6);
+    $gateways_list = cache()->remember('gateways_list', 300, fn() => \App\Models\Gateway::where('status',true)->pluck('logo','name')->chunk(6));
 @endphp
 
 <!-- Brand area start -->

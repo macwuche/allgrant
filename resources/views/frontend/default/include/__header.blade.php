@@ -48,7 +48,7 @@
                                 <div class="language-switcher">
                                     @if(setting('language_switcher'))
                                     <select name="language" class="langu-swit small" onchange="window.location.href=this.options[this.selectedIndex].value;">
-                                        @foreach(\App\Models\Language::where('status',true)->get() as $lang)
+                                        @foreach(\App\Models\Language::getAllCached()->where('status', true) as $lang)
                                             <option value="{{ route('language-update',['name'=> $lang->locale]) }}" @selected(app()->getLocale() == $lang->locale || $lang->is_default)>{{$lang->name}}</option>
                                         @endforeach
                                     </select>

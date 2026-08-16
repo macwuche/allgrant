@@ -1,5 +1,15 @@
 <?php
 
+// When running via PHP built-in server, serve static files directly
+// without booting Laravel — otherwise every asset boots the full framework
+if (php_sapi_name() === 'cli-server') {
+    $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    $file = __DIR__ . $path;
+    if ($path !== '/' && is_file($file)) {
+        return false;
+    }
+}
+
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 

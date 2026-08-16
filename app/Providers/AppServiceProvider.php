@@ -38,23 +38,28 @@ class AppServiceProvider extends ServiceProvider
         });
 
         if (App::dbConnectionCheck()) {
-            $timezone = setting('site_timezone', 'global');
-            $stripe_virtual_card = plugin_active('Stripe Virtual Card');
-            $api_key = $stripe_virtual_card ? json_decode($stripe_virtual_card->data, true)['secret_key'] : null;
+            try {
+                $timezone = setting('site_timezone', 'global');
+                $stripe_virtual_card = plugin_active('Stripe Virtual Card');
+                $api_key = $stripe_virtual_card ? json_decode($stripe_virtual_card->data, true)['secret_key'] : null;
 
-            config()->set([
-                'app.timezone' => $timezone,
-                'app.debug' => setting('debug_mode', 'permission'),
-                'debugbar.enabled' => setting('debug_mode', 'permission'),
-                'session.lifetime' => setting('session_lifetime', 'system'),
-                'stripe-webhooks.signing_secret' => $api_key,
-            ]);
+                config()->set([
+                    'app.timezone' => $timezone,
+                    'app.debug' => setting('debug_mode', 'permission'),
+                    'debugbar.enabled' => setting('debug_mode', 'permission'),
+                    'session.lifetime' => setting('session_lifetime', 'system'),
+                    'stripe-webhooks.signing_secret' => $api_key,
+                ]);
 
-            date_default_timezone_set($timezone);
+                date_default_timezone_set($timezone);
+            } catch (\Throwable $e) {
+                // DB connection available but query failed — log and continue booting
+                \Log::error('AppServiceProvider settings boot error: ' . $e->getMessage());
+            }
         }
 
         Blade::directive('lasset', function ($expression) {
-            $customLandingTheme = Theme::where('type', 'landing')->where('status', true)->first();
+            $customLandingTheme = cache()->remember('theme_landing', 300, fn() => Theme::where('type', 'landing')->where('status', true)->first());
             if ($customLandingTheme) {
                 return asset("landing_theme/$customLandingTheme->name/$expression");
             }
@@ -79,7 +84,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function configureAssetUrl()
     {
-        $assetUrl = url('assets');
+        $assetUrl = rtrim(config('app.url'), '/') . '/assets';
         $this->app->singleton('url', function ($app) use ($assetUrl) {
             $routes = $app['router']->getRoutes();
             $request = $app['request'];

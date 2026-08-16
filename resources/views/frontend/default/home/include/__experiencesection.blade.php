@@ -1,5 +1,5 @@
 @php
-    $landingContent =\App\Models\LandingContent::where('type','experiencesection')->where('locale',app()->getLocale())->get();
+    $landingContent =\App\Models\LandingContent::getByType('experiencesection', app()->getLocale());
 @endphp
 
 <!-- Experiences area start -->

@@ -1,5 +1,5 @@
 @php
-    $landingContent =\App\Models\LandingContent::where('type','workstepsection')->where('locale',app()->getLocale())->get();
+    $landingContent =\App\Models\LandingContent::getByType('workstepsection', app()->getLocale());
 @endphp
 
 <!-- Work step area start -->
