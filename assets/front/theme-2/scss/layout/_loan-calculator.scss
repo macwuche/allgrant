@@ -1,0 +1,102 @@
+@use '../utils' as *;
+
+/*----------------------------------------*/
+/* Loan calculator style
+/*----------------------------------------*/
+.loan-result-box {
+    border-radius: 20px;
+    background: var(--td-white);
+    box-shadow: 2.5px 2.5px 40px 0 rgba(0, 0, 0, 0.08);
+    padding: 30px 30px;
+    margin-inline-start: 80px;
+    border: 1px solid #DBDBDB;
+
+    @media #{$xs,$sm,$md,$lg,$xl} {
+        margin-inline-start: 0;
+    }
+
+    @media #{$xxs} {
+        padding: 20px 20px;
+    }
+
+    @include dark {
+        background-color: #415C68;
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .loan-title {
+        font-size: 30px;
+        margin-bottom: 30px;
+
+        @media #{$xs,$sm} {
+            font-size: 24px;
+        }
+    }
+
+    .loan-inner {
+        .loan-amount {
+
+            .result-value {
+                color: var(--td-heading);
+                font-size: 40px;
+                font-weight: 700;
+
+                @media #{$xs,$sm} {
+                    font-size: 28px;
+                }
+
+                @include dark {
+                    color: var(--td-white);
+                }
+
+            }
+
+            .result-label {
+                font-size: 14px;
+                font-weight: 500;
+
+                @include dark {
+                    color: var(--td-text-secondary);
+                }
+            }
+        }
+    }
+
+    .installment-lists {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: flex-start;
+        gap: 30px 30px;
+        align-self: stretch;
+        margin-top: 30px;
+
+        @media #{$xxs} {
+            grid-template-columns: 1fr;
+        }
+
+        .installment-item {
+            display: flex;
+            gap: 12px;
+
+            .icon {
+                flex: 0 0 auto;
+            }
+
+            .result-label {
+                color: var(--td-text-primary);
+                font-size: 14px;
+                font-weight: 500;
+
+                @include dark {
+                    color: var(--td-text-secondary);
+                }
+            }
+
+            .result-value {
+                font-size: 20px;
+                font-weight: 700;
+                margin-top: 5px;
+            }
+        }
+    }
+}

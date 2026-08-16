@@ -1,0 +1,2 @@
+<strong
+    class="{{ $txnType !== 'subtract' && $txnType !== 'investment' && $txnType !== 'withdraw' && $txnType !== 'send_money' && $txnType !== 'fund_transfer' ? 'green-color' : 'red-color'}}">{{ ($txnType !== 'subtract' && $txnType !== 'investment' && $txnType !== 'withdraw' && $txnType !== 'send_money' && $txnType !== 'fund_transfer' ? '+' : '-') . $amount . ' ' . transaction_currency($transaction) }}</strong>

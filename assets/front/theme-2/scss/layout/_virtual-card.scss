@@ -1,0 +1,57 @@
+@use '../utils' as *;
+
+/*----------------------------------------*/
+/*  Virtual card css
+/*----------------------------------------*/
+.virtual-card-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+    opacity: 0.3;
+    img {
+        width: 100%;
+    }
+}
+
+.virtual-card-box {
+    .virtual-card-thumb {
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    .bottom-contents {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        row-gap: 20px;
+        column-gap: 24px;
+        margin-top: 60px;
+        flex-wrap: wrap;
+
+        @media #{$xs} {
+            margin-top: 50px;
+        }
+
+        .payment-method {
+            display: flex;
+            row-gap: 12px;
+            column-gap: 12px;
+            flex-wrap: wrap;
+            img {
+                @include dark {
+                    filter: invert(1) grayscale(1) brightness(2);
+                }
+            }
+        }
+    }
+}
+
+.virtual-card-shapes {
+    .glow-one {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+}

@@ -1,0 +1,270 @@
+@use '../utils' as *;
+
+/*----------------------------------------*/
+/* Contact css
+/*----------------------------------------*/
+// Contact info style
+.contact-info-item {
+    background: var(--td-white);
+    border: 1px solid var(--td-border-primary);
+    border-radius: 20px;
+    padding: 95px 50px 50px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+    margin-top: 60px;
+
+    @include dark {
+        background-color: #415C68;
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    @media #{$md,$lg,$xl} {
+        padding: 75px 30px 50px;
+    }
+
+    @media #{$xs} {
+        padding: 75px 20px 50px;
+    }
+
+    .icon {
+        position: absolute;
+        top: -60px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2;
+        max-width: 118px;
+
+        @media #{$xs,$sm,$md,$lg,$xl} {
+            max-width: 98px;
+        }
+
+        span {
+            background: var(--td-white);
+            box-shadow: 0px 14px 24px -4px rgba(19, 8, 4, 0.11);
+            border-radius: 50%;
+            display: inline-block;
+
+            @include dark {
+                background-color: #415C68;
+            }
+        }
+    }
+
+    .contents {
+        .title {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .description {
+            margin-bottom: 15px;
+        }
+
+        .link {
+            font-size: 28px;
+            font-weight: 700;
+
+            @include dark {
+                color: var(--td-white);
+            }
+
+            @media #{$md,$lg,$xl} {
+                font-size: 22px;
+            }
+
+            @media #{$sm} {
+                font-size: 24px;
+            }
+
+            @media #{$xs} {
+                font-size: 20px;
+            }
+
+            a {
+                &:hover {
+                    color: var(--td-primary);
+                }
+            }
+        }
+    }
+}
+
+// Contact form style
+.contact-form-wrapper {
+    form {
+        background: #FFF5F1;
+        border: 1px solid #FFDAC7;
+        border-radius: 16px;
+        padding: 50px 50px;
+
+        @include dark {
+            background: #415C68;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        @media #{$xs,$sm} {
+            padding: 30px 30px;
+        }
+
+        @media #{$sm} {
+            padding: 30px 30px;
+        }
+
+        @media #{$xs} {
+            padding: 20px 20px;
+        }
+    }
+}
+
+.contact-form-input {
+    .input-inner {
+        position: relative;
+
+        input {
+            padding-inline-end: 65px;
+        }
+    }
+
+    .input-currency {
+        position: absolute;
+        inset-inline-end: 1px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgb(243 243 243);
+        border-inline-start: 1px solid #e5e8f2;
+        width: 56px;
+        height: calc(100% - 2px);
+        align-items: center;
+        justify-content: center;
+        display: inline-flex;
+        font-size: 16px;
+        font-weight: 500;
+        color: #606062;
+        border-radius: 0px 15px 15px 0px;
+        @include dark {
+            background: #d6d6d6;
+            color: var(--td-heading);
+        }
+
+        @include rtl {
+            border-radius: 15px 0px 0px 15px;
+        }
+    }
+
+    .select2-search--dropdown {
+        padding: 6px 6px;
+    }
+
+    .select2-results__option {
+        padding: 6px 14px;
+    }
+
+    .select2-container--default {
+        .select2-selection--single {
+            box-shadow: 0px 36px 75px -4px rgba(19, 8, 4, 0.08);
+            background-color: rgba(0, 0, 0, 0);
+            border: 1px solid #dee4ec;
+            border-radius: 14px;
+            height: 60px;
+            background: var(--td-white);
+
+            .select2-selection__rendered {
+                color: #030306;
+                padding-left: 16px;
+                font-weight: 500;
+                color: #2d3748;
+                font-size: 16px;
+                color: var(--td-heading);
+                line-height: 60px;
+                padding-left: 20px;
+                font-weight: 400;
+
+                @include rtl {
+                    padding-left: 0;
+                    padding-right: 20px;
+                }
+            }
+
+            .select2-selection__arrow {
+                height: 100%;
+            }
+        }
+
+        .select2-search--dropdown {
+            .select2-search__field {
+                border: 1px solid #aaa;
+                height: 40px;
+                border-radius: 6px;
+                padding: 0 12px;
+                border: 1px solid #ddd;
+
+                &:focus {
+                    border-color: #e2e8f0;
+                }
+            }
+        }
+
+        .select2-results__option--highlighted {
+            &.select2-results__option--selectable {
+                background-color: #ff7e42;
+            }
+        }
+    }
+
+    .select2-dropdown {
+        border-color: #e2e8f0;
+    }
+
+    label {
+        color: var(--td-text-primary);
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 6px;
+
+        @include dark {
+            color: var(--td-text-secondary);
+        }
+    }
+
+    .form-select {
+        @include rtl {
+            background-position: left .75rem center
+        }
+    }
+
+    .form-select,
+    .input,
+    textarea {
+        background-color: var(--td-white);
+        border: 1px solid #DEE4EC;
+        box-shadow: 0px 36px 75px -4px rgba(19, 8, 4, 0.08);
+        border-radius: 14px;
+        height: 60px;
+        padding: 0 20px;
+        font-size: 16px;
+        color: var(--td-heading);
+
+        @media #{$xs} {
+            height: 50px;
+        }
+
+        @include dark {
+            background-color: #E9E9E9;
+        }
+
+        &:focus {
+            border-color: var(--td-primary);
+        }
+
+        @include td-placeholder {
+            color: var(--td-heading);
+            font-size: 16px;
+        }
+    }
+
+    .textarea {
+        height: 230px;
+        padding: 20px 20px;
+    }
+}
