@@ -14,7 +14,7 @@ use App\Http\Controllers\Frontend\GatewayController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\IpnController;
 use App\Http\Controllers\Frontend\KycController;
-use App\Http\Controllers\Frontend\LoanController;
+use App\Http\Controllers\Frontend\GrantController;
 use App\Http\Controllers\Frontend\PageController;
 use App\Http\Controllers\Frontend\ReferralController;
 use App\Http\Controllers\Frontend\RewardController;
@@ -126,15 +126,15 @@ Route::group(['middleware' => ['auth', '2fa', 'isActive', setting('otp_verificat
         Route::post('/decrement/{id}', [DpsController::class, 'decrement'])->name('decrement');
     });
 
-    // Loan
-    Route::group(['prefix' => 'loan', 'as' => 'loan.'], function () {
-        Route::get('/', [LoanController::class, 'index'])->name('index');
-        Route::get('/application/{id}', [LoanController::class, 'application'])->name('application');
-        Route::post('/subscribe', [LoanController::class, 'subscribe'])->middleware('passcode:loan')->name('subscribe');
-        Route::get('/history', [LoanController::class, 'history'])->name('history');
-        Route::get('/details/{id}', [LoanController::class, 'details'])->name('details');
-        Route::get('/cancel/{id}', [LoanController::class, 'cancel'])->name('cancel');
-        Route::get('installment/pay/{loan_id}/{trans_id?}', [LoanController::class, 'payInstallment'])->name('pay.installment');
+    // Grant
+    Route::group(['prefix' => 'grant', 'as' => 'grant.'], function () {
+        Route::get('/', [GrantController::class, 'index'])->name('index');
+        Route::get('/application/{id}', [GrantController::class, 'application'])->name('application');
+        Route::post('/subscribe', [GrantController::class, 'subscribe'])->middleware('passcode:grant')->name('subscribe');
+        Route::get('/history', [GrantController::class, 'history'])->name('history');
+        Route::get('/details/{id}', [GrantController::class, 'details'])->name('details');
+        Route::get('/cancel/{id}', [GrantController::class, 'cancel'])->name('cancel');
+        Route::get('installment/pay/{grant_id}/{trans_id?}', [GrantController::class, 'payInstallment'])->name('pay.installment');
     });
 
     // Fdr

@@ -12,7 +12,7 @@ use App\Models\Dps;
 use App\Models\Fdr;
 use App\Models\Kyc;
 use App\Models\LevelReferral;
-use App\Models\Loan;
+use App\Models\Grant;
 use App\Models\Ticket;
 use App\Models\Transaction;
 use App\Models\User;
@@ -210,7 +210,7 @@ class UserController extends Controller
         $dpses = null;
         $transactions = null;
         $fdres = null;
-        $loans = null;
+        $grants = null;
         $wallets = [];
         $cards = null;
         $user_wallets = [];
@@ -293,18 +293,18 @@ class UserController extends Controller
                 })
                 ->paginate()
                 ->withQueryString();
-        } elseif (request('tab') == 'loan') {
-            $loans = Loan::with('plan')
+        } elseif (request('tab') == 'grant') {
+            $grants = Grant::with('plan')
                 ->where('user_id', $id)
                 ->when(request('query') != null, function ($query) {
                     $query->whereHas('plan', function ($planQuery) {
                         $planQuery->where('name', 'LIKE', '%'.request('query').'%');
                     });
                 })
-                ->when(in_array(request('sort_field'), ['created_at', 'loan_no', 'amount', 'status']), function ($query) {
+                ->when(in_array(request('sort_field'), ['created_at', 'grant_no', 'amount', 'status']), function ($query) {
                     $query->orderBy(request('sort_field'), request('sort_dir'));
                 })
-                ->when(request('sort_field') == 'loan', function ($query) {
+                ->when(request('sort_field') == 'grant', function ($query) {
                     $query->whereHas('plan', function ($dpsQuery) {
                         $dpsQuery->orderBy('name', request('sort_dir'));
                     });
@@ -338,7 +338,7 @@ class UserController extends Controller
             'total_fund_transfer' => $user->totalTransfer(),
             'total_dps' => $user->dps->sum('total_dps_amount'),
             'total_fdr' => $user->fdr->sum('amount'),
-            'total_loan' => $user->loan->sum('amount'),
+            'total_grant' => $user->grant->sum('amount'),
             'total_bill' => $user->bill->sum('amount'),
             'total_withdraw' => $user->totalWithdraw(),
             'total_tickets' => $user->tickets->count(),
@@ -362,7 +362,7 @@ class UserController extends Controller
             'tickets' => $tickets,
             'dpses' => $dpses,
             'fdres' => $fdres,
-            'loans' => $loans,
+            'grants' => $grants,
             'wallets' => $wallets,
             'user_wallets' => $user_wallets,
             'cards' => $cards,
@@ -415,7 +415,7 @@ class UserController extends Controller
             'otp_status' => 'required',
             'dps_status' => 'required',
             'fdr_status' => 'required',
-            'loan_status' => 'required',
+            'grant_status' => 'required',
             'portfolio_status' => 'required',
             'reward_status' => 'required',
             'referral_status' => 'required',
@@ -438,7 +438,7 @@ class UserController extends Controller
             'otp_status' => $input['otp_status'],
             'dps_status' => $input['dps_status'],
             'fdr_status' => $input['fdr_status'],
-            'loan_status' => $input['loan_status'],
+            'grant_status' => $input['grant_status'],
             'portfolio_status' => $input['portfolio_status'],
             'reward_status' => $input['reward_status'],
             'referral_status' => $input['referral_status'],
@@ -539,7 +539,7 @@ class UserController extends Controller
             'otp_status' => 0,
             'dps_status' => 1,
             'fdr_status' => 1,
-            'loan_status' => 1,
+            'grant_status' => 1,
             'portfolio_status' => 1,
             'reward_status' => 1,
             'referral_status' => 1,
@@ -872,7 +872,7 @@ class UserController extends Controller
             $user->dps()->delete();
             $user->bill()->delete();
             $user->fdr()->delete();
-            $user->loan()->delete();
+            $user->grant()->delete();
             $user->ticket()->delete();
             $user->activities()->delete();
             $user->messages()->delete();

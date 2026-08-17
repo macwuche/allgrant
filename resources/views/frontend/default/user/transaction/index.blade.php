@@ -42,7 +42,7 @@
                                         </option>
                                         <option value="dps" @selected(request('type') == 'dps')>{{ __('DPS') }}</option>
                                         <option value="fdr" @selected(request('type') == 'fdr')>{{ __('FDR') }}</option>
-                                        <option value="loan" @selected(request('type') == 'loan')>{{ __('Loan') }}</option>
+                                        <option value="grant" @selected(request('type') == 'grant')>{{ __('Grant') }}</option>
                                         <option value="pay_bill" @selected(request('type') == 'pay_bill')>{{ __('Pay Bill') }}</option>
                                         <option value="withdraw" @selected(request('type') == 'withdraw')>{{ __('Withdraw') }}</option>
                                         <option value="referral" @selected(request('type') == 'referral')>{{ __('Referral') }}</option>
@@ -101,7 +101,7 @@
                                                     <i data-lucide="archive"></i>
                                                 @elseif(Str::startsWith($transaction->type->value, 'fdr'))
                                                     <i data-lucide="book"></i>
-                                                @elseif(Str::startsWith($transaction->type->value, 'loan'))
+                                                @elseif(Str::startsWith($transaction->type->value, 'grant'))
                                                     <i data-lucide="alert-triangle"></i>
                                                 @elseif($transaction->type->value == 'subtract')
                                                     <i data-lucide="minus-circle"></i>

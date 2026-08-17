@@ -5,7 +5,7 @@ use App\Enums\TxnStatus;
 use App\Enums\TxnType;
 use App\Models\Gateway;
 use App\Models\Language;
-use App\Models\Loan;
+use App\Models\Grant;
 use App\Models\Ticket;
 use App\Models\Transaction;
 use App\Models\User;
@@ -354,7 +354,7 @@ if (! function_exists('pending_count')) {
             ->fundTransfar()
             ->count();
         $ticketCount = Ticket::where('status', 'open')->count();
-        $loanCount = Loan::reviewing()->count();
+        $grantCount = Grant::reviewing()->count();
 
         $data = [
             'withdraw_count' => $withdrawCount,
@@ -362,7 +362,7 @@ if (! function_exists('pending_count')) {
             'deposit_count' => $depositCount,
             'transfer_count' => $transferCount,
             'ticket_count' => $ticketCount,
-            'loan_count' => $loanCount,
+            'grant_count' => $grantCount,
         ];
 
         return $data;
@@ -435,9 +435,9 @@ if (! function_exists('isPlusTransaction')) {
     function isPlusTransaction($type)
     {
         if (
-            $type == TxnType::Subtract || $type == TxnType::LoanInstallment || $type == TxnType::FundTransfer ||
-            $type == TxnType::Withdraw || $type == TxnType::WithdrawAuto || $type == TxnType::LoanInstallment ||
-            $type == TxnType::DpsInstallment || $type == TxnType::LoanApply || $type == TxnType::DpsIncrease ||
+            $type == TxnType::Subtract || $type == TxnType::GrantInstallment || $type == TxnType::FundTransfer ||
+            $type == TxnType::Withdraw || $type == TxnType::WithdrawAuto || $type == TxnType::GrantInstallment ||
+            $type == TxnType::DpsInstallment || $type == TxnType::GrantApply || $type == TxnType::DpsIncrease ||
             $type == TxnType::FdrIncrease || $type == TxnType::Fdr || $type == TxnType::CardCreate || $type == TxnType::CardLoad
         ) {
             return false;
@@ -475,12 +475,12 @@ if (! function_exists('fdrRunning')) {
     }
 }
 
-if (! function_exists('loanRunning')) {
-    function loanRunning()
+if (! function_exists('grantRunning')) {
+    function grantRunning()
     {
-        $loan = \App\Models\Loan::running()->whereUserId(auth()->id())->count();
+        $grant = \App\Models\Grant::running()->whereUserId(auth()->id())->count();
 
-        return $loan;
+        return $grant;
     }
 }
 
@@ -562,7 +562,7 @@ if (! function_exists('notificationPermissions')) {
             'fund_transfer_email_notificaitons' => true,
             'dps_email_notificaitons' => true,
             'fdr_email_notificaitons' => true,
-            'loan_email_notificaitons' => true,
+            'grant_email_notificaitons' => true,
             'pay_bill_email_notificaitons' => true,
             'withdraw_payment_email_notificaitons' => true,
             'referral_email_notificaitons' => true,

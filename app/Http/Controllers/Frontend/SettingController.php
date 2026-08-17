@@ -230,7 +230,7 @@ class SettingController extends Controller
             'fund_transfer_email_notificaitons' => data_get($permissions, 'fund_transfer_email_notificaitons', 0),
             'dps_email_notificaitons' => data_get($permissions, 'dps_email_notificaitons', 0),
             'fdr_email_notificaitons' => data_get($permissions, 'fdr_email_notificaitons', 0),
-            'loan_email_notificaitons' => data_get($permissions, 'loan_email_notificaitons', 0),
+            'grant_email_notificaitons' => data_get($permissions, 'grant_email_notificaitons', 0),
             'pay_bill_email_notificaitons' => data_get($permissions, 'pay_bill_email_notificaitons', 0),
             'withdraw_payment_email_notificaitons' => data_get($permissions, 'withdraw_payment_email_notificaitons', 0),
             'referral_email_notificaitons' => data_get($permissions, 'referral_email_notificaitons', 0),

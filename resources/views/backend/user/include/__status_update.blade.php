@@ -248,24 +248,24 @@
                 </div>
                 <div class="col-xl-12">
                     <div class="profile-card-single">
-                        <h5 class="heading">{{ __('Loan Status') }}</h5>
+                        <h5 class="heading">{{ __('Grant Status') }}</h5>
                         <div class="switch-field">
                             <input
                                 type="radio"
-                                id="loan-active"
-                                name="loan_status"
+                                id="grant-active"
+                                name="grant_status"
                                 value="1"
-                                @if($user->loan_status) checked @endif
+                                @if($user->grant_status) checked @endif
                             />
-                            <label for="loan-active">{{ __('Active') }}</label>
+                            <label for="grant-active">{{ __('Active') }}</label>
                             <input
                                 type="radio"
-                                id="loan-disabled"
-                                name="loan_status"
+                                id="grant-disabled"
+                                name="grant_status"
                                 value="0"
-                                @if(!$user->loan_status) checked @endif
+                                @if(!$user->grant_status) checked @endif
                             />
-                            <label for="loan-disabled">{{ __('Disabled') }}</label>
+                            <label for="grant-disabled">{{ __('Disabled') }}</label>
                         </div>
                     </div>
                 </div>

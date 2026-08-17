@@ -100,7 +100,7 @@
                         </div>
                     </div>
                     <div class="section-design-nb">
-                        <strong>{{ __('NB:') }}</strong>{{ __('All plans will come from DPS Plan, FDR Plan, Loan Plan.') }}
+                        <strong>{{ __('NB:') }}</strong>{{ __('All plans will come from DPS Plan, FDR Plan, Grant Plan.') }}
                     </div>
                 </div>
 

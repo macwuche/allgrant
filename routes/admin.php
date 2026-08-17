@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Backend\AdSliderController;
 use App\Http\Controllers\Backend\AppController;
 use App\Http\Controllers\Backend\AppSettingsController;
 use App\Http\Controllers\Backend\AuthController;
@@ -22,8 +23,8 @@ use App\Http\Controllers\Backend\FundTransferController;
 use App\Http\Controllers\Backend\GatewayController;
 use App\Http\Controllers\Backend\KycController;
 use App\Http\Controllers\Backend\LanguageController;
-use App\Http\Controllers\Backend\LoanController;
-use App\Http\Controllers\Backend\LoanPlanController;
+use App\Http\Controllers\Backend\GrantController;
+use App\Http\Controllers\Backend\GrantPlanController;
 use App\Http\Controllers\Backend\NavigationController;
 use App\Http\Controllers\Backend\NotificationController;
 use App\Http\Controllers\Backend\OthersBankController;
@@ -133,8 +134,8 @@ Route::group(['prefix' => 'plan', 'as' => 'plan.'], function () {
         Route::delete('/destroy/{id}', 'destroy')->name('destroy');
     });
 
-    // =============================== Loan Plan Management ==================================
-    Route::group(['prefix' => 'loan', 'as' => 'loan.', 'controller' => LoanPlanController::class], function () {
+    // =============================== Grant Plan Management ==================================
+    Route::group(['prefix' => 'grant', 'as' => 'grant.', 'controller' => GrantPlanController::class], function () {
         Route::get('/index', 'index')->name('index');
         Route::get('/create', 'create')->name('create');
         Route::post('/store', 'store')->name('store')->withoutMiddleware('XSS');
@@ -142,6 +143,16 @@ Route::group(['prefix' => 'plan', 'as' => 'plan.'], function () {
         Route::post('/update/{id}', 'update')->name('update')->withoutMiddleware('XSS');
         Route::delete('/destroy/{id}', 'destroy')->name('destroy');
     });
+});
+
+// =============================== Ad Slider Management ==================================
+Route::group(['prefix' => 'ad-slider', 'as' => 'ad-slider.', 'controller' => AdSliderController::class], function () {
+    Route::get('/index', 'index')->name('index');
+    Route::get('/create', 'create')->name('create');
+    Route::post('/store', 'store')->name('store');
+    Route::get('/edit/{id}', 'edit')->name('edit');
+    Route::post('/update/{id}', 'update')->name('update');
+    Route::delete('/destroy/{id}', 'destroy')->name('destroy');
 });
 
 // ===============================  DPS Management ==================================
@@ -167,8 +178,8 @@ Route::group(['prefix' => 'fdr', 'as' => 'fdr.', 'controller' => FdrController::
     Route::post('/subscribe/fdr', 'subscribeFdrRequest')->name('request.subscribe');
 });
 
-// ===============================  Loan Management ==================================
-Route::group(['prefix' => 'loan', 'as' => 'loan.', 'controller' => LoanController::class], function () {
+// ===============================  Grant Management ==================================
+Route::group(['prefix' => 'grant', 'as' => 'grant.', 'controller' => GrantController::class], function () {
     Route::get('/all', 'all')->name('all');
     Route::post('/approval-action/{id}', 'approvalAction')->name('approval.action');
     Route::get('/request', 'request')->name('request');
@@ -178,8 +189,8 @@ Route::group(['prefix' => 'loan', 'as' => 'loan.', 'controller' => LoanControlle
     Route::get('/completed', 'completed')->name('completed');
     Route::get('/details/{id}', 'details')->name('details');
     Route::post('status', 'status')->name('status');
-    Route::get('/subscribe/loan', 'createLoanRequest')->name('subscribe.preview');
-    Route::post('/loan-subscribe', 'subscribeLoanRequest')->name('subscribe');
+    Route::get('/subscribe/grant', 'createGrantRequest')->name('subscribe.preview');
+    Route::post('/grant-subscribe', 'subscribeGrantRequest')->name('subscribe');
 });
 
 // ===============================  Bill Management ==================================

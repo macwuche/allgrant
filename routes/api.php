@@ -15,7 +15,7 @@ use App\Http\Controllers\Api\FdrController;
 use App\Http\Controllers\Api\GeneralController;
 use App\Http\Controllers\Api\KycController;
 use App\Http\Controllers\Api\LanguageController;
-use App\Http\Controllers\Api\LoanController;
+use App\Http\Controllers\Api\GrantController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PortfolioController;
 use App\Http\Controllers\Api\ReferralController;
@@ -150,14 +150,14 @@ Route::middleware('auth:sanctum', 'isActive')->group(function () {
     Route::get('fdr/details/{fdr_id}', [FdrController::class, 'details']);
     Route::get('fdr/installments/{fdr_id}', [FdrController::class, 'installments']);
 
-    // Loan
-    Route::get('loan/plans', [LoanController::class, 'plans']);
-    Route::post('loan/subscribe', [LoanController::class, 'subscribe']);
-    Route::get('loan/history', [LoanController::class, 'history']);
-    Route::get('loan/details/{loan_id}', [LoanController::class, 'details']);
-    Route::post('loan/cancel', [LoanController::class, 'cancel']);
-    Route::get('loan/installments/{loan_id}', [LoanController::class, 'installments']);
-    Route::post('loan/pay-installment', [LoanController::class, 'payInstallment']);
+    // Grant
+    Route::get('grant/plans', [GrantController::class, 'plans']);
+    Route::post('grant/subscribe', [GrantController::class, 'subscribe']);
+    Route::get('grant/history', [GrantController::class, 'history']);
+    Route::get('grant/details/{grant_id}', [GrantController::class, 'details']);
+    Route::post('grant/cancel', [GrantController::class, 'cancel']);
+    Route::get('grant/installments/{grant_id}', [GrantController::class, 'installments']);
+    Route::post('grant/pay-installment', [GrantController::class, 'payInstallment']);
 
     // Pay Bill
     Route::post('pay-bill', [BillController::class, 'payNow'])->middleware('appDemo');

@@ -27,7 +27,7 @@ class PermissionSeeder extends Seeder
             ['category' => 'Statistics Management', 'name' => 'total-fund-transfer'],
             ['category' => 'Statistics Management', 'name' => 'total-dps'],
             ['category' => 'Statistics Management', 'name' => 'total-fdr'],
-            ['category' => 'Statistics Management', 'name' => 'total-loan'],
+            ['category' => 'Statistics Management', 'name' => 'total-grant'],
             ['category' => 'Statistics Management', 'name' => 'total-pay-bill'],
             ['category' => 'Statistics Management', 'name' => 'total-reward-points'],
             ['category' => 'Statistics Management', 'name' => 'deposit-bonus'],
@@ -52,7 +52,7 @@ class PermissionSeeder extends Seeder
             ['category' => 'Customer Management', 'name' => 'user-cards'],
             ['category' => 'Customer Management', 'name' => 'user-dps'],
             ['category' => 'Customer Management', 'name' => 'user-fdr'],
-            ['category' => 'Customer Management', 'name' => 'user-loan'],
+            ['category' => 'Customer Management', 'name' => 'user-grant'],
 
             ['category' => 'Wallet Management', 'name' => 'wallet-list'],
 
@@ -118,18 +118,23 @@ class PermissionSeeder extends Seeder
             ['category' => 'FDR Management', 'name' => 'all-fdr'],
             ['category' => 'FDR Management', 'name' => 'view-fdr-details'],
 
-            ['category' => 'Loan Management', 'name' => 'loan-plan-list'],
-            ['category' => 'Loan Management', 'name' => 'loan-plan-create'],
-            ['category' => 'Loan Management', 'name' => 'loan-plan-edit'],
-            ['category' => 'Loan Management', 'name' => 'loan-plan-delete'],
-            ['category' => 'Loan Management', 'name' => 'pending-loan'],
-            ['category' => 'Loan Management', 'name' => 'running-loan'],
-            ['category' => 'Loan Management', 'name' => 'due-loan'],
-            ['category' => 'Loan Management', 'name' => 'paid-loan'],
-            ['category' => 'Loan Management', 'name' => 'rejected-loan'],
-            ['category' => 'Loan Management', 'name' => 'all-loan'],
-            ['category' => 'Loan Management', 'name' => 'view-loan-details'],
-            ['category' => 'Loan Management', 'name' => 'loan-approval'],
+            ['category' => 'Grant Management', 'name' => 'grant-plan-list'],
+            ['category' => 'Grant Management', 'name' => 'grant-plan-create'],
+            ['category' => 'Grant Management', 'name' => 'grant-plan-edit'],
+            ['category' => 'Grant Management', 'name' => 'grant-plan-delete'],
+            ['category' => 'Grant Management', 'name' => 'pending-grant'],
+            ['category' => 'Grant Management', 'name' => 'running-grant'],
+            ['category' => 'Grant Management', 'name' => 'due-grant'],
+            ['category' => 'Grant Management', 'name' => 'paid-grant'],
+            ['category' => 'Grant Management', 'name' => 'rejected-grant'],
+            ['category' => 'Grant Management', 'name' => 'all-grant'],
+            ['category' => 'Grant Management', 'name' => 'view-grant-details'],
+            ['category' => 'Grant Management', 'name' => 'grant-approval'],
+
+            ['category' => 'Ad Slider Management', 'name' => 'ad-slider-list'],
+            ['category' => 'Ad Slider Management', 'name' => 'ad-slider-create'],
+            ['category' => 'Ad Slider Management', 'name' => 'ad-slider-edit'],
+            ['category' => 'Ad Slider Management', 'name' => 'ad-slider-delete'],
 
             ['category' => 'Bill Management', 'name' => 'bill-service-import'],
             ['category' => 'Bill Management', 'name' => 'bill-service-list'],
@@ -206,7 +211,7 @@ class PermissionSeeder extends Seeder
 
             ['category' => 'Customer Management', 'name' => 'subscribe-user-dps'],
             ['category' => 'Customer Management', 'name' => 'subscribe-user-fdr'],
-            ['category' => 'Customer Management', 'name' => 'subscribe-user-loan'],
+            ['category' => 'Customer Management', 'name' => 'subscribe-user-grant'],
         ];
 
         foreach ($permissions as $permission) {

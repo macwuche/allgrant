@@ -55,7 +55,7 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
         'otp_status',
         'dps_status',
         'fdr_status',
-        'loan_status',
+        'grant_status',
         'portfolio_status',
         'reward_status',
         'referral_status',
@@ -324,9 +324,9 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
         return $this->hasMany(Fdr::class, 'user_id', 'id');
     }
 
-    public function loan()
+    public function grant()
     {
-        return $this->hasMany(Loan::class, 'user_id', 'id');
+        return $this->hasMany(Grant::class, 'user_id', 'id');
     }
 
     public function bill()

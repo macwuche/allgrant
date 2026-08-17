@@ -160,49 +160,49 @@ class PushNotificationSeeder extends Seeder
             // ],
             // [
             //     'icon' => 'alert-triangle',
-            //     'name' => 'Loan Apply',
-            //     'code' => 'loan_apply',
+            //     'name' => 'Grant Apply',
+            //     'code' => 'grant_apply',
             //     'for' => 'Admin',
-            //     'title' => '"[[plan_name]]" Loan Application From [[user_name]].',
-            //     'message_body' => '"[[plan_name]]" Loan Application From [[user_name]].',
-            //     'short_codes' => '["[[user_name]]","[[plan_name]]","[[loan_id]]","[[installment_rate]]","[[loan_amount]]","[[installment_interval]]"'
+            //     'title' => '"[[plan_name]]" Grant Application From [[user_name]].',
+            //     'message_body' => '"[[plan_name]]" Grant Application From [[user_name]].',
+            //     'short_codes' => '["[[user_name]]","[[plan_name]]","[[grant_id]]","[[installment_rate]]","[[grant_amount]]","[[installment_interval]]"'
             // ],
             // [
             //     'icon' => 'alert-triangle',
-            //     'name' => 'Loan Approved',
-            //     'code' => 'loan_approved',
+            //     'name' => 'Grant Approved',
+            //     'code' => 'grant_approved',
             //     'for' => 'User',
-            //     'title' => '"[[plan_name]]" Loan Approved.',
-            //     'message_body' => '"[[plan_name]]" Loan Approved',
-            //     'short_codes' => '["[[plan_name]]","[[loan_id]]","[[installment_rate]]","[[loan_amount]]","[[given_installment]]","[[installment_interval]]","[[next_installment_date]]","[[total_installment]]"'
+            //     'title' => '"[[plan_name]]" Grant Approved.',
+            //     'message_body' => '"[[plan_name]]" Grant Approved',
+            //     'short_codes' => '["[[plan_name]]","[[grant_id]]","[[installment_rate]]","[[grant_amount]]","[[given_installment]]","[[installment_interval]]","[[next_installment_date]]","[[total_installment]]"'
             // ],
             // [
             //     'icon' => 'alert-triangle',
-            //     'name' => 'Loan Rejected',
-            //     'code' => 'loan_rejected',
+            //     'name' => 'Grant Rejected',
+            //     'code' => 'grant_rejected',
             //     'for' => 'User',
-            //     'title' => '"[[plan_name]]" Loan Rejected.',
-            //     'message_body' => '"[[plan_name]]" Loan Rejected',
-            //     'short_codes' => '["[[plan_name]]","[[loan_id]]","[[installment_rate]]","[[loan_amount]]","[[installment_interval]]"'
+            //     'title' => '"[[plan_name]]" Grant Rejected.',
+            //     'message_body' => '"[[plan_name]]" Grant Rejected',
+            //     'short_codes' => '["[[plan_name]]","[[grant_id]]","[[installment_rate]]","[[grant_amount]]","[[installment_interval]]"'
             // ],
             // [
             //     'icon' => 'alert-triangle',
-            //     'name' => 'Loan Installment',
-            //     'code' => 'loan_installment',
+            //     'name' => 'Grant Installment',
+            //     'code' => 'grant_installment',
             //     'for' => 'User',
-            //     'title' => '"[[plan_name]]" Loan Installment Fee Deducted From Balance.',
-            //     'message_body' => '"[[plan_name]]" Loan Installment Fee Deducted From Balance.',
-            //     'short_codes' => '["[[plan_name]]","[[loan_id]]","[[installment_rate]]","[[loan_amount]]","[[delay_charge]]","[[installment_amount]]","[[given_installment]]","[[installment_interval]]","[[next_installment_date]]","[[total_installment]]"'
+            //     'title' => '"[[plan_name]]" Grant Installment Fee Deducted From Balance.',
+            //     'message_body' => '"[[plan_name]]" Grant Installment Fee Deducted From Balance.',
+            //     'short_codes' => '["[[plan_name]]","[[grant_id]]","[[installment_rate]]","[[grant_amount]]","[[delay_charge]]","[[installment_amount]]","[[given_installment]]","[[installment_interval]]","[[next_installment_date]]","[[total_installment]]"'
             // ],
 
             // [
             //     'icon' => 'alert-triangle',
-            //     'name' => 'Loan Installment',
-            //     'code' => 'loan_installment',
+            //     'name' => 'Grant Installment',
+            //     'code' => 'grant_installment',
             //     'for' => 'Admin',
-            //     'title' => '"[[user_name]]" \'s "[[plan_name]]" Loan Installment Completed.',
-            //     'message_body' => '"[[user_name]]" \'s "[[plan_name]]" Loan Installment Completed.',
-            //     'short_codes' => '["[[user_name]]","[[plan_name]]","[[loan_id]]","[[installment_rate]]","[[loan_amount]]","[[delay_charge]]","[[installment_amount]]","[[given_installment]]","[[installment_interval]]","[[next_installment_date]]","[[total_installment]]"'
+            //     'title' => '"[[user_name]]" \'s "[[plan_name]]" Grant Installment Completed.',
+            //     'message_body' => '"[[user_name]]" \'s "[[plan_name]]" Grant Installment Completed.',
+            //     'short_codes' => '["[[user_name]]","[[plan_name]]","[[grant_id]]","[[installment_rate]]","[[grant_amount]]","[[delay_charge]]","[[installment_amount]]","[[given_installment]]","[[installment_interval]]","[[next_installment_date]]","[[total_installment]]"'
             // ],
             // [
             //     'icon' => 'credit-card',

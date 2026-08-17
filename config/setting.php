@@ -255,8 +255,8 @@ return [
             [
                 'type' => 'checkbox', // input fields type
                 'data' => 'boolean', // data type, string, int, boolean
-                'name' => 'user_loan', // unique name for field
-                'label' => 'User Loan', // you know what label it is
+                'name' => 'user_grant', // unique name for field
+                'label' => 'User Grant', // you know what label it is
                 'rules' => 'required', // validation rule of laravel
                 'value' => 1, // default value if you want
             ],
@@ -485,8 +485,8 @@ return [
             [
                 'type' => 'checkbox', // input fields type
                 'data' => 'boolean', // data type, string, int, boolean
-                'name' => 'kyc_loan', // unique name for field
-                'label' => 'Loan', // you know what label it is
+                'name' => 'kyc_grant', // unique name for field
+                'label' => 'Grant', // you know what label it is
                 'rules' => 'required', // validation rule of laravel
                 'value' => '0', // default value if you want
             ],
@@ -549,8 +549,8 @@ return [
             [
                 'type' => 'checkbox', // input fields type
                 'data' => 'boolean', // data type, string, int, boolean
-                'name' => 'loan_passcode_status', // unique name for field
-                'label' => 'Loan', // you know what label it is
+                'name' => 'grant_passcode_status', // unique name for field
+                'label' => 'Grant', // you know what label it is
                 'rules' => 'required', // validation rule of laravel
                 'value' => '0', // default value if you want
             ],

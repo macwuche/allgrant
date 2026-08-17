@@ -1,9 +1,9 @@
 @if(request('tab') == 'card')
 <div @class([ 'tab-pane fade' , 'show active'=> request('tab') == 'card'
     ])
-    id="pills-loan"
+    id="pills-grant"
     role="tabpanel"
-    aria-labelledby="pills-loan-tab"
+    aria-labelledby="pills-grant-tab"
     >
     <div class="row">
         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">

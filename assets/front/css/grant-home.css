@@ -1,0 +1,386 @@
+/* Grant-focused user dashboard home — scoped under .grant-home to avoid touching the rest of the theme */
+.grant-home {
+    --gh-radius: 20px;
+    --gh-radius-sm: 14px;
+    --gh-ink: #0b0b10;
+    --gh-muted: #6b7280;
+    --gh-border: #eceef2;
+    --gh-lavender-1: #dfe3fb;
+    --gh-lavender-2: #c7cff6;
+    --gh-chip-bg: #f4f5f9;
+}
+
+.grant-home .gh-hero-row {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 20px;
+    align-items: stretch;
+    margin-bottom: 20px;
+}
+
+.grant-home .gh-hero-row > * {
+    /* Grid items default to a minimum width based on their content's
+       natural (unwrapped) size, which can stretch the whole row/page
+       wider than intended if that content can't wrap. This overrides
+       that default so long content wraps/clips within its own track
+       instead of blowing out the layout. */
+    min-width: 0;
+}
+
+@media (max-width: 991px) {
+    .grant-home .gh-hero-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Hero banner slider — a stack of slides (the default fallback banner, or
+   admin-configured ad slides), one visible at a time */
+.grant-home .gh-banner-slider {
+    position: relative;
+    min-height: 220px;
+}
+
+.grant-home .gh-banner {
+    position: absolute;
+    inset: 0;
+    /* Establishes its own stacking context so the z-index values used
+       below (text above the decorative icon, etc.) stay contained here
+       and can never collide with page-level elements like the fixed
+       top nav bar, no matter what value they use. */
+    z-index: 0;
+    overflow: hidden;
+    border-radius: var(--gh-radius);
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.grant-home .gh-banner.is-active {
+    position: relative;
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 1;
+}
+
+.grant-home .gh-banner-text {
+    max-width: 62%;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--gh-ink);
+    position: relative;
+    z-index: 2;
+    /* A long string with no spaces (e.g. a pasted URL or gibberish) has no
+       natural place to wrap. Without this, its minimum content width
+       stretches the whole .gh-hero-row grid track wider than the page,
+       even though the card itself clips visually via overflow:hidden. */
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.grant-home .gh-banner-cta {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    margin-top: 16px;
+    padding: 9px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    background: rgba(11, 11, 16, 0.9);
+    color: #ffffff;
+    text-decoration: none;
+    position: relative;
+    z-index: 2;
+}
+
+.grant-home .gh-banner-cta.is-dark {
+    background: rgba(255, 255, 255, 0.92);
+    color: #12141c;
+}
+
+.grant-home .gh-banner-icon {
+    position: absolute;
+    right: 18px;
+    bottom: 18px;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.grant-home .gh-banner-icon svg {
+    width: 44px;
+    height: 44px;
+}
+
+.grant-home .gh-banner-dots {
+    position: absolute;
+    left: 28px;
+    bottom: 18px;
+    z-index: 3;
+    display: flex;
+    gap: 6px;
+}
+
+.grant-home .gh-banner-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(11, 11, 16, 0.18);
+    cursor: pointer;
+    transition: width 0.2s ease, background 0.2s ease;
+}
+
+.grant-home .gh-banner-dots span.is-active {
+    width: 18px;
+    border-radius: 4px;
+    background: rgba(11, 11, 16, 0.55);
+}
+
+/* Amount / apply card */
+.grant-home .gh-amount-card {
+    background: #ffffff;
+    border: 1px solid var(--gh-border);
+    border-radius: var(--gh-radius);
+    padding: 26px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.grant-home .gh-amount-label {
+    font-size: 13px;
+    color: var(--gh-muted);
+    margin-bottom: 6px;
+}
+
+.grant-home .gh-amount-value {
+    font-size: 34px;
+    font-weight: 800;
+    color: var(--gh-ink);
+    letter-spacing: -0.02em;
+    margin-bottom: 18px;
+}
+
+.grant-home .gh-chip-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.grant-home .gh-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--gh-chip-bg);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--gh-ink);
+    flex: 1;
+    min-width: 140px;
+}
+
+.grant-home .gh-chip svg {
+    width: 16px;
+    height: 16px;
+    color: #6c3beb;
+    flex-shrink: 0;
+}
+
+.grant-home .gh-chip .gh-chip-sub {
+    display: block;
+    font-size: 11px;
+    color: var(--gh-muted);
+}
+
+/* Pill CTA button */
+.grant-home .gh-btn-black {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #030306;
+    color: #ffffff;
+    border: none;
+    border-radius: 999px;
+    padding: 14px 22px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    width: 100%;
+    transition: background 0.15s ease;
+}
+
+.grant-home .gh-btn-black:hover {
+    background: #1a1a22;
+    color: #ffffff;
+}
+
+.grant-home .gh-btn-black svg {
+    width: 16px;
+    height: 16px;
+}
+
+.grant-home .gh-btn-black-sm {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #030306;
+    color: #ffffff;
+    border: none;
+    border-radius: 999px;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.grant-home .gh-btn-black-sm:hover {
+    background: #1a1a22;
+    color: #ffffff;
+}
+
+.grant-home .gh-btn-outline-sm {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #ffffff;
+    color: var(--gh-muted);
+    border: 1px solid var(--gh-border);
+    border-radius: 999px;
+    padding: 9px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Section header (shared by Quick Action, etc.) */
+.grant-home .gh-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.grant-home .gh-section-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--gh-ink);
+}
+
+/* Quick Action cards */
+.grant-home .gh-quick-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+}
+
+@media (max-width: 767px) {
+    .grant-home .gh-quick-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.grant-home .gh-quick-card {
+    position: relative;
+    z-index: 0;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid var(--gh-border);
+    border-radius: var(--gh-radius-sm);
+    padding: 18px;
+}
+
+/* Soft tinted icon circle bleeding off the bottom-right corner, echoing
+   the hero banner's decorative icon treatment */
+.grant-home .gh-quick-watermark {
+    position: absolute;
+    right: -22px;
+    bottom: -22px;
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.grant-home .gh-quick-watermark svg {
+    width: 30px;
+    height: 30px;
+    margin-left: -11px;
+    margin-top: -11px;
+}
+
+.grant-home .gh-quick-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 420px) {
+    .grant-home .gh-quick-top {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .grant-home .gh-quick-top .gh-btn-black-sm {
+        justify-content: center;
+    }
+}
+
+.grant-home .gh-quick-identity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.grant-home .gh-quick-logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    flex-shrink: 0;
+}
+
+.grant-home .gh-quick-logo svg {
+    width: 18px;
+    height: 18px;
+}
+
+.grant-home .gh-quick-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--gh-ink);
+}
+
+.grant-home .gh-quick-amount {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--gh-ink);
+    margin-bottom: 4px;
+}
+
+.grant-home .gh-quick-amount-label {
+    font-size: 12px;
+    color: var(--gh-muted);
+}

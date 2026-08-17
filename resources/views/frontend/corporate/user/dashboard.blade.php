@@ -119,22 +119,22 @@
                         </div>
                     </div>
                 @endif
-                @if (setting('user_loan', 'permission'))
+                @if (setting('user_grant', 'permission'))
                     <div class="col-xl-4 col-lg-4 col-md-6 col-12">
                         <div class="single-spec-stat">
                             <div class="top">
                                 <div class="icon">
                                     <i data-lucide="alert-triangle"></i>
                                 </div>
-                                <div class="title">{{ __('My Loan') }}</div>
+                                <div class="title">{{ __('My Grant') }}</div>
                             </div>
                             <div class="text">
-                                @if ($total_running_loan > 0)
+                                @if ($total_running_grant > 0)
                                     <p>
-                                        @foreach ($user->loan->whereIn('status', [\App\Enums\LoanStatus::Running, \App\Enums\LoanStatus::Due])->take(4) ?? [] as $loan)
-                                            {{ $loan->plan?->name }} -
-                                            @if ($loan->last_date)
-                                                <strong>{{ $loan->last_date->format('d M Y') }}</strong>
+                                        @foreach ($user->grant->whereIn('status', [\App\Enums\GrantStatus::Running, \App\Enums\GrantStatus::Due])->take(4) ?? [] as $grant)
+                                            {{ $grant->plan?->name }} -
+                                            @if ($grant->last_date)
+                                                <strong>{{ $grant->last_date->format('d M Y') }}</strong>
                                             @else
                                                 <strong>N/A</strong>
                                             @endif
@@ -142,16 +142,16 @@
                                         @endforeach
                                     </p>
                                 @else
-                                    <p>{{ __('Currently No Loan Found.') }}</p>
+                                    <p>{{ __('Currently No Grant Found.') }}</p>
                                 @endif
                             </div>
                             <div class="bottom">
-                                @if ($total_running_loan > 0)
-                                    <div class="amount">{{ $currencySymbol . number_format($total_loan_amount, 2) }}</div>
+                                @if ($total_running_grant > 0)
+                                    <div class="amount">{{ $currencySymbol . number_format($total_grant_amount, 2) }}</div>
                                 @else
                                     <div class="amount">{{ $currencySymbol . number_format(0, 2) }}</div>
                                 @endif
-                                <a href="{{ route('user.loan.history') }}" class="ex-link"><i
+                                <a href="{{ route('user.grant.history') }}" class="ex-link"><i
                                         data-lucide="arrow-up-right"></i></a>
                             </div>
                         </div>
@@ -232,14 +232,14 @@
                 </div>
             </div>
         @endif
-        @if (setting('user_loan', 'permission'))
+        @if (setting('user_grant', 'permission'))
             <div class="col-xl-3 col-lg-3 col-md-6 col-12">
                 <div class="single-user-stat-card">
                     <div class="icon">
                         <img src="{{ asset('front/images/icons/fintech/7.png') }}" alt="">
                     </div>
-                    <div class="number">{{ $total_loan }}</div>
-                    <div class="title">{{ __('Total Loan') }}</div>
+                    <div class="number">{{ $total_grant }}</div>
+                    <div class="title">{{ __('Total Grant') }}</div>
                 </div>
             </div>
         @endif
@@ -313,7 +313,7 @@
                                                     <i data-lucide="archive"></i>
                                                 @elseif(Str::startsWith($transaction->type->value, 'fdr'))
                                                     <i data-lucide="book"></i>
-                                                @elseif(Str::startsWith($transaction->type->value, 'loan'))
+                                                @elseif(Str::startsWith($transaction->type->value, 'grant'))
                                                     <i data-lucide="alert-triangle"></i>
                                                 @elseif($transaction->type->value == 'subtract')
                                                     <i data-lucide="minus-circle"></i>

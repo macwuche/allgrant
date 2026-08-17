@@ -227,26 +227,26 @@
                 <div class="col-xl-4 col-md-12">
                     <div class="site-card">
                         <div class="site-card-header">
-                            <h3 class="title">{{ __('Loan Bounty') }}</h3>
+                            <h3 class="title">{{ __('Grant Bounty') }}</h3>
                             <div class="col-sm-6">
-                                <form action="{{ route('admin.referral.status') }}" method="post" id="loan-status">
+                                <form action="{{ route('admin.referral.status') }}" method="post" id="grant-status">
                                     @csrf
-                                    <input type="hidden" name="type" value="loan_level">
+                                    <input type="hidden" name="type" value="grant_level">
                                     <div class="switch-field m-0">
                                         <input
                                             type="radio"
-                                            id="loan-1"
+                                            id="grant-1"
                                             name="status"
-                                            @checked(setting('loan_level'))
+                                            @checked(setting('grant_level'))
                                         />
-                                        <label for="loan-1" class="loan-status toggle-switch">{{ __('Active') }}</label>
+                                        <label for="grant-1" class="grant-status toggle-switch">{{ __('Active') }}</label>
                                         <input
                                             type="radio"
-                                            id="loan-0"
+                                            id="grant-0"
                                             name="status"
-                                            @checked(!setting('loan_level'))
+                                            @checked(!setting('grant_level'))
                                         />
-                                        <label for="loan-0" class="loan-status toggle-switch">{{ __('Deactive') }}</label>
+                                        <label for="grant-0" class="grant-status toggle-switch">{{ __('Deactive') }}</label>
                                     </div>
                                 </form>
                             </div>
@@ -255,32 +255,32 @@
                         <div class="site-card-body">
                             <p class="paragraph">{{ __('You can') }}
                                 <strong>{{ __('Add').','. __('Edit').' '. __('or').' '. __('Delete') }}</strong> {{ __('any of the') }}
-                                <strong>{{ __('Level Referred User Loan Bounty') }}</strong></p>
+                                <strong>{{ __('Level Referred User Grant Bounty') }}</strong></p>
 
-                            @foreach($loans as $loan)
+                            @foreach($grants as $grant)
                                 <div class="single-gateway">
                                     <div class="gateway-name">
                                         <div class="gateway-title">
-                                            <h4>{{  __('Level '). $loan->the_order }}</h4>
+                                            <h4>{{  __('Level '). $grant->the_order }}</h4>
                                         </div>
                                     </div>
                                     <div class="gateway-right">
                                         <div class="gateway-status">
-                                            <div class="site-badge success">{{ $loan->bounty }}%</div>
+                                            <div class="site-badge success">{{ $grant->bounty }}%</div>
                                         </div>
                                         <div class="gateway-edit">
                                             @can('referral-edit')
                                                 <a href="" type="button" class="edit-referral"
-                                                   data-id="{{$loan->id}}"
-                                                   data-editfor="{{ 'Update ' . $loan->type . ' level '. $loan->the_order }}"
-                                                   data-bounty="{{ $loan->bounty }}"
+                                                   data-id="{{$grant->id}}"
+                                                   data-editfor="{{ 'Update ' . $grant->type . ' level '. $grant->the_order }}"
+                                                   data-bounty="{{ $grant->bounty }}"
                                                 ><i data-lucide="edit-3"></i></a>
                                             @endcan
                                             @can('referral-delete')
                                                 <a href="" class="red-bg ms-2 delete-referral" type="button"
-                                                   data-id="{{$loan->id}}"
-                                                   data-type="{{$loan->type}}"
-                                                   data-target="{{  $loan->type . ' level '. $loan->the_order }}"
+                                                   data-id="{{$grant->id}}"
+                                                   data-type="{{$grant->type}}"
+                                                   data-target="{{  $grant->type . ' level '. $grant->the_order }}"
                                                 ><i data-lucide="trash-2"></i></a>
                                             @endcan
                                         </div>

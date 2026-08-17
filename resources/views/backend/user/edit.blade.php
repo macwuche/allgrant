@@ -128,11 +128,11 @@
                                 </div>
                             </div>
                         </div>
-                        @canany(['subscribe-user-dps', 'subscribe-user-fdr', 'subscribe-user-loan'])
+                        @canany(['subscribe-user-dps', 'subscribe-user-fdr', 'subscribe-user-grant'])
                             <div class="site-card">
                                 <div class="site-card-header">
                                     <h3 class="title-small">
-                                        {{ __('Subscribe DPS, FDR & Loan') }}
+                                        {{ __('Subscribe DPS, FDR & Grant') }}
                                     </h3>
                                 </div>
                                 <div class="site-card-body">
@@ -154,12 +154,12 @@
                                                     {{ __('FDR') }}
                                                 </a>
                                             @endcan
-                                            @can('subscribe-user-loan')
-                                                <a href="{{ route('admin.loan.subscribe.preview', ['user_id' => $user->id]) }}"
+                                            @can('subscribe-user-grant')
+                                                <a href="{{ route('admin.grant.subscribe.preview', ['user_id' => $user->id]) }}"
                                                     class="site-btn-sm red-btn" data-bs-toggle="tooltip"
-                                                    title="{{ __('Subscribe Loan') }}"
-                                                    data-bs-original-title="{{ __('Subscribe Loan') }}">
-                                                    {{ __('Loan') }}
+                                                    title="{{ __('Subscribe Grant') }}"
+                                                    data-bs-original-title="{{ __('Subscribe Grant') }}">
+                                                    {{ __('Grant') }}
                                                 </a>
                                             @endcan
                                         </div>
@@ -232,9 +232,9 @@
                                     <i data-lucide="alert-triangle"></i>
                                 </div>
                                 <div class="content">
-                                    <h4>{{ $currencySymbol }}<span class="count">{{ $statistics['total_loan'] }}</span>
+                                    <h4>{{ $currencySymbol }}<span class="count">{{ $statistics['total_grant'] }}</span>
                                     </h4>
-                                    <p>{{ __('Total Loan') }}</p>
+                                    <p>{{ __('Total Grant') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -351,11 +351,11 @@
                                             data-lucide="book"></i>{{ __('FDR') }}</a>
                                 </li>
                             @endcan
-                            @can('user-loan')
+                            @can('user-grant')
                                 <li class="nav-item" role="presentation">
-                                    <a href="{{ route('admin.user.edit', ['user' => $user->id, 'tab' => 'loan']) }}"
-                                        class="nav-link {{ request('tab') == 'loan' ? 'active' : '' }}"><i
-                                            data-lucide="alert-triangle"></i>{{ __('Loan') }}</a>
+                                    <a href="{{ route('admin.user.edit', ['user' => $user->id, 'tab' => 'grant']) }}"
+                                        class="nav-link {{ request('tab') == 'grant' ? 'active' : '' }}"><i
+                                            data-lucide="alert-triangle"></i>{{ __('Grant') }}</a>
                                 </li>
                             @endcan
 
@@ -412,9 +412,9 @@
                             <!-- FDR -->
                             @include('backend.user.include.__fdr')
                         @endcan
-                        @can('user-loan')
-                            <!-- Loan -->
-                            @include('backend.user.include.__loan')
+                        @can('user-grant')
+                            <!-- Grant -->
+                            @include('backend.user.include.__grant')
                         @endcan
 
                         @if (setting('virtual_card', 'permission'))

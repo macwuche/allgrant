@@ -65,10 +65,10 @@ class UserNavigationSeeder extends Seeder
                 'position' => 7,
             ],
             [
-                'type' => 'loan',
+                'type' => 'grant',
                 'icon' => 'alert-triangle',
-                'url' => 'user/loan',
-                'name' => 'Loan',
+                'url' => 'user/grant',
+                'name' => 'Grant',
                 'position' => 8,
             ],
             [

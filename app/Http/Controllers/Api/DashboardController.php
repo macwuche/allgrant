@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\DpsStatus;
 use App\Enums\FdrStatus;
-use App\Enums\LoanStatus;
+use App\Enums\GrantStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Export\CSV\TransactionExport;
 use App\Http\Resources\TransactionResource;
@@ -50,12 +50,12 @@ class DashboardController extends Controller
                         ];
                     })->values(),
                 ],
-                'loan_data' => [
-                    'total_running_loan_amount' => $currency_symbol.$user->loan->whereIn('status', [LoanStatus::Running, LoanStatus::Due])->sum('total_loan_amount'),
-                    'running_loan_summary' => $user->loan->whereIn('status', [LoanStatus::Running, LoanStatus::Due])->map(function ($loan) {
+                'grant_data' => [
+                    'total_running_grant_amount' => $currency_symbol.$user->grant->whereIn('status', [GrantStatus::Running, GrantStatus::Due])->sum('total_grant_amount'),
+                    'running_grant_summary' => $user->grant->whereIn('status', [GrantStatus::Running, GrantStatus::Due])->map(function ($grant) {
                         return [
-                            'name' => $loan->plan?->name,
-                            'end_date' => now()->parse($loan->last_date)->format('d M Y'),
+                            'name' => $grant->plan?->name,
+                            'end_date' => now()->parse($grant->last_date)->format('d M Y'),
                         ];
                     })->values(),
                 ],
@@ -108,7 +108,7 @@ class DashboardController extends Controller
                 'total_transfer' => $currency_symbol.$user->totalTransfer(),
                 'total_dps' => $currency_symbol.$user->dps->sum('total_dps_amount'),
                 'total_fdr' => $currency_symbol.$user->fdr->sum('amount'),
-                'total_loan' => $currency_symbol.$user->loan->sum('amount'),
+                'total_grant' => $currency_symbol.$user->grant->sum('amount'),
                 'total_bill' => $currency_symbol.$user->bill->sum('amount'),
                 'total_referral_profit' => $currency_symbol.$user->totalReferralProfit(),
                 'total_referral' => $user->referrals()->count(),

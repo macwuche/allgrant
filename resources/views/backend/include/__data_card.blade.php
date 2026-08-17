@@ -134,15 +134,15 @@
     </div>
 </div>
 @endcan
-@can('total-loan')
+@can('total-grant')
 <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
     <div class="data-card">
         <div class="icon">
             <i data-lucide="alert-triangle"></i>
         </div>
         <div class="content">
-            <h4>{{ $currencySymbol }}<span class="count">{{ $data['total_loan'] }}</span> </h4>
-            <p>{{ __('Total Loan') }}</p>
+            <h4>{{ $currencySymbol }}<span class="count">{{ $data['total_grant'] }}</span> </h4>
+            <p>{{ __('Total Grant') }}</p>
         </div>
     </div>
 </div>

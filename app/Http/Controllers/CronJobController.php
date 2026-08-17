@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Enums\DpsStatus;
 use App\Enums\FdrStatus;
-use App\Enums\LoanStatus;
+use App\Enums\GrantStatus;
 use App\Enums\TxnStatus;
 use App\Enums\TxnType;
 use App\Models\CronJob;
 use App\Models\CronJobLog;
 use App\Models\DpsTransaction;
 use App\Models\FDRTransaction;
-use App\Models\LoanTransaction;
+use App\Models\GrantTransaction;
 use App\Models\Portfolio;
 use App\Models\User;
 use App\Traits\NotifyTrait;
@@ -324,7 +324,7 @@ class CronJobController extends Controller
         }
     }
 
-    public function loan()
+    public function grant()
     {
 
         try {
@@ -334,18 +334,18 @@ class CronJobController extends Controller
             $today = Carbon::today();
             $this->startCron();
 
-            LoanTransaction::with('loan.plan')->whereNull('given_date')
+            GrantTransaction::with('grant.plan')->whereNull('given_date')
                 ->where('installment_date', '<=', $today)
-                ->whereRelation('loan', 'status', 'running')
-                ->chunk(500, function ($loanTransaction) use ($today) {
-                    foreach ($loanTransaction as $installment) {
+                ->whereRelation('grant', 'status', 'running')
+                ->chunk(500, function ($grantTransaction) use ($today) {
+                    foreach ($grantTransaction as $installment) {
 
-                        // Get loan data
-                        $loan = $installment->loan;
+                        // Get grant data
+                        $grant = $installment->grant;
                         // Get plan data
-                        $plan = $loan->plan;
+                        $plan = $grant->plan;
                         // Get user data
-                        $user = $loan->user;
+                        $user = $grant->user;
 
                         // Calculate per installment
                         $perInstallment = $installment->paid_amount;
@@ -366,7 +366,7 @@ class CronJobController extends Controller
                         // Otherwise, deferment increase.
                         if ($user->balance >= $finalAmount) {
 
-                            // Save loan info
+                            // Save grant info
                             $installment->given_date = $today;
                             $installment->paid_amount = $amount;
                             $installment->charge = $charge;
@@ -378,72 +378,72 @@ class CronJobController extends Controller
                             $user->save();
 
                             // Get Installments
-                            $totalInstallments = count($loan->transactions);
-                            $givenInstallments = $loan->transactions->whereNotNull('given_date')->count();
+                            $totalInstallments = count($grant->transactions);
+                            $givenInstallments = $grant->transactions->whereNotNull('given_date')->count();
 
-                            Txn::new($amount, $charge, $finalAmount, 'System', 'Loan Installment #'.$loan->loan_no.'', TxnType::LoanInstallment, TxnStatus::Success, '', null, $user->id, null, 'User');
+                            Txn::new($amount, $charge, $finalAmount, 'System', 'Grant Installment #'.$grant->grant_no.'', TxnType::GrantInstallment, TxnStatus::Success, '', null, $user->id, null, 'User');
 
-                            $status = $totalInstallments == $givenInstallments ? LoanStatus::Completed : LoanStatus::Running;
+                            $status = $totalInstallments == $givenInstallments ? GrantStatus::Completed : GrantStatus::Running;
 
-                            $loan->status = $status;
-                            $loan->save();
+                            $grant->status = $status;
+                            $grant->save();
 
                             // Shortcodes for notifications
                             $shortcodes = [
                                 '[[site_title]]' => setting('site_title', 'global'),
                                 '[[site_url]]' => route('home'),
-                                '[[plan_name]]' => $loan->plan->name,
-                                '[[user_name]]' => $loan->user->full_name,
-                                '[[full_name]]' => $loan->user->full_name,
-                                '[[loan_id]]' => $loan->loan_no,
+                                '[[plan_name]]' => $grant->plan->name,
+                                '[[user_name]]' => $grant->user->full_name,
+                                '[[full_name]]' => $grant->user->full_name,
+                                '[[grant_id]]' => $grant->grant_no,
                                 '[[given_installment]]' => $givenInstallments,
-                                '[[total_installment]]' => count($loan->transactions),
-                                '[[next_installment_date]]' => nextInstallment($loan->id, LoanTransaction::class, 'loan_id'),
-                                '[[loan_amount]]' => $loan->amount.' '.setting('site_currency', 'global'),
+                                '[[total_installment]]' => count($grant->transactions),
+                                '[[next_installment_date]]' => nextInstallment($grant->id, GrantTransaction::class, 'grant_id'),
+                                '[[grant_amount]]' => $grant->amount.' '.setting('site_currency', 'global'),
                                 '[[installment_amount]]' => $perInstallment.' '.setting('site_currency', 'global'),
                                 '[[delay_charge]]' => $charge.' '.setting('site_currency', 'global'),
-                                '[[installment_interval]]' => $loan->plan->installment_intervel,
-                                '[[installment_rate]]' => $loan->plan->installment_rate,
+                                '[[installment_interval]]' => $grant->plan->installment_intervel,
+                                '[[installment_rate]]' => $grant->plan->installment_rate,
                             ];
 
-                            $this->smsNotify('loan_installment', $shortcodes, $loan->user->phone);
-                            $this->mailNotify($loan->user->email, 'loan_installment', $shortcodes);
-                            $this->pushNotify('loan_installment', $shortcodes, route('user.loan.details', $loan->loan_no), $loan->user_id);
-                            $this->pushNotify('loan_installment', $shortcodes, route('admin.loan.details', $loan->id), $loan->user_id, 'Admin');
+                            $this->smsNotify('grant_installment', $shortcodes, $grant->user->phone);
+                            $this->mailNotify($grant->user->email, 'grant_installment', $shortcodes);
+                            $this->pushNotify('grant_installment', $shortcodes, route('user.grant.details', $grant->grant_no), $grant->user_id);
+                            $this->pushNotify('grant_installment', $shortcodes, route('admin.grant.details', $grant->id), $grant->user_id, 'Admin');
                         } else {
                             $installment->deferment++;
                             $installment->save();
-                            $loan->status = LoanStatus::Due;
-                            $loan->save();
+                            $grant->status = GrantStatus::Due;
+                            $grant->save();
 
                             // Shortcodes for notifications
                             $shortcodes = [
                                 '[[site_title]]' => setting('site_title', 'global'),
                                 '[[site_url]]' => route('home'),
-                                '[[plan_name]]' => $loan->plan->name,
-                                '[[user_name]]' => $loan->user->full_name,
-                                '[[full_name]]' => $loan->user->full_name,
-                                '[[loan_id]]' => $loan->loan_no,
-                                '[[given_installment]]' => $loan->transactions->whereNotNull('given_date')->count(),
-                                '[[total_installment]]' => count($loan->transactions),
-                                '[[next_installment_date]]' => nextInstallment($loan->id, \App\Models\LoanTransaction::class, 'loan_id'),
-                                '[[loan_amount]]' => $loan->amount.' '.setting('site_currency', 'global'),
+                                '[[plan_name]]' => $grant->plan->name,
+                                '[[user_name]]' => $grant->user->full_name,
+                                '[[full_name]]' => $grant->user->full_name,
+                                '[[grant_id]]' => $grant->grant_no,
+                                '[[given_installment]]' => $grant->transactions->whereNotNull('given_date')->count(),
+                                '[[total_installment]]' => count($grant->transactions),
+                                '[[next_installment_date]]' => nextInstallment($grant->id, \App\Models\GrantTransaction::class, 'grant_id'),
+                                '[[grant_amount]]' => $grant->amount.' '.setting('site_currency', 'global'),
                                 '[[installment_amount]]' => $perInstallment.' '.setting('site_currency', 'global'),
                                 '[[delay_charge]]' => $charge.' '.setting('site_currency', 'global'),
-                                '[[installment_interval]]' => $loan->plan->installment_intervel,
-                                '[[installment_rate]]' => $loan->plan->installment_rate,
+                                '[[installment_interval]]' => $grant->plan->installment_intervel,
+                                '[[installment_rate]]' => $grant->plan->installment_rate,
                             ];
 
-                            $this->smsNotify('loan_installment_due', $shortcodes, $loan->user->phone);
-                            $this->mailNotify($loan->user->email, 'loan_installment_due', $shortcodes);
-                            $this->pushNotify('loan_installment_due', $shortcodes, route('user.loan.details', $loan->loan_no), $loan->user_id);
+                            $this->smsNotify('grant_installment_due', $shortcodes, $grant->user->phone);
+                            $this->mailNotify($grant->user->email, 'grant_installment_due', $shortcodes);
+                            $this->pushNotify('grant_installment_due', $shortcodes, route('user.grant.details', $grant->grant_no), $grant->user_id);
                         }
                     }
                 });
 
             DB::commit();
 
-            return '........User Loan Successfully!!.';
+            return '........User Grant Successfully!!.';
         } catch (\Throwable $th) {
             DB::rollBack();
             throw $th;

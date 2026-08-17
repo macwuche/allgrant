@@ -46,11 +46,11 @@ class CronJobSeeder extends Seeder
                 'status' => 'running',
             ],
             [
-                'name' => 'Loan',
+                'name' => 'Grant',
                 'next_run_at' => now()->addMinutes(1),
                 'schedule' => 86400,
                 'type' => 'system',
-                'reserved_method' => 'loan',
+                'reserved_method' => 'grant',
                 'status' => 'running',
             ],
         ];

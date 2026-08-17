@@ -37,17 +37,17 @@ class ReferralController extends Controller
             ReferralType::Deposit,
             ReferralType::DPS,
             ReferralType::FDR,
-            ReferralType::Loan,
+            ReferralType::Grant,
             ReferralType::PayBill,
         ];
 
         $deposits = LevelReferral::where('type', ReferralType::Deposit->value)->get();
         $dpses = LevelReferral::where('type', ReferralType::DPS->value)->get();
         $fdrs = LevelReferral::where('type', ReferralType::FDR->value)->get();
-        $loans = LevelReferral::where('type', ReferralType::Loan->value)->get();
+        $grants = LevelReferral::where('type', ReferralType::Grant->value)->get();
         $bills = LevelReferral::where('type', ReferralType::PayBill->value)->get();
 
-        return view('backend.referral.index', compact('referralType', 'dpses', 'deposits', 'fdrs', 'loans', 'bills'));
+        return view('backend.referral.index', compact('referralType', 'dpses', 'deposits', 'fdrs', 'grants', 'bills'));
     }
 
     /**

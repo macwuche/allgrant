@@ -3,7 +3,7 @@
     $pending_count = pending_count();
     @endphp
     @if($pending_count['withdraw_count'] || $pending_count['kyc_count'] || $pending_count['deposit_count'] ||
-    $pending_count['ticket_count'] || $pending_count['kyc_count'] || $pending_count['loan_count'])
+    $pending_count['ticket_count'] || $pending_count['kyc_count'] || $pending_count['grant_count'])
     <div class="col-xl-12">
         <div class="admin-latest-announcements">
             <div class="content"><i data-lucide="zap"></i>{{ __("Explore the important Requests to review first") }}</div>
@@ -45,11 +45,11 @@
                     ({{ $pending_count['ticket_count'] }})</a>
                 @endif
                 @endcan
-                @can('pending-loan')
-                @if($pending_count['loan_count'])
-                <a href="{{ route('admin.loan.request') }}" class="site-btn-xs red-btn"><i data-lucide="loader"
-                        class="spining-icon"></i>{{ __('Loan') }}
-                    ({{ $pending_count['loan_count'] }})</a>
+                @can('pending-grant')
+                @if($pending_count['grant_count'])
+                <a href="{{ route('admin.grant.request') }}" class="site-btn-xs red-btn"><i data-lucide="loader"
+                        class="spining-icon"></i>{{ __('Grant') }}
+                    ({{ $pending_count['grant_count'] }})</a>
                 @endif
                 @endcan
             </div>

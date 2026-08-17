@@ -21,9 +21,9 @@
                                     <button class="nav-link" id="nav-fdr-tab" data-bs-toggle="tab"
                                         data-bs-target="#nav-fdr" type="button" role="tab" aria-controls="nav-fdr"
                                         aria-selected="false">{{ __('FDR') }}</button>
-                                    <button class="nav-link" id="nav-loan-tab" data-bs-toggle="tab"
-                                        data-bs-target="#nav-loan" type="button" role="tab"
-                                        aria-controls="nav-loan" aria-selected="false">{{ __('Loan') }}</button>
+                                    <button class="nav-link" id="nav-grant-tab" data-bs-toggle="tab"
+                                        data-bs-target="#nav-grant" type="button" role="tab"
+                                        aria-controls="nav-grant" aria-selected="false">{{ __('Grant') }}</button>
                                 </div>
                             </nav>
                         </div>
@@ -33,7 +33,7 @@
             @php
                 $dps_plans = App\Models\DpsPlan::active()->get();
                 $fdr_plans = App\Models\FdrPlan::active()->get();
-                $loan_plans = App\Models\LoanPlan::active()->get();
+                $grant_plans = App\Models\GrantPlan::active()->get();
             @endphp
 
             <div class="col-xxl-12">
@@ -239,9 +239,9 @@
                                 @endforelse
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="nav-loan" role="tabpanel" aria-labelledby="nav-loan-tab">
+                    <div class="tab-pane fade" id="nav-grant" role="tabpanel" aria-labelledby="nav-grant-tab">
                         <div class="row gy-30">
-                            @forelse ($loan_plans as $plan)
+                            @forelse ($grant_plans as $plan)
                                 <div class="col-xxl-3 col-xl-3 col-lg-4 col-md-6">
                                     <div class="has_fade_anim" data-delay="0.15">
                                         <div class="pricing-item">
@@ -309,7 +309,7 @@
                                             </div>
                                             <div class="btn-inner">
                                                 <a class="td-btn gradient-btn radius-8 w-100"
-                                                    href="{{ route('user.loan.index') }}">
+                                                    href="{{ route('user.grant.index') }}">
                                                     <span class="btn-text">{{ __('Subscribe') }}</span>
                                                     <span class="btn-icon">
                                                         <svg width="19" height="19" viewBox="0 0 19 19"

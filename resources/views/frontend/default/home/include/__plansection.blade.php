@@ -1,7 +1,7 @@
 @php
 $dps_permission = setting('user_dps', 'permission');
 $fdr_permission = setting('user_fdr', 'permission');
-$loan_permission = setting('user_loan', 'permission');
+$grant_permission = setting('user_grant', 'permission');
 
 // Determine the first active tab based on permissions
 $active_tab = null;
@@ -9,8 +9,8 @@ if ($dps_permission) {
 $active_tab = 'dps';
 } elseif ($fdr_permission) {
 $active_tab = 'fdr';
-} elseif ($loan_permission) {
-$active_tab = 'loan';
+} elseif ($grant_permission) {
+$active_tab = 'grant';
 }
 @endphp
 
@@ -48,12 +48,12 @@ $active_tab = 'loan';
                             </button>
                         </li>
                         @endif
-                        @if($loan_permission)
+                        @if($grant_permission)
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link {{ $active_tab == 'loan' ? 'active' : '' }}" id="price-tab-three" data-bs-toggle="tab"
+                            <button class="nav-link {{ $active_tab == 'grant' ? 'active' : '' }}" id="price-tab-three" data-bs-toggle="tab"
                                 data-bs-target="#price-tab-three-pane" type="button" role="tab"
-                                aria-controls="price-tab-three-pane" aria-selected="{{ $active_tab == 'loan' ? 'true' : 'false' }}">
-                                <span><i class="fa-regular fa-triangle-exclamation"></i></span>{{ __('Loan') }}
+                                aria-controls="price-tab-three-pane" aria-selected="{{ $active_tab == 'grant' ? 'true' : 'false' }}">
+                                <span><i class="fa-regular fa-triangle-exclamation"></i></span>{{ __('Grant') }}
                             </button>
                         </li>
                         @endif
@@ -65,7 +65,7 @@ $active_tab = 'loan';
         @php
         $dps_plans = cache()->remember('dps_plans_active', 300, fn() => App\Models\DpsPlan::active()->get());
         $fdr_plans = cache()->remember('fdr_plans_active', 300, fn() => App\Models\FdrPlan::active()->get());
-        $loan_plans = App\Models\LoanPlan::activeCached();
+        $grant_plans = App\Models\GrantPlan::activeCached();
         @endphp
 
         <div class="tab-content" id="myTabContent">
@@ -150,10 +150,10 @@ $active_tab = 'loan';
                 </div>
             </div>
             @endif
-            @if($loan_permission)
-            <div class="tab-pane fade {{ $active_tab == 'loan' ? 'show active' : '' }}" id="price-tab-three-pane" role="tabpanel" aria-labelledby="price-tab-three" tabindex="0">
+            @if($grant_permission)
+            <div class="tab-pane fade {{ $active_tab == 'grant' ? 'show active' : '' }}" id="price-tab-three-pane" role="tabpanel" aria-labelledby="price-tab-three" tabindex="0">
                 <div class="row gy-30">
-                    @forelse ($loan_plans as $plan)
+                    @forelse ($grant_plans as $plan)
                     <div class="col-xxl-3 col-xl-3 col-lg-4 col-md-6 col-sm-6">
                         <div class="price-item" data-aos="fade-up" data-aos-duration="6000">
                             <div class="price-top">
@@ -167,15 +167,15 @@ $active_tab = 'loan';
                             </div>
                             <div class="info-list">
                                 <ul>
-                                    <li><span><i class="fa-regular fa-check"></i></span>{{ __('Minimum Loan') }} : {{ $currencySymbol.$plan->minimum_amount }}</li>
-                                    <li><span><i class="fa-regular fa-check"></i></span>{{ __('Miximum Loan') }} : {{ $currencySymbol.$plan->maximum_amount }}</li>
+                                    <li><span><i class="fa-regular fa-check"></i></span>{{ __('Minimum Grant') }} : {{ $currencySymbol.$plan->minimum_amount }}</li>
+                                    <li><span><i class="fa-regular fa-check"></i></span>{{ __('Miximum Grant') }} : {{ $currencySymbol.$plan->maximum_amount }}</li>
                                     <li><span><i class="fa-regular fa-check"></i></span>{{ __('Installment Rate') }} : {{ $plan->per_installment }}%</li>
                                     <li><span><i class="fa-regular fa-check"></i></span>{{ __('Installment Slice') }} : {{ $plan->installment_intervel }} {{ __('Days') }}</li>
                                     <li><span><i class="fa-regular fa-check"></i></span>{{ __('Total Installment') }} : {{ $plan->total_installment }}</li>
                                 </ul>
                             </div>
                             <div class="price-btn">
-                                <a class="pricing-btn w-100" href="{{ route('user.loan.index') }}">{{ __('Apply Now') }}</a>
+                                <a class="pricing-btn w-100" href="{{ route('user.grant.index') }}">{{ __('Apply Now') }}</a>
                             </div>
                         </div>
                     </div>

@@ -25,7 +25,7 @@
             var withdraw_data = Object.values(chartData['withdraw_statistics']);
             var total_dps = Object.values(chartData['total_dps']);
             var total_fdr = Object.values(chartData['total_fdr']);
-            var total_loan = Object.values(chartData['total_loan']);
+            var total_grant = Object.values(chartData['total_grant']);
             var total_bill = Object.values(chartData['total_bill']);
             var symbol = chartData['symbol'];
 
@@ -61,8 +61,8 @@
                         tension: 0.1
                     },
                     {
-                        label: 'Total Loan '+symbol+sumArrayValues(total_loan),
-                        data: total_loan,
+                        label: 'Total Grant '+symbol+sumArrayValues(total_grant),
+                        data: total_grant,
                         backgroundColor: '#6F2DBD',
                         borderColor: '#ffffff',
                         borderWidth: 0,
@@ -93,6 +93,7 @@
 
 
             var ctx = document.getElementById('statisticsChart');
+            if (!ctx) return;
             var configuration = {
                 type: 'bar',
                 data,
@@ -128,7 +129,7 @@
             'withdraw_statistics':@json($data['withdraw_statistics']),
             'total_dps':@json($data['dps_statistics']),
             'total_fdr':@json($data['fdr_statistics']),
-            'total_loan':@json($data['loan_statistics']),
+            'total_grant':@json($data['grant_statistics']),
             'total_bill':@json($data['bill_statistics']),
             'symbol': @json($data['symbol']),
         };
@@ -160,20 +161,22 @@
             }]
         };
         // render init block
-        new Chart(
-            document.getElementById('fundTransferChart'),
-            {
-                type: 'doughnut',
-                data,
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
+        if (document.getElementById('fundTransferChart')) {
+            new Chart(
+                document.getElementById('fundTransferChart'),
+                {
+                    type: 'doughnut',
+                    data,
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
                         }
                     }
                 }
-            }
-        );
+            );
+        }
 
         // Country Chart
         var country = @json($data['country']);
@@ -214,20 +217,22 @@
             }]
         };
         // render init block
-        new Chart(
-            document.getElementById('countryChart'),
-            {
-                type: 'doughnut',
-                data,
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
+        if (document.getElementById('countryChart')) {
+            new Chart(
+                document.getElementById('countryChart'),
+                {
+                    type: 'doughnut',
+                    data,
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
                         }
                     }
                 }
-            }
-        );
+            );
+        }
 
         // Browser Chart
         var browser = @json($data['browser']);
@@ -268,20 +273,22 @@
             }]
         };
         // render init block
-        new Chart(
-            document.getElementById('browserChart'),
-            {
-                type: 'polarArea',
-                data,
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
+        if (document.getElementById('browserChart')) {
+            new Chart(
+                document.getElementById('browserChart'),
+                {
+                    type: 'polarArea',
+                    data,
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
                         }
                     }
                 }
-            }
-        );
+            );
+        }
 
         // OS Chart
         var platform = @json($data['platform']);
@@ -319,20 +326,22 @@
             }]
         };
         // render init block
-        new Chart(
-            document.getElementById('osChart'),
-            {
-                type: 'pie',
-                data,
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
+        if (document.getElementById('osChart')) {
+            new Chart(
+                document.getElementById('osChart'),
+                {
+                    type: 'pie',
+                    data,
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
                         }
                     }
                 }
-            }
-        );
+            );
+        }
 
     })(jQuery);
 </script>

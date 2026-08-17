@@ -32,7 +32,7 @@ class TransferService
         $amount = $input['amount'];
         $bankId = (int) $input['bank_id'];
         $bankInfo = OthersBank::find($bankId);
-        $userWallet = $user->wallets()->find($walletType);
+        $userWallet = $walletType == 'default' ? null : $user->wallets()->find($walletType);
         $currencyCode = $walletType == 'default' ? setting('site_currency', 'global') : $userWallet->currency->code;
 
         if ($bankId != 0) {
@@ -108,7 +108,7 @@ class TransferService
         $bankId = (int) $input['bank_id'];
         $bankInfo = OthersBank::find($bankId);
         $currency = setting('site_currency', 'global');
-        $userWallet = $user->wallets()->find($walletType);
+        $userWallet = $walletType == 'default' ? null : $user->wallets()->find($walletType);
         $currencyCode = $walletType == 'default' ? setting('site_currency', 'global') : $userWallet->currency->code;
 
         $manualData = $input['manual_data'] ?? [];

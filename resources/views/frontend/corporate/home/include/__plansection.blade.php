@@ -48,8 +48,8 @@
                                 {{ __('FDR') }}</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="loan-tab" data-bs-toggle="tab" data-bs-target="#loan-tab-pane"
-                                type="button" role="tab" aria-controls="loan-tab-pane" aria-selected="false">
+                            <button class="nav-link" id="grant-tab" data-bs-toggle="tab" data-bs-target="#grant-tab-pane"
+                                type="button" role="tab" aria-controls="grant-tab-pane" aria-selected="false">
                                 <span class="icon"><svg width="44" height="44" viewBox="0 0 44 44"
                                         fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <circle cx="22" cy="22" r="20.75" fill="white" stroke="#FF7E42"
@@ -59,7 +59,7 @@
                                             fill="#FF7E42" />
                                     </svg>
                                 </span>
-                                {{ __('Loan') }}</button>
+                                {{ __('Grant') }}</button>
                         </li>
                     </ul>
                 </div>
@@ -67,7 +67,7 @@
             @php
                 $dps_plans = App\Models\DpsPlan::active()->get();
                 $fdr_plans = App\Models\FdrPlan::active()->get();
-                $loan_plans = App\Models\LoanPlan::active()->get();
+                $grant_plans = App\Models\GrantPlan::active()->get();
             @endphp
             <div class="tab-content" id="myTabContent">
                 <div class="tab-pane fade show active" id="dps-tab-pane" role="tabpanel" aria-labelledby="dps-tab"
@@ -260,10 +260,10 @@
                             @endforelse
                     </div>
                 </div>
-                <div class="tab-pane fade" id="loan-tab-pane" role="tabpanel" aria-labelledby="loan-tab"
+                <div class="tab-pane fade" id="grant-tab-pane" role="tabpanel" aria-labelledby="grant-tab"
                     tabindex="0">
                     <div class="row">
-                        @forelse ($loan_plans as $plan)
+                        @forelse ($grant_plans as $plan)
                             <div class="col-xxl-4 col-xl-4">
                                 <div class="price-item">
                                     <div class="price-heading">
@@ -282,7 +282,7 @@
                                                         <img src="{{ asset('front/theme-2') }}/images/icons/check-black.svg"
                                                             alt="check">
                                                     </span>
-                                                    <span class="title">{{ __('Minimum Loan') }} :
+                                                    <span class="title">{{ __('Minimum Grant') }} :
                                                         {{ $currencySymbol . $plan->minimum_amount }}</span>
                                                 </div>
                                             </li>
@@ -292,7 +292,7 @@
                                                         <img src="{{ asset('front/theme-2') }}/images/icons/check-black.svg"
                                                             alt="check">
                                                     </span>
-                                                    <span class="title">{{ __('Miximum Loan') }} :
+                                                    <span class="title">{{ __('Miximum Grant') }} :
                                                         {{ $currencySymbol . $plan->maximum_amount }}</span>
                                                 </div>
                                             </li>
@@ -329,7 +329,7 @@
                                         </ul>
                                     </div>
                                     <div class="price-link">
-                                        <a href="{{ route('user.loan.index') }}"
+                                        <a href="{{ route('user.grant.index') }}"
                                             class="site-btn gdt-btn w-100">{{ __('Subscribe') }}</a>
                                     </div>
                                 </div>

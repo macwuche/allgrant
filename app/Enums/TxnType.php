@@ -18,9 +18,9 @@ enum TxnType: string
     case ReceiveMoney = 'receive_money';
     case Refund = 'refund';
     case FundTransfer = 'fund_transfer';
-    case Loan = 'loan';
-    case LoanApply = 'loan_applied';
-    case LoanInstallment = 'loan_installment';
+    case Grant = 'grant';
+    case GrantApply = 'grant_applied';
+    case GrantInstallment = 'grant_installment';
     case DpsInstallment = 'dps_installment';
     case DpsIncrease = 'dps_increase';
     case DpsDecrease = 'dps_decrease';

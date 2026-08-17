@@ -9,7 +9,7 @@
     @php
         $dps_running = dpsRunning();
         $fdr_running = fdrRunning();
-        $loan_running = loanRunning();
+        $grant_running = grantRunning();
         $ticket_running = App\Models\Ticket::Opened()->where('user_id',auth()->id())->count();
         $referral_counter = $user->referrals->count();
         $navigations = App\Models\UserNavigation::orderBy('position')->get();
@@ -25,7 +25,7 @@
                     @include('frontend::include.__menu-item',['navigation' => $navigation])
                 @elseif ($navigation->type == 'fdr' && setting('user_fdr', 'permission') && auth()->user()->fdr_status)
                     @include('frontend::include.__menu-item',['navigation' => $navigation])
-                @elseif ($navigation->type == 'loan' && setting('user_loan', 'permission') && auth()->user()->loan_status)
+                @elseif ($navigation->type == 'grant' && setting('user_grant', 'permission') && auth()->user()->grant_status)
                     @include('frontend::include.__menu-item',['navigation' => $navigation])
                 @elseif ($navigation->type == 'rewards' && setting('user_reward', 'permission') && auth()->user()->reward_status)
                     @include('frontend::include.__menu-item',['navigation' => $navigation])

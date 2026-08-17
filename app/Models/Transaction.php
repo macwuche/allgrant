@@ -140,13 +140,19 @@ class Transaction extends Model
 
     public function getCurrencyAttribute(): string
     {
+        if ($this->wallet_type === 'default') {
+            return setting('site_currency', 'global');
+        }
+
         return $this->userWallet->currency->code ?? setting('site_currency', 'global');
     }
 
     public function currency(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $this->userWallet->currency->code ?? setting('site_currency', 'global')
+            get: fn ($value) => $this->wallet_type === 'default'
+                ? setting('site_currency', 'global')
+                : ($this->userWallet->currency->code ?? setting('site_currency', 'global'))
         )->shouldCache();
     }
 

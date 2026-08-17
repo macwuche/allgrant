@@ -11,7 +11,7 @@ use App\Models\Bill;
 use App\Models\Dps;
 use App\Models\Fdr;
 use App\Models\Gateway;
-use App\Models\Loan;
+use App\Models\Grant;
 use App\Models\LoginActivities;
 use App\Models\ReferralRelationship;
 use App\Models\Ticket;
@@ -95,10 +95,10 @@ class DashboardController extends Controller
         })->toArray();
         $billStatistics = array_replace($dateArray, $billStatistics);
 
-        $loanStatistics = Loan::whereBetween('created_at', $dateFilter)->get()->groupBy('day')->map(function ($group) {
+        $grantStatistics = Grant::whereBetween('created_at', $dateFilter)->get()->groupBy('day')->map(function ($group) {
             return $group->sum('amount');
         })->toArray();
-        $loanStatistics = array_replace($dateArray, $loanStatistics);
+        $grantStatistics = array_replace($dateArray, $grantStatistics);
 
         // ============================= End dashboard statistics =============================================
 
@@ -141,7 +141,7 @@ class DashboardController extends Controller
         $symbol = setting('currency_symbol', 'global');
         $total_dps = Dps::get()->sum('total_dps_amount');
         $total_fdr = Fdr::sum('amount');
-        $total_loan = Loan::sum('amount');
+        $total_grant = Grant::sum('amount');
         $total_bill = $transaction->where('type', TxnType::PayBill)->sum('amount');
 
         $fund_transfer_statistics = [
@@ -164,7 +164,7 @@ class DashboardController extends Controller
             'total_deposit' => $totalDeposit->sum('amount'),
             'total_dps' => $total_dps,
             'total_fdr' => $total_fdr,
-            'total_loan' => $total_loan,
+            'total_grant' => $total_grant,
             'total_bill' => $total_bill,
             'points' => User::sum('points'),
             'total_send' => $totalSend,
@@ -176,7 +176,7 @@ class DashboardController extends Controller
             'withdraw_statistics' => $withdrawStatistics,
             'dps_statistics' => $dpsStatistics,
             'fdr_statistics' => $fdrStatistics,
-            'loan_statistics' => $loanStatistics,
+            'grant_statistics' => $grantStatistics,
             'bill_statistics' => $billStatistics,
             'fund_transfer_statistics' => $fund_transfer_statistics,
 
@@ -201,7 +201,7 @@ class DashboardController extends Controller
                 'deposit_statistics' => $depositStatistics,
                 'total_dps' => $dpsStatistics,
                 'total_fdr' => $fdrStatistics,
-                'total_loan' => $loanStatistics,
+                'total_grant' => $grantStatistics,
                 'total_bill' => $billStatistics,
                 'withdraw_statistics' => $withdrawStatistics,
                 'symbol' => $symbol,
