@@ -8,8 +8,6 @@ use App\Enums\TxnType;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\Bill;
-use App\Models\Dps;
-use App\Models\Fdr;
 use App\Models\Gateway;
 use App\Models\Grant;
 use App\Models\LoginActivities;
@@ -79,17 +77,6 @@ class DashboardController extends Controller
         })->toArray();
         $withdrawStatistics = array_replace($dateArray, $withdrawStatistics);
 
-        $dpsStatistics = Dps::whereBetween('created_at', $dateFilter)->get()->groupBy('day')->map(function ($group) {
-            return $group->sum('total_dps_amount');
-        })->toArray();
-
-        $dpsStatistics = array_replace($dateArray, $dpsStatistics);
-
-        $fdrStatistics = Fdr::whereBetween('created_at', $dateFilter)->get()->groupBy('day')->map(function ($group) {
-            return $group->sum('amount');
-        })->toArray();
-        $fdrStatistics = array_replace($dateArray, $fdrStatistics);
-
         $billStatistics = Bill::whereBetween('created_at', $dateFilter)->get()->groupBy('day')->map(function ($group) {
             return $group->sum('amount');
         })->toArray();
@@ -139,8 +126,6 @@ class DashboardController extends Controller
         $country = array_slice($country, 0, 5);
 
         $symbol = setting('currency_symbol', 'global');
-        $total_dps = Dps::get()->sum('total_dps_amount');
-        $total_fdr = Fdr::sum('amount');
         $total_grant = Grant::sum('amount');
         $total_bill = $transaction->where('type', TxnType::PayBill)->sum('amount');
 
@@ -162,8 +147,6 @@ class DashboardController extends Controller
             'total_staff' => $totalStaff,
 
             'total_deposit' => $totalDeposit->sum('amount'),
-            'total_dps' => $total_dps,
-            'total_fdr' => $total_fdr,
             'total_grant' => $total_grant,
             'total_bill' => $total_bill,
             'points' => User::sum('points'),
@@ -174,8 +157,6 @@ class DashboardController extends Controller
             'date_label' => $dateArray,
             'deposit_statistics' => $depositStatistics,
             'withdraw_statistics' => $withdrawStatistics,
-            'dps_statistics' => $dpsStatistics,
-            'fdr_statistics' => $fdrStatistics,
             'grant_statistics' => $grantStatistics,
             'bill_statistics' => $billStatistics,
             'fund_transfer_statistics' => $fund_transfer_statistics,
@@ -199,8 +180,6 @@ class DashboardController extends Controller
             return response()->json([
                 'date_label' => $dateArray,
                 'deposit_statistics' => $depositStatistics,
-                'total_dps' => $dpsStatistics,
-                'total_fdr' => $fdrStatistics,
                 'total_grant' => $grantStatistics,
                 'total_bill' => $billStatistics,
                 'withdraw_statistics' => $withdrawStatistics,

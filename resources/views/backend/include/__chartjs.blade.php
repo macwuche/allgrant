@@ -23,8 +23,6 @@
             var date_label =  Object.keys(chartData['date_label']);
             var deposit_data = Object.values(chartData['deposit_statistics']);
             var withdraw_data = Object.values(chartData['withdraw_statistics']);
-            var total_dps = Object.values(chartData['total_dps']);
-            var total_fdr = Object.values(chartData['total_fdr']);
             var total_grant = Object.values(chartData['total_grant']);
             var total_bill = Object.values(chartData['total_bill']);
             var symbol = chartData['symbol'];
@@ -37,24 +35,6 @@
                         label: 'Total Deposit '+symbol+sumArrayValues(deposit_data),
                         data: deposit_data,
                         backgroundColor: '#ef476f',
-                        borderColor: '#ffffff',
-                        borderWidth: 0,
-                        borderRadius: 90,
-                        tension: 0.1
-                    },
-                    {
-                        label: 'Total DPS '+symbol+sumArrayValues(total_dps),
-                        data: total_dps,
-                        backgroundColor: '#2F3E46',
-                        borderColor: '#ffffff',
-                        borderWidth: 0,
-                        borderRadius: 90,
-                        tension: 0.1
-                    },
-                    {
-                        label: 'Total FDR '+symbol+sumArrayValues(total_fdr),
-                        data: total_fdr,
-                        backgroundColor: '#619B8A',
                         borderColor: '#ffffff',
                         borderWidth: 0,
                         borderRadius: 90,
@@ -127,8 +107,6 @@
             'date_label':@json($data['date_label']),
             'deposit_statistics':@json($data['deposit_statistics']),
             'withdraw_statistics':@json($data['withdraw_statistics']),
-            'total_dps':@json($data['dps_statistics']),
-            'total_fdr':@json($data['fdr_statistics']),
             'total_grant':@json($data['grant_statistics']),
             'total_bill':@json($data['bill_statistics']),
             'symbol': @json($data['symbol']),

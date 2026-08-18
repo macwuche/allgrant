@@ -239,22 +239,6 @@ return [
             [
                 'type' => 'checkbox', // input fields type
                 'data' => 'boolean', // data type, string, int, boolean
-                'name' => 'user_dps', // unique name for field
-                'label' => 'User DPS', // you know what label it is
-                'rules' => 'required', // validation rule of laravel
-                'value' => 1, // default value if you want
-            ],
-            [
-                'type' => 'checkbox', // input fields type
-                'data' => 'boolean', // data type, string, int, boolean
-                'name' => 'user_fdr', // unique name for field
-                'label' => 'User FDR', // you know what label it is
-                'rules' => 'required', // validation rule of laravel
-                'value' => 1, // default value if you want
-            ],
-            [
-                'type' => 'checkbox', // input fields type
-                'data' => 'boolean', // data type, string, int, boolean
                 'name' => 'user_grant', // unique name for field
                 'label' => 'User Grant', // you know what label it is
                 'rules' => 'required', // validation rule of laravel
@@ -467,24 +451,6 @@ return [
             [
                 'type' => 'checkbox', // input fields type
                 'data' => 'boolean', // data type, string, int, boolean
-                'name' => 'kyc_dps', // unique name for field
-                'label' => 'DPS', // you know what label it is
-                'rules' => 'required', // validation rule of laravel
-                'value' => '0', // default value if you want
-            ],
-
-            [
-                'type' => 'checkbox', // input fields type
-                'data' => 'boolean', // data type, string, int, boolean
-                'name' => 'kyc_fdr', // unique name for field
-                'label' => 'FDR', // you know what label it is
-                'rules' => 'required', // validation rule of laravel
-                'value' => '0', // default value if you want
-            ],
-
-            [
-                'type' => 'checkbox', // input fields type
-                'data' => 'boolean', // data type, string, int, boolean
                 'name' => 'kyc_grant', // unique name for field
                 'label' => 'Grant', // you know what label it is
                 'rules' => 'required', // validation rule of laravel
@@ -527,22 +493,6 @@ return [
                 'data' => 'boolean', // data type, string, int, boolean
                 'name' => 'fund_transfer_passcode_status', // unique name for field
                 'label' => 'Fund Transfer', // you know what label it is
-                'rules' => 'required', // validation rule of laravel
-                'value' => '0', // default value if you want
-            ],
-            [
-                'type' => 'checkbox', // input fields type
-                'data' => 'boolean', // data type, string, int, boolean
-                'name' => 'dps_passcode_status', // unique name for field
-                'label' => 'DPS', // you know what label it is
-                'rules' => 'required', // validation rule of laravel
-                'value' => '0', // default value if you want
-            ],
-            [
-                'type' => 'checkbox', // input fields type
-                'data' => 'boolean', // data type, string, int, boolean
-                'name' => 'fdr_passcode_status', // unique name for field
-                'label' => 'FDR', // you know what label it is
                 'rules' => 'required', // validation rule of laravel
                 'value' => '0', // default value if you want
             ],

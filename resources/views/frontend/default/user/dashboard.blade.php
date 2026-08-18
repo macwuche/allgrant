@@ -149,10 +149,6 @@
                                                 <div class="event-icon">
                                                     @if ($transaction->type->value == 'deposit' || $transaction->type->value == 'manual_deposit')
                                                         <i data-lucide="chevrons-down"></i>
-                                                    @elseif(Str::startsWith($transaction->type->value, 'dps'))
-                                                        <i data-lucide="archive"></i>
-                                                    @elseif(Str::startsWith($transaction->type->value, 'fdr'))
-                                                        <i data-lucide="book"></i>
                                                     @elseif(Str::startsWith($transaction->type->value, 'grant'))
                                                         <i data-lucide="hand-coins"></i>
                                                     @elseif($transaction->type->value == 'subtract')

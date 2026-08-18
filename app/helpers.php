@@ -437,41 +437,12 @@ if (! function_exists('isPlusTransaction')) {
         if (
             $type == TxnType::Subtract || $type == TxnType::GrantInstallment || $type == TxnType::FundTransfer ||
             $type == TxnType::Withdraw || $type == TxnType::WithdrawAuto || $type == TxnType::GrantInstallment ||
-            $type == TxnType::DpsInstallment || $type == TxnType::GrantApply || $type == TxnType::DpsIncrease ||
-            $type == TxnType::FdrIncrease || $type == TxnType::Fdr || $type == TxnType::CardCreate || $type == TxnType::CardLoad
+            $type == TxnType::GrantApply || $type == TxnType::CardCreate || $type == TxnType::CardLoad
         ) {
             return false;
         }
 
         return true;
-    }
-}
-
-if (! function_exists('getTotalMature')) {
-    function getTotalMature($dps)
-    {
-        $totalInstallmentFee = $dps->transactions->sum('paid_amount');
-
-        $interestAmount = ($totalInstallmentFee * $dps->plan?->interest_rate) / 100;
-
-        return intval($totalInstallmentFee + $interestAmount);
-    }
-}
-
-if (! function_exists('dpsRunning')) {
-    function dpsRunning()
-    {
-        $dps = \App\Models\Dps::ongoing()->whereUserId(auth()->id())->count();
-
-        return $dps;
-    }
-}
-if (! function_exists('fdrRunning')) {
-    function fdrRunning()
-    {
-        $fdr = \App\Models\Fdr::ongoing()->whereUserId(auth()->id())->count();
-
-        return $fdr;
     }
 }
 
@@ -560,8 +531,6 @@ if (! function_exists('notificationPermissions')) {
             '2fa_notifications' => true,
             'deposit_email_notificaitons' => true,
             'fund_transfer_email_notificaitons' => true,
-            'dps_email_notificaitons' => true,
-            'fdr_email_notificaitons' => true,
             'grant_email_notificaitons' => true,
             'pay_bill_email_notificaitons' => true,
             'withdraw_payment_email_notificaitons' => true,

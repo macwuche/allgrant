@@ -202,52 +202,6 @@
                 </div>
                 <div class="col-xl-12">
                     <div class="profile-card-single">
-                        <h5 class="heading">{{ __('DPS Status') }}</h5>
-                        <div class="switch-field">
-                            <input
-                                type="radio"
-                                id="dps-active"
-                                name="dps_status"
-                                value="1"
-                                @if($user->dps_status) checked @endif
-                            />
-                            <label for="dps-active">{{ __('Active') }}</label>
-                            <input
-                                type="radio"
-                                id="dps-disabled"
-                                name="dps_status"
-                                value="0"
-                                @if(!$user->dps_status) checked @endif
-                            />
-                            <label for="dps-disabled">{{ __('Disabled') }}</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-12">
-                    <div class="profile-card-single">
-                        <h5 class="heading">{{ __('FDR Status') }}</h5>
-                        <div class="switch-field">
-                            <input
-                                type="radio"
-                                id="fdr-active"
-                                name="fdr_status"
-                                value="1"
-                                @if($user->fdr_status) checked @endif
-                            />
-                            <label for="fdr-active">{{ __('Active') }}</label>
-                            <input
-                                type="radio"
-                                id="fdr-disabled"
-                                name="fdr_status"
-                                value="0"
-                                @if(!$user->fdr_status) checked @endif
-                            />
-                            <label for="fdr-disabled">{{ __('Disabled') }}</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-12">
-                    <div class="profile-card-single">
                         <h5 class="heading">{{ __('Grant Status') }}</h5>
                         <div class="switch-field">
                             <input

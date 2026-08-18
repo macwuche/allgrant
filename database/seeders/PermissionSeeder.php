@@ -25,8 +25,6 @@ class PermissionSeeder extends Seeder
             ['category' => 'Statistics Management', 'name' => 'total-withdraw'],
             ['category' => 'Statistics Management', 'name' => 'total-referral'],
             ['category' => 'Statistics Management', 'name' => 'total-fund-transfer'],
-            ['category' => 'Statistics Management', 'name' => 'total-dps'],
-            ['category' => 'Statistics Management', 'name' => 'total-fdr'],
             ['category' => 'Statistics Management', 'name' => 'total-grant'],
             ['category' => 'Statistics Management', 'name' => 'total-pay-bill'],
             ['category' => 'Statistics Management', 'name' => 'total-reward-points'],
@@ -50,8 +48,6 @@ class PermissionSeeder extends Seeder
             ['category' => 'Customer Management', 'name' => 'all-type-status'],
             ['category' => 'Customer Management', 'name' => 'user-paybacks'],
             ['category' => 'Customer Management', 'name' => 'user-cards'],
-            ['category' => 'Customer Management', 'name' => 'user-dps'],
-            ['category' => 'Customer Management', 'name' => 'user-fdr'],
             ['category' => 'Customer Management', 'name' => 'user-grant'],
 
             ['category' => 'Wallet Management', 'name' => 'wallet-list'],
@@ -96,27 +92,6 @@ class PermissionSeeder extends Seeder
             ['category' => 'Fund Transfer Management', 'name' => 'others-bank-edit'],
             ['category' => 'Fund Transfer Management', 'name' => 'others-bank-delete'],
             ['category' => 'Fund Transfer Management', 'name' => 'fund-transfer-approval'],
-
-            ['category' => 'DPS Management', 'name' => 'dps-plan-list'],
-            ['category' => 'DPS Management', 'name' => 'dps-plan-create'],
-            ['category' => 'DPS Management', 'name' => 'dps-plan-edit'],
-            ['category' => 'DPS Management', 'name' => 'dps-plan-delete'],
-            ['category' => 'DPS Management', 'name' => 'ongoing-dps'],
-            ['category' => 'DPS Management', 'name' => 'payable-dps'],
-            ['category' => 'DPS Management', 'name' => 'complete-dps'],
-            ['category' => 'DPS Management', 'name' => 'closed-dps'],
-            ['category' => 'DPS Management', 'name' => 'all-dps'],
-            ['category' => 'DPS Management', 'name' => 'view-dps-details'],
-
-            ['category' => 'FDR Management', 'name' => 'fdr-plan-list'],
-            ['category' => 'FDR Management', 'name' => 'fdr-plan-create'],
-            ['category' => 'FDR Management', 'name' => 'fdr-plan-edit'],
-            ['category' => 'FDR Management', 'name' => 'fdr-plan-delete'],
-            ['category' => 'FDR Management', 'name' => 'running-fdr'],
-            ['category' => 'FDR Management', 'name' => 'due-fdr'],
-            ['category' => 'FDR Management', 'name' => 'closed-fdr'],
-            ['category' => 'FDR Management', 'name' => 'all-fdr'],
-            ['category' => 'FDR Management', 'name' => 'view-fdr-details'],
 
             ['category' => 'Grant Management', 'name' => 'grant-plan-list'],
             ['category' => 'Grant Management', 'name' => 'grant-plan-create'],
@@ -209,8 +184,6 @@ class PermissionSeeder extends Seeder
             ['category' => 'System Management', 'name' => 'clear-cache'],
             ['category' => 'System Management', 'name' => 'application-details'],
 
-            ['category' => 'Customer Management', 'name' => 'subscribe-user-dps'],
-            ['category' => 'Customer Management', 'name' => 'subscribe-user-fdr'],
             ['category' => 'Customer Management', 'name' => 'subscribe-user-grant'],
         ];
 

@@ -40,8 +40,6 @@
                                         <option value="fund_transfer" @selected(request('type') == 'fund_transfer')>
                                             {{ __('Fund Transfer') }}
                                         </option>
-                                        <option value="dps" @selected(request('type') == 'dps')>{{ __('DPS') }}</option>
-                                        <option value="fdr" @selected(request('type') == 'fdr')>{{ __('FDR') }}</option>
                                         <option value="grant" @selected(request('type') == 'grant')>{{ __('Grant') }}</option>
                                         <option value="pay_bill" @selected(request('type') == 'pay_bill')>{{ __('Pay Bill') }}</option>
                                         <option value="withdraw" @selected(request('type') == 'withdraw')>{{ __('Withdraw') }}</option>
@@ -97,10 +95,6 @@
                                             <div class="event-icon">
                                                 @if ($transaction->type->value == 'deposit' || $transaction->type->value == 'manual_deposit')
                                                     <i data-lucide="chevrons-down"></i>
-                                                @elseif(Str::startsWith($transaction->type->value, 'dps'))
-                                                    <i data-lucide="archive"></i>
-                                                @elseif(Str::startsWith($transaction->type->value, 'fdr'))
-                                                    <i data-lucide="book"></i>
                                                 @elseif(Str::startsWith($transaction->type->value, 'grant'))
                                                     <i data-lucide="alert-triangle"></i>
                                                 @elseif($transaction->type->value == 'subtract')

@@ -52,7 +52,7 @@ class Transaction extends Model
 
     public function scopeProfit($query)
     {
-        return $query->whereIn('type', [TxnType::Referral, TxnType::SignupBonus, TxnType::PortfolioBonus, TxnType::RewardRedeem, TxnType::DpsMaturity, TxnType::FdrInstallment]);
+        return $query->whereIn('type', [TxnType::Referral, TxnType::SignupBonus, TxnType::PortfolioBonus, TxnType::RewardRedeem]);
     }
 
     public function scopeSearch($query, $search)
@@ -227,7 +227,7 @@ class Transaction extends Model
     public function totalProfit()
     {
         return $this->where('status', TxnStatus::Success)->where(function ($query) {
-            $query->whereIn('type', [TxnType::Referral, TxnType::SignupBonus, TxnType::PortfolioBonus, TxnType::RewardRedeem, TxnType::DpsMaturity, TxnType::FdrInstallment]);
+            $query->whereIn('type', [TxnType::Referral, TxnType::SignupBonus, TxnType::PortfolioBonus, TxnType::RewardRedeem]);
         });
     }
 

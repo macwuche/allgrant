@@ -128,32 +128,16 @@
                                 </div>
                             </div>
                         </div>
-                        @canany(['subscribe-user-dps', 'subscribe-user-fdr', 'subscribe-user-grant'])
+                        @canany(['subscribe-user-grant'])
                             <div class="site-card">
                                 <div class="site-card-header">
                                     <h3 class="title-small">
-                                        {{ __('Subscribe DPS, FDR & Grant') }}
+                                        {{ __('Subscribe Grant') }}
                                     </h3>
                                 </div>
                                 <div class="site-card-body">
                                     <div class="row">
                                         <div class="col-xl-12 mt-3 text-center">
-                                            @can('subscribe-user-dps')
-                                                <a href="{{ route('admin.dps.request.create', ['user_id' => $user->id]) }}"
-                                                    class="site-btn-sm blue-btn" data-bs-toggle="tooltip"
-                                                    title="{{ __('Subscribe DPS') }}"
-                                                    data-bs-original-title="{{ __('Subscribe DPS') }}">
-                                                    {{ __('DPS') }}
-                                                </a>
-                                            @endcan
-                                            @can('subscribe-user-fdr')
-                                                <a href="{{ route('admin.fdr.request.create', ['user_id' => $user->id]) }}"
-                                                    class="site-btn-sm primary-btn" data-bs-toggle="tooltip"
-                                                    title="{{ __('Subscribe FDR') }}"
-                                                    data-bs-original-title="{{ __('Subscribe FDR') }}">
-                                                    {{ __('FDR') }}
-                                                </a>
-                                            @endcan
                                             @can('subscribe-user-grant')
                                                 <a href="{{ route('admin.grant.subscribe.preview', ['user_id' => $user->id]) }}"
                                                     class="site-btn-sm red-btn" data-bs-toggle="tooltip"
@@ -199,30 +183,6 @@
                                     <h4>{{ $currencySymbol }}<span
                                             class="count">{{ $statistics['total_fund_transfer'] }}</span> </h4>
                                     <p>{{ __('Total Fund Transfer') }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                            <div class="data-card">
-                                <div class="icon">
-                                    <i data-lucide="archive"></i>
-                                </div>
-                                <div class="content">
-                                    <h4>{{ $currencySymbol }}<span class="count">{{ $statistics['total_dps'] }}</span>
-                                    </h4>
-                                    <p>{{ __('Total DPS') }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                            <div class="data-card">
-                                <div class="icon">
-                                    <i data-lucide="book"></i>
-                                </div>
-                                <div class="content">
-                                    <h4>{{ $currencySymbol }}<span class="count">{{ $statistics['total_fdr'] }}</span>
-                                    </h4>
-                                    <p>{{ __('Total FDR') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -337,20 +297,6 @@
                                 </li>
                             @endcan
 
-                            @can('user-dps')
-                                <li class="nav-item" role="presentation">
-                                    <a href="{{ route('admin.user.edit', ['user' => $user->id, 'tab' => 'dps']) }}"
-                                        class="nav-link {{ request('tab') == 'dps' ? 'active' : '' }}"><i
-                                            data-lucide="archive"></i>{{ __('DPS') }}</a>
-                                </li>
-                            @endcan
-                            @can('user-fdr')
-                                <li class="nav-item" role="presentation">
-                                    <a href="{{ route('admin.user.edit', ['user' => $user->id, 'tab' => 'fdr']) }}"
-                                        class="nav-link {{ request('tab') == 'fdr' ? 'active' : '' }}"><i
-                                            data-lucide="book"></i>{{ __('FDR') }}</a>
-                                </li>
-                            @endcan
                             @can('user-grant')
                                 <li class="nav-item" role="presentation">
                                     <a href="{{ route('admin.user.edit', ['user' => $user->id, 'tab' => 'grant']) }}"
@@ -404,14 +350,6 @@
                             @include('backend.user.include.__earnings')
                         @endcan
 
-                        @can('user-dps')
-                            <!-- DPS -->
-                            @include('backend.user.include.__dps')
-                        @endcan
-                        @can('user-fdr')
-                            <!-- FDR -->
-                            @include('backend.user.include.__fdr')
-                        @endcan
                         @can('user-grant')
                             <!-- Grant -->
                             @include('backend.user.include.__grant')

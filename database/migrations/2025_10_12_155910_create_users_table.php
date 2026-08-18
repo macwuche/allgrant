@@ -42,8 +42,6 @@ return new class extends Migration
             $table->boolean('withdraw_status')->default(true);
             $table->boolean('transfer_status')->default(true);
             $table->boolean('otp_status')->default(true);
-            $table->boolean('dps_status')->default(true);
-            $table->boolean('fdr_status')->nullable()->default(true);
             $table->boolean('loan_status')->default(true);
             $table->boolean('pay_bill_status')->default(true);
             $table->boolean('portfolio_status')->default(true);

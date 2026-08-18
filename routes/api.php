@@ -10,8 +10,6 @@ use App\Http\Controllers\Api\BillController;
 use App\Http\Controllers\Api\CardController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DepositController;
-use App\Http\Controllers\Api\DpsController;
-use App\Http\Controllers\Api\FdrController;
 use App\Http\Controllers\Api\GeneralController;
 use App\Http\Controllers\Api\KycController;
 use App\Http\Controllers\Api\LanguageController;
@@ -133,22 +131,6 @@ Route::middleware('auth:sanctum', 'isActive')->group(function () {
 
     // Wire Transfer
     Route::post('wire-transfer', WireTransferController::class);
-
-    // DPS
-    Route::apiResource('dps', DpsController::class)->only('index', 'store', 'destroy');
-    Route::post('dps/increase', [DpsController::class, 'increment']);
-    Route::post('dps/decrease', [DpsController::class, 'decrement']);
-    Route::get('dps/history', [DpsController::class, 'history']);
-    Route::get('dps/details/{dps_id}', [DpsController::class, 'details']);
-    Route::get('dps/installments/{dps_id}', [DpsController::class, 'installments']);
-
-    // FDR
-    Route::apiResource('fdr', FdrController::class)->only('index', 'store', 'destroy');
-    Route::post('fdr/increase', [FdrController::class, 'increment']);
-    Route::post('fdr/decrease', [FdrController::class, 'decrement']);
-    Route::get('fdr/history', [FdrController::class, 'history']);
-    Route::get('fdr/details/{fdr_id}', [FdrController::class, 'details']);
-    Route::get('fdr/installments/{fdr_id}', [FdrController::class, 'installments']);
 
     // Grant
     Route::get('grant/plans', [GrantController::class, 'plans']);

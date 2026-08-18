@@ -8,8 +8,6 @@ use App\Enums\TxnType;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
 use App\Models\Card;
-use App\Models\Dps;
-use App\Models\Fdr;
 use App\Models\Kyc;
 use App\Models\LevelReferral;
 use App\Models\Grant;
@@ -207,9 +205,7 @@ class UserController extends Controller
         $level = LevelReferral::where('type', 'investment')->max('the_order') + 1;
 
         $earnings = null;
-        $dpses = null;
         $transactions = null;
-        $fdres = null;
         $grants = null;
         $wallets = [];
         $cards = null;
@@ -230,32 +226,6 @@ class UserController extends Controller
                 })
                 ->paginate()
                 ->withQueryString();
-        } elseif (request('tab') == 'dps') {
-            $dpses = Dps::with('plan')
-                ->where('user_id', $id)
-                ->when(request('query') != null, function ($query) {
-                    $query->whereHas('plan', function ($planQuery) {
-                        $planQuery->where('name', 'LIKE', '%'.request('query').'%');
-                    });
-                })
-                ->when(in_array(request('sort_field'), ['created_at', 'dps_id', 'per_installment', 'status']), function ($query) {
-                    $query->orderBy(request('sort_field'), request('sort_dir'));
-                })
-                ->when(request('sort_field') == 'dps', function ($query) {
-                    $query->whereHas('plan', function ($dpsQuery) {
-                        $dpsQuery->orderBy('name', request('sort_dir'));
-                    });
-                })
-                ->when(request('sort_field') == 'interest_rate', function ($query) {
-                    $query->whereHas('plan', function ($dpsQuery) {
-                        $dpsQuery->orderBy('interest_rate', request('sort_dir'));
-                    });
-                })
-                ->when(! request()->has('sort_field'), function ($query) {
-                    $query->latest();
-                })
-                ->paginate()
-                ->withQueryString();
         } elseif (request('tab') == 'transactions') {
             $transactions = Transaction::where('user_id', $id)
                 ->search(request('query'))
@@ -266,27 +236,6 @@ class UserController extends Controller
                 ])
                 ->when(request('sort_field') != null, function ($query) {
                     $query->orderBy(request('sort_field'), request('sort_dir'));
-                })
-                ->when(! request()->has('sort_field'), function ($query) {
-                    $query->latest();
-                })
-                ->paginate()
-                ->withQueryString();
-        } elseif (request('tab') == 'fdr') {
-            $fdres = Fdr::with('plan')
-                ->where('user_id', $id)
-                ->when(request('query') != null, function ($query) {
-                    $query->whereHas('plan', function ($planQuery) {
-                        $planQuery->where('name', 'LIKE', '%'.request('query').'%');
-                    });
-                })
-                ->when(in_array(request('sort_field'), ['created_at', 'fdr_id', 'amount', 'status']), function ($query) {
-                    $query->orderBy(request('sort_field'), request('sort_dir'));
-                })
-                ->when(request('sort_field') == 'fdr', function ($query) {
-                    $query->whereHas('plan', function ($dpsQuery) {
-                        $dpsQuery->orderBy('name', request('sort_dir'));
-                    });
                 })
                 ->when(! request()->has('sort_field'), function ($query) {
                     $query->latest();
@@ -336,8 +285,6 @@ class UserController extends Controller
         $statistics = [
             'total_deposit' => $user->total_deposit,
             'total_fund_transfer' => $user->totalTransfer(),
-            'total_dps' => $user->dps->sum('total_dps_amount'),
-            'total_fdr' => $user->fdr->sum('amount'),
             'total_grant' => $user->grant->sum('amount'),
             'total_bill' => $user->bill->sum('amount'),
             'total_withdraw' => $user->totalWithdraw(),
@@ -360,8 +307,6 @@ class UserController extends Controller
             'earnings' => $earnings,
             'transactions' => $transactions,
             'tickets' => $tickets,
-            'dpses' => $dpses,
-            'fdres' => $fdres,
             'grants' => $grants,
             'wallets' => $wallets,
             'user_wallets' => $user_wallets,
@@ -413,8 +358,6 @@ class UserController extends Controller
             'withdraw_status' => 'required',
             'transfer_status' => 'required',
             'otp_status' => 'required',
-            'dps_status' => 'required',
-            'fdr_status' => 'required',
             'grant_status' => 'required',
             'portfolio_status' => 'required',
             'reward_status' => 'required',
@@ -436,8 +379,6 @@ class UserController extends Controller
             'withdraw_status' => $input['withdraw_status'],
             'transfer_status' => $input['transfer_status'],
             'otp_status' => $input['otp_status'],
-            'dps_status' => $input['dps_status'],
-            'fdr_status' => $input['fdr_status'],
             'grant_status' => $input['grant_status'],
             'portfolio_status' => $input['portfolio_status'],
             'reward_status' => $input['reward_status'],
@@ -537,8 +478,6 @@ class UserController extends Controller
             'withdraw_status' => 1,
             'transfer_status' => 4,
             'otp_status' => 0,
-            'dps_status' => 1,
-            'fdr_status' => 1,
             'grant_status' => 1,
             'portfolio_status' => 1,
             'reward_status' => 1,
@@ -869,9 +808,7 @@ class UserController extends Controller
             $user = User::find($id);
             $user->kycs()->delete();
             $user->transaction()->delete();
-            $user->dps()->delete();
             $user->bill()->delete();
-            $user->fdr()->delete();
             $user->grant()->delete();
             $user->ticket()->delete();
             $user->activities()->delete();

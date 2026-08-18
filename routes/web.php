@@ -7,8 +7,6 @@ use App\Http\Controllers\Frontend\BillPayController;
 use App\Http\Controllers\Frontend\CardController;
 use App\Http\Controllers\Frontend\DashboardController;
 use App\Http\Controllers\Frontend\DepositController;
-use App\Http\Controllers\Frontend\DpsController;
-use App\Http\Controllers\Frontend\FdrController;
 use App\Http\Controllers\Frontend\FundTransferController;
 use App\Http\Controllers\Frontend\GatewayController;
 use App\Http\Controllers\Frontend\HomeController;
@@ -115,17 +113,6 @@ Route::group(['middleware' => ['auth', '2fa', 'isActive', setting('otp_verificat
         Route::get('beneficiary/show/{id}', [BeneficiaryController::class, 'show'])->name('beneficiary.show');
     });
 
-    // Dps
-    Route::group(['prefix' => 'dps', 'as' => 'dps.'], function () {
-        Route::get('/', [DpsController::class, 'index'])->name('index');
-        Route::get('/subscribe/{id}', [DpsController::class, 'subscribe'])->middleware('passcode:dps')->name('subscribe');
-        Route::get('/history', [DpsController::class, 'history'])->name('history');
-        Route::get('/details/{id}', [DpsController::class, 'details'])->name('details');
-        Route::get('/cancel/{id}', [DpsController::class, 'cancel'])->name('cancel');
-        Route::post('/increment/{id}', [DpsController::class, 'increment'])->name('increment');
-        Route::post('/decrement/{id}', [DpsController::class, 'decrement'])->name('decrement');
-    });
-
     // Grant
     Route::group(['prefix' => 'grant', 'as' => 'grant.'], function () {
         Route::get('/', [GrantController::class, 'index'])->name('index');
@@ -135,17 +122,6 @@ Route::group(['middleware' => ['auth', '2fa', 'isActive', setting('otp_verificat
         Route::get('/details/{id}', [GrantController::class, 'details'])->name('details');
         Route::get('/cancel/{id}', [GrantController::class, 'cancel'])->name('cancel');
         Route::get('installment/pay/{grant_id}/{trans_id?}', [GrantController::class, 'payInstallment'])->name('pay.installment');
-    });
-
-    // Fdr
-    Route::group(['prefix' => 'fdr', 'as' => 'fdr.'], function () {
-        Route::get('/', [FdrController::class, 'index'])->name('index');
-        Route::post('/subscribe', [FdrController::class, 'subscribe'])->middleware('passcode:fdr')->name('subscribe');
-        Route::get('/history', [FdrController::class, 'history'])->name('history');
-        Route::get('/details/{id}', [FdrController::class, 'details'])->name('details');
-        Route::get('/cancel/{id}', [FdrController::class, 'cancel'])->name('cancel');
-        Route::post('/increment/{id}', [FdrController::class, 'increment'])->name('increment');
-        Route::post('/decrement/{id}', [FdrController::class, 'decrement'])->name('decrement');
     });
 
     // Pay Bill

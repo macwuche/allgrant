@@ -2,15 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\DpsStatus;
-use App\Enums\FdrStatus;
 use App\Enums\GrantStatus;
 use App\Enums\TxnStatus;
 use App\Enums\TxnType;
 use App\Models\CronJob;
 use App\Models\CronJobLog;
-use App\Models\DpsTransaction;
-use App\Models\FDRTransaction;
 use App\Models\GrantTransaction;
 use App\Models\Portfolio;
 use App\Models\User;
@@ -199,131 +195,6 @@ class CronJobController extends Controller
         }
     }
 
-    public function dps()
-    {
-
-        try {
-
-            DB::beginTransaction();
-
-            // Get today date
-            $today = Carbon::today();
-            $this->startCron();
-
-            // Get all dps installments by today date and paid installment fee or increment deferment
-            DpsTransaction::with('dps.plan', 'dps.user')
-                ->where('installment_date', '<=', $today)
-                ->where('given_date', null)
-                ->whereHas('dps', function ($query) {
-                    $query->whereNull('cancel_date')
-                        ->whereIn('status', [DpsStatus::Running, DpsStatus::Due]);
-                })
-                ->chunk(500, function ($dpsTransactions) use ($today) {
-
-                    // Run every installments
-                    foreach ($dpsTransactions as $installment) {
-                        // Get dps
-                        $dps = $installment->dps;
-                        // Get plan data
-                        $plan = $dps->plan;
-                        // Get user data
-                        $user = $dps->user;
-
-                        // Calculatate deferement charge
-                        if ($installment->deferment != 0 && $installment->deferment >= $plan->delay_days) {
-                            $charge = $plan->charge_type == 'percentage' ? (($plan->charge / 100) * $plan->per_installment) : $plan->charge;
-                        } else {
-                            $charge = 0;
-                        }
-
-                        // Shortcodes for notification
-                        $shortcodes = [
-                            '[[site_title]]' => setting('site_title', 'global'),
-                            '[[site_url]]' => route('home'),
-                            '[[plan_name]]' => $dps->plan->name,
-                            '[[user_name]]' => $user->full_name,
-                            '[[full_name]]' => $user->full_name,
-                            '[[dps_id]]' => $dps->dps_id,
-                            '[[per_installment]]' => $dps->per_installment,
-                            '[[interest_rate]]' => $dps->plan->interest_rate,
-                            '[[installment_date]]' => $installment->created_at,
-                            '[[delay_charge]]' => $charge,
-                            '[[given_installment]]' => $dps->given_installment,
-                            '[[total_installment]]' => count($dps->transactions),
-                            '[[matured_amount]]' => getTotalMature($dps),
-                        ];
-
-                        if ($user->balance >= $plan->per_installment) {
-
-                            // Calculation of installment
-                            $amount = $dps->per_installment;
-                            $finalAmount = $amount + $charge;
-
-                            $installment->given_date = $today;
-                            $installment->paid_amount = $amount;
-                            $installment->charge = $charge;
-                            $installment->final_amount = $finalAmount;
-                            $installment->save();
-
-                            // Increment given installment
-                            $dps->increment('given_installment');
-
-                            // Paid and charge amount deducted from user balance
-                            $user->decrement('balance', $finalAmount);
-
-                            Txn::new($amount, $charge, $finalAmount, 'System', 'DPS Installment '.$plan->name.'', TxnType::DpsInstallment, TxnStatus::Success, '', null, $dps->user_id, null, 'User');
-
-                            // Get given installment from dps
-                            $givenInstallment = $dps->given_installment;
-
-                            // Count total installments from dps transactions
-                            $totalInstallments = count($dps->transactions);
-
-                            // if $givenInstallment equals to $totalInstallments that is means dps status now mature/completed
-                            // Otherwise, dps status is running
-                            $dpsStatus = $givenInstallment == $totalInstallments ? DpsStatus::Mature : DpsStatus::Running;
-
-                            // Update status
-                            $dps->status = $dpsStatus;
-                            $dps->save();
-
-                            // Profit added to user balance
-                            if ($dpsStatus->value == DpsStatus::Mature->value) {
-                                $maturity_fee = $dps->plan->add_maturity_platform_fee ? $dps->plan->maturity_platform_fee : 0;
-                                $total_mature_amount = getTotalMature($dps) - $maturity_fee;
-                                $user->increment('balance', $total_mature_amount);
-
-                                Txn::new(getTotalMature($dps), $maturity_fee, $total_mature_amount, 'System', 'DPS Maturity '.$plan->name.'', TxnType::DpsMaturity, TxnStatus::Success, '', null, $dps->user_id, null, 'User');
-
-                                $this->smsNotify('dps_completed', $shortcodes, $dps->user->phone);
-                                $this->mailNotify($dps->user->email, 'dps_completed', $shortcodes);
-                                $this->pushNotify('dps_completed', $shortcodes, route('user.dps.details', $dps->dps_id), $dps->user_id);
-                                $this->pushNotify('dps_completed', $shortcodes, route('admin.dps.details', $dps->id), $dps->user_id, 'Admin');
-                            }
-                        } else {
-
-                            // Increment deferment
-                            $installment->increment('deferment');
-                            // Dps status set to due.
-                            $dps->status = DpsStatus::Due;
-                            $dps->save();
-
-                            $this->smsNotify('dps_installment_due', $shortcodes, $dps->user->phone);
-                            $this->mailNotify($dps->user->email, 'dps_installment_due', $shortcodes);
-                            $this->pushNotify('dps_installment_due', $shortcodes, route('user.dps.details', $dps->dps_id), $dps->user_id);
-                        }
-                    }
-                });
-
-            DB::commit();
-
-            return '........User DPS Successfully!!.';
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            throw $th;
-        }
-    }
-
     public function grant()
     {
 
@@ -444,88 +315,6 @@ class CronJobController extends Controller
             DB::commit();
 
             return '........User Grant Successfully!!.';
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            throw $th;
-        }
-    }
-
-    public function fdr()
-    {
-
-        try {
-
-            DB::beginTransaction();
-
-            $today = now();
-
-            $this->startCron();
-
-            FDRTransaction::with('fdr', 'fdr.plan', 'fdr.user')
-                ->where('given_date', '<=', $today)
-                ->whereRelation('fdr', 'status', 'running')
-                ->whereNull('paid_amount')
-                ->chunk(500, function ($fdrTransaction) {
-                    foreach ($fdrTransaction as $installment) {
-                        $fdr = $installment->fdr;
-                        $plan = $fdr->plan;
-                        $user = $fdr->user;
-
-                        $perInstallment = $installment->given_amount;
-
-                        $user->balance += $perInstallment;
-                        $user->save();
-
-                        $installment->paid_amount = $perInstallment;
-                        $installment->save();
-
-                        Txn::new($perInstallment, 0, $perInstallment, 'System', 'FDR Installemnt', TxnType::FdrInstallment, TxnStatus::Success, '', null, $fdr->user_id, null, 'User');
-
-                        $totalInstallments = count($fdr->transactions);
-                        $givenInstallments = FDRTransaction::where('fdr_id', $fdr->id)->whereNotNull('paid_amount')->count();
-
-                        $status = $totalInstallments == $givenInstallments ? FdrStatus::Completed : FdrStatus::Running;
-
-                        $fdr->status = $status;
-                        $fdr->save();
-
-                        $trx = FDRTransaction::where('fdr_id', $fdr->id)->whereNull('paid_amount')->first();
-
-                        $shortcodes = [
-                            '[[site_title]]' => setting('site_title', 'global'),
-                            '[[site_url]]' => route('home'),
-                            '[[plan_name]]' => $fdr->plan->name,
-                            '[[user_name]]' => $user->full_name,
-                            '[[full_name]]' => $user->full_name,
-                            '[[fdr_id]]' => $fdr->fdr_id,
-                            '[[per_installment]]' => $perInstallment,
-                            '[[interest_rate]]' => $fdr->plan->interest_rate,
-                            '[[given_installment]]' => $givenInstallments,
-                            '[[total_installment]]' => $totalInstallments,
-                            '[[amount]]' => $fdr->amount.' '.setting('site_currency', 'global'),
-                            '[[installment_interval]]' => $fdr->plan->intervel,
-                            '[[next_installment_date]]' => $trx?->given_date?->format('d M Y'),
-                        ];
-
-                        $this->smsNotify('fdr_installment', $shortcodes, $fdr->user->phone);
-                        $this->mailNotify($fdr->user->email, 'fdr_installment', $shortcodes);
-                        $this->pushNotify('fdr_installment', $shortcodes, route('user.fdr.details', $fdr->id), $fdr->user_id);
-
-                        if ($fdr->status == FdrStatus::Completed && $fdr->plan->add_maturity_platform_fee) {
-                            $user->decrement('balance', $fdr->plan->maturity_platform_fee);
-                            Txn::new($fdr->plan->maturity_platform_fee, 0, $fdr->plan->maturity_platform_fee, 'System', 'FDR Maturity Fee', TxnType::FdrMaturityFee, TxnStatus::Success, '', null, $fdr->user_id, null, 'User');
-
-                            $this->smsNotify('fdr_completed', $shortcodes, $fdr->user->phone);
-                            $this->mailNotify($fdr->user->email, 'fdr_completed', $shortcodes);
-                            $this->pushNotify('fdr_completed', $shortcodes, route('user.fdr.details', $fdr->id), $fdr->user_id);
-                            $this->pushNotify('fdr_completed', $shortcodes, route('admin.fdr.details', $fdr->id), $fdr->user_id, 'Admin');
-                        }
-                    }
-                });
-
-            DB::commit();
-
-            return '........User FDR Successfully!!.';
         } catch (\Throwable $th) {
             DB::rollBack();
             throw $th;

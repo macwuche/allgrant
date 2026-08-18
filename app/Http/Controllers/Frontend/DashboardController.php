@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Enums\DpsStatus;
-use App\Enums\FdrStatus;
 use App\Enums\GrantStatus;
 use App\Http\Controllers\Controller;
 use App\Models\AdSlider;
@@ -16,8 +14,6 @@ class DashboardController extends Controller
     public function dashboard(Request $request)
     {
         $user = auth()->user()->load([
-            'dps.plan',
-            'fdr.plan',
             'grant.plan',
         ]);
 
@@ -42,12 +38,8 @@ class DashboardController extends Controller
             'profit_last_7_days' => $user->totalProfit(7),
             'total_withdraw' => $user->totalWithdraw(),
             'total_transfer' => $user->totalTransfer(),
-            'total_dps' => $user->dps->count(),
             'total_bill' => $user->bill->count(),
-            'total_fdr' => $user->fdr->count(),
-            'total_running_dps' => $user->dps->whereIn('status', [DpsStatus::Running, DpsStatus::Due])->count(),
             'total_running_grant' => $user->grant->whereIn('status', [GrantStatus::Running, GrantStatus::Due])->count(),
-            'total_running_fdr' => $user->fdr->where('status', FdrStatus::Running)->count(),
             'total_grant' => $user->grant->count(),
             'total_referral_profit' => $user->totalReferralProfit(),
             'total_referral' => $referral?->relationships()->count() ?? 0,
@@ -56,8 +48,6 @@ class DashboardController extends Controller
             'total_tickets' => $user->ticket->count(),
             'recentTransactions' => $recentTransactions,
             'user' => $user,
-            'dps_mature_amount' => $user->dps->whereIn('status', [DpsStatus::Running, DpsStatus::Due])->sum('total_mature_amount'),
-            'fdr_mature_amount' => $user->fdr->where('status', FdrStatus::Running)->sum('total_mature_amount'),
             'total_grant_amount' => $user->grant->whereIn('status', [GrantStatus::Running, GrantStatus::Due])->sum('total_grant_amount'),
             'grantPlans' => $grantPlans,
             'heroGrantPlan' => $heroGrantPlan,

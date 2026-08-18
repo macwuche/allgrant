@@ -14,11 +14,7 @@ use App\Http\Controllers\Backend\CurrencyController;
 use App\Http\Controllers\Backend\CustomCssController;
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\DepositController;
-use App\Http\Controllers\Backend\DpsController;
-use App\Http\Controllers\Backend\DpsPlanController;
 use App\Http\Controllers\Backend\EmailTemplateController;
-use App\Http\Controllers\Backend\FdrController;
-use App\Http\Controllers\Backend\FdrPlanController;
 use App\Http\Controllers\Backend\FundTransferController;
 use App\Http\Controllers\Backend\GatewayController;
 use App\Http\Controllers\Backend\KycController;
@@ -114,26 +110,6 @@ Route::group(['prefix' => 'fund-transfer', 'as' => 'fund.transfer.', 'controller
 });
 
 Route::group(['prefix' => 'plan', 'as' => 'plan.'], function () {
-    // =============================== DPS Plan Management ==================================
-    Route::group(['prefix' => 'dps', 'as' => 'dps.', 'controller' => DpsPlanController::class], function () {
-        Route::get('/index', 'index')->name('index');
-        Route::get('/create', 'create')->name('create');
-        Route::post('/store', 'store')->name('store');
-        Route::get('/edit/{id}', 'edit')->name('edit');
-        Route::post('/update/{id}', 'update')->name('update');
-        Route::delete('/destroy/{id}', 'destroy')->name('destroy');
-    });
-
-    // =============================== FDR Plan Management ==================================
-    Route::group(['prefix' => 'fdr', 'as' => 'fdr.', 'controller' => FdrPlanController::class], function () {
-        Route::get('/index', 'index')->name('index');
-        Route::get('/create', 'create')->name('create');
-        Route::post('/store', 'store')->name('store');
-        Route::get('/edit/{id}', 'edit')->name('edit');
-        Route::post('/update/{id}', 'update')->name('update');
-        Route::delete('/destroy/{id}', 'destroy')->name('destroy');
-    });
-
     // =============================== Grant Plan Management ==================================
     Route::group(['prefix' => 'grant', 'as' => 'grant.', 'controller' => GrantPlanController::class], function () {
         Route::get('/index', 'index')->name('index');
@@ -153,29 +129,6 @@ Route::group(['prefix' => 'ad-slider', 'as' => 'ad-slider.', 'controller' => AdS
     Route::get('/edit/{id}', 'edit')->name('edit');
     Route::post('/update/{id}', 'update')->name('update');
     Route::delete('/destroy/{id}', 'destroy')->name('destroy');
-});
-
-// ===============================  DPS Management ==================================
-Route::group(['prefix' => 'dps', 'as' => 'dps.', 'controller' => DpsController::class], function () {
-    Route::get('/all', 'all')->name('all');
-    Route::get('/ongoing', 'ongoing')->name('ongoing');
-    Route::get('/payable', 'payable')->name('payable');
-    Route::get('/complete', 'complete')->name('complete');
-    Route::get('/close', 'close')->name('close');
-    Route::get('/details/{id}', 'details')->name('details');
-    Route::get('/create/dps-request', 'createDpsRequest')->name('request.create');
-    Route::post('/subscribe/dps-request', 'subscribeDpsRequest')->name('request.subscribe');
-});
-
-// ===============================  FDR Management ==================================
-Route::group(['prefix' => 'fdr', 'as' => 'fdr.', 'controller' => FdrController::class], function () {
-    Route::get('/all', 'all')->name('all');
-    Route::get('/ongoing', 'ongoing')->name('ongoing');
-    Route::get('/completed', 'completed')->name('completed');
-    Route::get('/close', 'close')->name('close');
-    Route::get('/details/{id}', 'details')->name('details');
-    Route::get('/create/fdr-request', 'createFdrRequest')->name('request.create');
-    Route::post('/subscribe/fdr', 'subscribeFdrRequest')->name('request.subscribe');
 });
 
 // ===============================  Grant Management ==================================

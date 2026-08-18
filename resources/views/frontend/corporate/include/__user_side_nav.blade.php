@@ -7,8 +7,6 @@
         <a href="{{route('home')}}" class="logo"><img src="{{ asset(setting('site_logo','global')) }}" style="height:{{ $height }};width:{{ $width }};max-width:none" alt="{{ auth()->user()->full_name }}"></a>
     </div>
     @php
-        $dps_running = dpsRunning();
-        $fdr_running = fdrRunning();
         $grant_running = grantRunning();
         $ticket_running = App\Models\Ticket::Opened()->where('user_id',auth()->id())->count();
         $referral_counter = $user->referrals->count();
@@ -20,10 +18,6 @@
                 @if ($navigation->type == 'cards' && setting('virtual_card', 'permission'))
                     @include('frontend::include.__menu-item',['navigation' => $navigation])
                 @elseif ($navigation->type == 'wallets' && setting('multiple_currency', 'permission'))
-                    @include('frontend::include.__menu-item',['navigation' => $navigation])
-                @elseif ($navigation->type == 'dps' && setting('user_dps', 'permission') && auth()->user()->dps_status)
-                    @include('frontend::include.__menu-item',['navigation' => $navigation])
-                @elseif ($navigation->type == 'fdr' && setting('user_fdr', 'permission') && auth()->user()->fdr_status)
                     @include('frontend::include.__menu-item',['navigation' => $navigation])
                 @elseif ($navigation->type == 'grant' && setting('user_grant', 'permission') && auth()->user()->grant_status)
                     @include('frontend::include.__menu-item',['navigation' => $navigation])

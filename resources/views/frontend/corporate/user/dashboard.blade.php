@@ -51,74 +51,6 @@
         </div>
         <div class="col-xl-8 col-lg-12 col-md-12 col-12">
             <div class="row">
-                @if (setting('user_dps', 'permission'))
-                    <div class="col-xl-4 col-lg-4 col-md-6 col-12">
-                        <div class="single-spec-stat">
-                            <div class="top">
-                                <div class="icon">
-                                    <i data-lucide="archive"></i>
-                                </div>
-                                <div class="title">{{ __('My DPS') }}</div>
-                            </div>
-                            <div class="text">
-                                @if ($total_running_dps > 0)
-                                    <p>
-                                        @foreach ($user->dps->whereIn('status', [App\Enums\DpsStatus::Running, App\Enums\DpsStatus::Due])->take(4) ?? [] as $dps)
-                                            {{ $dps->plan?->name }} - <strong> {{ $dps->last_date }} </strong>
-                                            {!! !$loop->last ? ', <br>' : '' !!}
-                                        @endforeach
-                                    </p>
-                                @else
-                                    <p>{{ __('Currently No DPS Found.') }}</p>
-                                @endif
-                            </div>
-                            <div class="bottom">
-                                @if ($total_running_dps > 0)
-                                    <div class="amount">{{ $currencySymbol . number_format($dps_mature_amount, 2) }}</div>
-                                @else
-                                    <div class="amount">{{ $currencySymbol . number_format(0, 2) }}</div>
-                                @endif
-                                <a href="{{ route('user.dps.history') }}" class="ex-link"><i
-                                        data-lucide="arrow-up-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                @endif
-                @if (setting('user_fdr', 'permission'))
-                    <div class="col-xl-4 col-lg-4 col-md-6 col-12">
-                        <div class="single-spec-stat">
-                            <div class="top">
-                                <div class="icon">
-                                    <i data-lucide="book"></i>
-                                </div>
-                                <div class="title">
-                                    {{ __('My FDR') }}
-                                </div>
-                            </div>
-                            <div class="text">
-                                @if ($total_running_fdr > 0)
-                                    <p>
-                                        @foreach ($user->fdr->where('status', App\Enums\FdrStatus::Running)->take(4) ?? [] as $fdr)
-                                            {{ $fdr->plan?->name }} - <strong> {{ $fdr->last_date->format('d M Y') }}
-                                            </strong> {!! !$loop->last ? ', <br>' : '' !!}
-                                        @endforeach
-                                    </p>
-                                @else
-                                    <p>{{ __('Currently No FDR Found.') }}</p>
-                                @endif
-                            </div>
-                            <div class="bottom">
-                                @if ($total_running_fdr > 0)
-                                    <div class="amount">{{ $currencySymbol . number_format($fdr_mature_amount, 2) }}</div>
-                                @else
-                                    <div class="amount">{{ $currencySymbol . number_format(0, 2) }}</div>
-                                @endif
-                                <a href="{{ route('user.fdr.history') }}" class="ex-link"><i
-                                        data-lucide="arrow-up-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                @endif
                 @if (setting('user_grant', 'permission'))
                     <div class="col-xl-4 col-lg-4 col-md-6 col-12">
                         <div class="single-spec-stat">
@@ -210,28 +142,6 @@
                 <div class="title">{{ __('Referral Bonus') }}</div>
             </div>
         </div>
-        @if (setting('user_dps', 'permission'))
-            <div class="col-xl-3 col-lg-3 col-md-6 col-12">
-                <div class="single-user-stat-card">
-                    <div class="icon">
-                        <img src="{{ asset('front/images/icons/fintech/5.png') }}" alt="">
-                    </div>
-                    <div class="number">{{ $total_dps }}</div>
-                    <div class="title">{{ __('Total DPS') }}</div>
-                </div>
-            </div>
-        @endif
-        @if (setting('user_fdr', 'permission'))
-            <div class="col-xl-3 col-lg-3 col-md-6 col-12">
-                <div class="single-user-stat-card">
-                    <div class="icon">
-                        <img src="{{ asset('front/images/icons/fintech/6.png') }}" alt="">
-                    </div>
-                    <div class="number">{{ $total_fdr }}</div>
-                    <div class="title">{{ __('Total FDR') }}</div>
-                </div>
-            </div>
-        @endif
         @if (setting('user_grant', 'permission'))
             <div class="col-xl-3 col-lg-3 col-md-6 col-12">
                 <div class="single-user-stat-card">
@@ -309,10 +219,6 @@
                                             <div class="event-icon">
                                                 @if ($transaction->type->value == 'deposit' || $transaction->type->value == 'manual_deposit')
                                                     <i data-lucide="chevrons-down"></i>
-                                                @elseif(Str::startsWith($transaction->type->value, 'dps'))
-                                                    <i data-lucide="archive"></i>
-                                                @elseif(Str::startsWith($transaction->type->value, 'fdr'))
-                                                    <i data-lucide="book"></i>
                                                 @elseif(Str::startsWith($transaction->type->value, 'grant'))
                                                     <i data-lucide="alert-triangle"></i>
                                                 @elseif($transaction->type->value == 'subtract')

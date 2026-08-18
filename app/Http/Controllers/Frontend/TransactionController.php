@@ -26,8 +26,6 @@ class TransactionController extends Controller
 
         $types = match (request('type')) {
             'grant' => [TxnType::Grant->value, TxnType::GrantApply, TxnType::GrantInstallment],
-            'fdr' => [TxnType::FdrIncrease, TxnType::FdrDecrease, TxnType::FdrInstallment, TxnType::FdrMaturityFee],
-            'dps' => [TxnType::DpsIncrease, TxnType::DpsDecrease, TxnType::DpsInstallment, TxnType::DpsMaturity],
             default => request('type')
         };
 

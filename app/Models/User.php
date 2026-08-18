@@ -53,8 +53,6 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
         'withdraw_status',
         'transfer_status',
         'otp_status',
-        'dps_status',
-        'fdr_status',
         'grant_status',
         'portfolio_status',
         'reward_status',
@@ -207,7 +205,7 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
     {
 
         $sum = $this->transaction()->where('status', TxnStatus::Success)->where(function ($query) {
-            $query->whereIn('type', [TxnType::Referral, TxnType::SignupBonus, TxnType::PortfolioBonus, TxnType::RewardRedeem, TxnType::DpsMaturity, TxnType::FdrInstallment]);
+            $query->whereIn('type', [TxnType::Referral, TxnType::SignupBonus, TxnType::PortfolioBonus, TxnType::RewardRedeem]);
         });
 
         if ($days != null) {
@@ -216,11 +214,6 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
         $sum = $sum->sum('amount');
 
         return round($sum, 2);
-    }
-
-    public function totalFdr()
-    {
-        $this->fdr()->sum('amount');
     }
 
     public function rejectedKycs()
@@ -312,16 +305,6 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
     public function branch()
     {
         return $this->belongsTo(Branch::class, 'branch_id');
-    }
-
-    public function dps()
-    {
-        return $this->hasMany(Dps::class, 'user_id', 'id');
-    }
-
-    public function fdr()
-    {
-        return $this->hasMany(Fdr::class, 'user_id', 'id');
     }
 
     public function grant()

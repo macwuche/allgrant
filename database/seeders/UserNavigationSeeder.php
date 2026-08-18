@@ -51,20 +51,6 @@ class UserNavigationSeeder extends Seeder
                 'position' => 5,
             ],
             [
-                'type' => 'dps',
-                'icon' => 'archive',
-                'url' => 'user/dps',
-                'name' => 'DPS',
-                'position' => 6,
-            ],
-            [
-                'type' => 'fdr',
-                'icon' => 'book',
-                'url' => 'user/fdr',
-                'name' => 'FDR',
-                'position' => 7,
-            ],
-            [
                 'type' => 'grant',
                 'icon' => 'alert-triangle',
                 'url' => 'user/grant',

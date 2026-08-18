@@ -21,17 +21,6 @@ enum TxnType: string
     case Grant = 'grant';
     case GrantApply = 'grant_applied';
     case GrantInstallment = 'grant_installment';
-    case DpsInstallment = 'dps_installment';
-    case DpsIncrease = 'dps_increase';
-    case DpsDecrease = 'dps_decrease';
-    case FdrIncrease = 'fdr_increase';
-    case FdrDecrease = 'fdr_decrease';
-    case DpsMaturity = 'dps_maturity';
-    case DpsCancelled = 'dps_cancelled';
-    case Fdr = 'fdr';
-    case FdrInstallment = 'fdr_installment';
-    case FdrMaturityFee = 'fdr_maturity_fee';
-    case FdrCancelled = 'fdr_cancelled';
     case PayBill = 'pay_bill';
     case CardCreate = 'card_create';
     case CardLoad = 'card_load';

@@ -124,7 +124,22 @@
       "Bash(nohup /nix/store/0n9rl5l9syy808xi9bk4f6dhnfrvhkww-playwright-browsers-chromium/chromium-1080/chrome-linux/chrome --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --remote-debugging-port=9342 --remote-debugging-address=127.0.0.1 --user-data-dir=/tmp/claude-1000/-home-runner-workspace/f633b083-acc9-4443-8699-029d2d6b898b/scratchpad/cdp/profile12 --window-size=1440,1000 about:blank)",
       "Bash(pkill -9 -f \"remote-debugging-port=9342\")",
       "Bash(git status *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(GIT_SEQUENCE_EDITOR=\"cat\" git rebase -i 4ad7bc4 --force-rebase)",
+      "Bash(git checkout *)",
+      "Bash(git rebase *)",
+      "Bash(mkdir -p /tmp/gitmess-backup)",
+      "Bash(mv .claude/settings.local.json /tmp/gitmess-backup/settings.local.json.bak)",
+      "Bash(mv work.md /tmp/gitmess-backup/work.md.bak)",
+      "Bash(GIT_SEQUENCE_EDITOR=\"sed -i '0,/^pick 66952f0/s//edit 66952f0/'\" git rebase *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git check-ignore *)",
+      "Artifact",
+      "Bash(git fetch *)",
+      "Bash(git --version)",
+      "WebFetch(domain:claude.ai)",
+      "Read(//home/novabrid/app.novabridgegrant.org/**)"
     ]
   }
 }

@@ -108,32 +108,6 @@
     </div>
 </div>
 @endcan
-@can('total-dps')
-<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-    <div class="data-card">
-        <div class="icon">
-            <i data-lucide="archive"></i>
-        </div>
-        <div class="content">
-            <h4>{{ $currencySymbol }}<span class="count">{{ $data['total_dps'] }}</span> </h4>
-            <p>{{ __('Total DPS') }}</p>
-        </div>
-    </div>
-</div>
-@endcan
-@can('total-fdr')
-<div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-    <div class="data-card">
-        <div class="icon">
-            <i data-lucide="book"></i>
-        </div>
-        <div class="content">
-            <h4>{{ $currencySymbol }}<span class="count">{{ $data['total_fdr'] }}</span> </h4>
-            <p>{{ __('Total FDR') }}</p>
-        </div>
-    </div>
-</div>
-@endcan
 @can('total-grant')
 <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
     <div class="data-card">

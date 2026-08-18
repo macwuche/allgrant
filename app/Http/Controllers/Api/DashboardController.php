@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Enums\DpsStatus;
-use App\Enums\FdrStatus;
 use App\Enums\GrantStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Export\CSV\TransactionExport;
@@ -32,24 +30,6 @@ class DashboardController extends Controller
                 'portfolio_showable' => (bool) setting('user_portfolio', 'permission') && $user->portfolio,
                 'earn_text' => __('Earn :amount', ['amount' => $currency_symbol.setting('referral_bonus', 'fee')]),
                 'wallets' => WalletResource::collectionWithDefault($wallets, $user),
-                'dps_data' => [
-                    'total_running_dps_amount' => $currency_symbol.$user->dps->whereIn('status', [DpsStatus::Running, DpsStatus::Due])->sum('total_mature_amount'),
-                    'running_dps_summary' => $user->dps->whereIn('status', [DpsStatus::Running, DpsStatus::Due])->map(function ($dps) {
-                        return [
-                            'name' => $dps->plan?->name,
-                            'end_date' => $dps->last_date,
-                        ];
-                    })->values(),
-                ],
-                'fdr_data' => [
-                    'total_running_fdr_amount' => $currency_symbol.$user->fdr->where('status', FdrStatus::Running)->sum('total_mature_amount'),
-                    'running_fdr_summary' => $user->fdr->where('status', FdrStatus::Running)->map(function ($fdr) {
-                        return [
-                            'name' => $fdr->plan?->name,
-                            'end_date' => now()->parse($fdr->last_date)->format('d M Y'),
-                        ];
-                    })->values(),
-                ],
                 'grant_data' => [
                     'total_running_grant_amount' => $currency_symbol.$user->grant->whereIn('status', [GrantStatus::Running, GrantStatus::Due])->sum('total_grant_amount'),
                     'running_grant_summary' => $user->grant->whereIn('status', [GrantStatus::Running, GrantStatus::Due])->map(function ($grant) {
@@ -106,8 +86,6 @@ class DashboardController extends Controller
                 'total_deposit' => $currency_symbol.$user->total_deposit,
                 'total_withdraw' => $currency_symbol.$user->totalWithdraw(),
                 'total_transfer' => $currency_symbol.$user->totalTransfer(),
-                'total_dps' => $currency_symbol.$user->dps->sum('total_dps_amount'),
-                'total_fdr' => $currency_symbol.$user->fdr->sum('amount'),
                 'total_grant' => $currency_symbol.$user->grant->sum('amount'),
                 'total_bill' => $currency_symbol.$user->bill->sum('amount'),
                 'total_referral_profit' => $currency_symbol.$user->totalReferralProfit(),
