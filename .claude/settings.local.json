@@ -139,7 +139,8 @@
       "Bash(git fetch *)",
       "Bash(git --version)",
       "WebFetch(domain:claude.ai)",
-      "Read(//home/novabrid/app.novabridgegrant.org/**)"
+      "Read(//home/novabrid/app.novabridgegrant.org/**)",
+      "Bash(printf 'echo -n '\\\\''php artisan tinker --execute=\"\\\\$t=microtime\\(true\\);DB::connection\\(\\)->getPdo\\(\\);echo .connect:..round\\(microtime\\(true\\)-\\\\$t,3\\);\"'\\\\''')"
     ]
   }
 }
