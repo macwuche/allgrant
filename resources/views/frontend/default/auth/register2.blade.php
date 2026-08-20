@@ -76,8 +76,8 @@
                             <div class="inputs">
                                 <label for="">{{ __('Gender') }} @if(getPageSetting('gender_validation'))<span class="required">*</span> @endif</label>
                                 <select name="gender" class="box-input" id="gender">
-                                    @foreach(['Male','Female','Others'] as $gender)
-                                        <option @selected($gender == old('gender')) value="{{ $gender }}">{{ $gender  }}</option>
+                                    @foreach(['male' => 'Male', 'female' => 'Female', 'other' => 'Others'] as $value => $label)
+                                        <option @selected($value == old('gender')) value="{{ $value }}">{{ $label }}</option>
                                     @endforeach
                                 </select>
                             </div>

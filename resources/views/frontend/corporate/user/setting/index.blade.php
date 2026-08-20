@@ -78,8 +78,8 @@
                                 <div class="inputs">
                                     <label class="form-label">{{ __('Gender') }}</label>
                                     <select name="gender" class="page-count box-input" required>
-                                        @foreach(['Male','Female','Other'] as $gender)
-                                            <option value="{{$gender}}"  @selected($user->gender == $gender)>{{$gender}}</option>
+                                        @foreach(['male' => 'Male', 'female' => 'Female', 'other' => 'Other'] as $value => $label)
+                                            <option value="{{$value}}"  @selected(strtolower($user->gender) == $value)>{{$label}}</option>
                                         @endforeach
                                     </select>
                                 </div>

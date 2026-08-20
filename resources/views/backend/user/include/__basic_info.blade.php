@@ -98,8 +98,8 @@
                                         <label for="" class="box-input-label">{{ __('Gender:') }}</label>
                                         <select name="gender" class="form-control form-select">
                                             <option value="" selected>{{ __('Select Gender') }}</option>
-                                            @foreach(['Male','Female','Other'] as $gender)
-                                                <option value="{{$gender}}"  @selected(strtolower($user->gender) == strtolower($gender))>{{$gender}}</option>
+                                            @foreach(['male' => 'Male', 'female' => 'Female', 'other' => 'Other'] as $value => $label)
+                                                <option value="{{$value}}"  @selected(strtolower($user->gender) == $value)>{{$label}}</option>
                                             @endforeach
                                         </select>
                                     </div>

@@ -111,7 +111,7 @@ class RegisteredUserController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'g-recaptcha-response' => Rule::requiredIf(plugin_active('Google reCaptcha')),
             new Recaptcha,
-            'gender' => [Rule::requiredIf($isGender), 'in:Male,Female,Others'],
+            'gender' => [Rule::requiredIf($isGender), 'in:male,female,other'],
             'username' => [Rule::requiredIf($isUsername), 'alpha_num', 'max:15', 'unique:users'],
             'branch_id' => [Rule::requiredIf($isBranch), 'exists:branches,id'],
             'i_agree' => ['required'],

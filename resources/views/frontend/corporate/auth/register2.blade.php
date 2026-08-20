@@ -107,13 +107,13 @@
                                                         </label>
                                                     </div>
                                                     <div class="custom-options">
-                                                        <div class="custom-option" data-value="Male">
+                                                        <div class="custom-option" data-value="male">
                                                             <span>{{ __('Male') }}</span>
                                                         </div>
-                                                        <div class="custom-option" data-value="Female">
+                                                        <div class="custom-option" data-value="female">
                                                             <span>{{ __('Female') }}</span>
                                                         </div>
-                                                        <div class="custom-option" data-value="Others">
+                                                        <div class="custom-option" data-value="other">
                                                             <span>{{ __('Others') }}</span>
                                                         </div>
                                                     </div>

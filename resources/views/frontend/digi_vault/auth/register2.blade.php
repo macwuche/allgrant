@@ -90,9 +90,9 @@
                                         </label>
                                         <div class="input-field">
                                             <select id="select2Icons" name="gender" class="select2-icons form-select">
-                                                @foreach (['Male', 'Female', 'Others'] as $gender)
-                                                    <option @selected($gender == old('gender')) value="{{ $gender }}">
-                                                        {{ $gender }}</option>
+                                                @foreach (['male' => 'Male', 'female' => 'Female', 'other' => 'Others'] as $value => $label)
+                                                    <option @selected($value == old('gender')) value="{{ $value }}">
+                                                        {{ $label }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
