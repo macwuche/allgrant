@@ -23,7 +23,7 @@
     RewriteRule .* - [F,L]
 
     # Block other sensitive top-level files not covered above
-    <FilesMatch "^(composer\.(json|lock)|artisan|package(-lock)?\.json)$">
+    <FilesMatch "^(composer\.(json|lock)|artisan|pint\.json|package(-lock)?\.json)$">
         Order allow,deny
         Deny from all
     </FilesMatch>
