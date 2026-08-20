@@ -2,18 +2,31 @@
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
     </IfModule>
-	<Files .env>
-       Order allow,deny
-       Deny from all
-    </Files>
-   
-    <Files laravel.log>
-       Order allow,deny
-       Deny from all
-    </Files>
-
 
     RewriteEngine On
+
+    # Block any dot-prefixed path segment (.env, .git/*, .htaccess.orig,
+    # .htaccess.ori, .DS_Store, etc.) anywhere in the URL, except the ACME
+    # challenge path SSL certs rely on.
+    RewriteCond %{REQUEST_URI} !^/\.well-known/
+    RewriteCond %{REQUEST_URI} (^|/)\.[^/]+ [NC]
+    RewriteRule .* - [F,L]
+
+    # Block direct access to internal application folders. This project's
+    # public/ contents are deliberately flattened to the project root (no
+    # separate public/ docroot), so everything the app needs to run sits
+    # beside index.php — these are the folders nothing should ever fetch
+    # directly over HTTP. /assets/ (including the assets/storage symlink,
+    # see config/filesystems.php's `links`) is deliberately left open —
+    # it's the app's real public asset path.
+    RewriteCond %{REQUEST_URI} ^/(app|bootstrap|config|database|DB|resources|routes|storage|tests|vendor)(/|$) [NC]
+    RewriteRule .* - [F,L]
+
+    # Block other sensitive top-level files not covered above
+    <FilesMatch "^(composer\.(json|lock)|artisan|package(-lock)?\.json)$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
