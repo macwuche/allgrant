@@ -35,10 +35,9 @@
                                 @include('backend.filter.th',['label' => 'Grant','field' => 'grant'])
                                 @include('backend.filter.th',['label' => 'Grant ID','field' => 'grant_no'])
                                 @include('backend.filter.th',['label' => 'Amount','field' => 'amount'])
-                                <th>{{ __('Installment Amount') }}</th>
-                                <th>{{ __('Next Payment') }}</th>
-                                <th>{{ __('Installment') }}</th>
-                                <th>{{ __('Paid') }}</th>
+                                <th>{{ __('Application Charge') }}</th>
+                                <th>{{ __('Commission') }}</th>
+                                <th>{{ __('Net Amount') }}</th>
                                 @include('backend.filter.th',['label' => 'Status','field' => 'status'])
                             </tr>
                             </thead>
@@ -51,28 +50,19 @@
                                     <td>
                                         {{ $currencySymbol.$grant->amount }}
                                     </td>
-                                    <td>{{ $currencySymbol.($grant->amount / 100 ) * $grant->plan->per_installment }}</td>
+                                    <td>{{ $currencySymbol.$grant->plan->applicationFee($grant->amount) }}</td>
                                     <td>
-                                        @if($grant->status == App\Enums\GrantStatus::Reviewing)
-                                            -
-                                        @else
-                                            {{ nextInstallment($grant->id, \App\Models\GrantTransaction::class, 'grant_id') }}
-                                        @endif
+                                        {{ $grant->status == App\Enums\GrantStatus::Approved ? $currencySymbol.$grant->commission_amount : '-' }}
                                     </td>
                                     <td>
-                                        {{ $grant->plan->total_installment }}
-                                    </td>
-                                    <td>
-                                        {{ $currencySymbol.$grant->transactions->sum('amount') }}
+                                        {{ $grant->status == App\Enums\GrantStatus::Approved ? $currencySymbol.$grant->net_amount : '-' }}
                                     </td>
 
                                     <td>
-                                        @if($grant->status->value == 'running')
-                                            <div class="type site-badge primary">{{ ucfirst($grant->status->value) }}</div>
-                                        @elseif($grant->status->value == 'rejected' || $grant->status->value == 'due')
-                                            <div class="type site-badge danger">{{ ucfirst($grant->status->value) }}</div>
-                                        @elseif($grant->status->value == 'completed' )
+                                        @if($grant->status->value == 'approved')
                                             <div class="type site-badge success">{{ ucfirst($grant->status->value) }}</div>
+                                        @elseif($grant->status->value == 'rejected' || $grant->status->value == 'cancelled')
+                                            <div class="type site-badge danger">{{ ucfirst($grant->status->value) }}</div>
                                         @elseif($grant->status->value == 'reviewing')
                                             <div class="type site-badge pending">{{ ucfirst($grant->status->value) }}</div>
                                         @endif

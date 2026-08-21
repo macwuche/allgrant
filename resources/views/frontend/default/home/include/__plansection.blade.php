@@ -31,17 +31,17 @@ $grant_permission = setting('user_grant', 'permission');
                             <h4>{{ $plan->name }}</h4>
                         </div>
                         <div class="price-value">
-                            <strong>{{ $plan->per_installment }}%</strong>
-                            <sub>/ {{ $plan->installment_intervel }} {{ __('Days') }}</sub>
+                            <strong>{{ $plan->commission_charge }}{{ $plan->commission_charge_type == 'percentage' ? '%' : ' ' . $currencySymbol }}</strong>
+                            <sub>{{ __('Commission') }}</sub>
                         </div>
                     </div>
                     <div class="info-list">
                         <ul>
                             <li><span><i class="fa-regular fa-check"></i></span>{{ __('Minimum Grant') }} : {{ $currencySymbol.$plan->minimum_amount }}</li>
                             <li><span><i class="fa-regular fa-check"></i></span>{{ __('Miximum Grant') }} : {{ $currencySymbol.$plan->maximum_amount }}</li>
-                            <li><span><i class="fa-regular fa-check"></i></span>{{ __('Installment Rate') }} : {{ $plan->per_installment }}%</li>
-                            <li><span><i class="fa-regular fa-check"></i></span>{{ __('Installment Slice') }} : {{ $plan->installment_intervel }} {{ __('Days') }}</li>
-                            <li><span><i class="fa-regular fa-check"></i></span>{{ __('Total Installment') }} : {{ $plan->total_installment }}</li>
+                            <li><span><i class="fa-regular fa-check"></i></span>{{ __('Approval Days') }} : {{ $plan->approval_days ?? 0 }}</li>
+                            <li><span><i class="fa-regular fa-check"></i></span>{{ __('Application Charge') }} : {{ $plan->grant_fee }}{{ $plan->grant_fee_type == 'percentage' ? '%' : ' ' . $currencySymbol }}</li>
+                            <li><span><i class="fa-regular fa-check"></i></span>{{ __('Commission Charge') }} : {{ $plan->commission_charge }}{{ $plan->commission_charge_type == 'percentage' ? '%' : ' ' . $currencySymbol }}</li>
                         </ul>
                     </div>
                     <div class="price-btn">

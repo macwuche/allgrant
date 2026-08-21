@@ -31,11 +31,11 @@ class DashboardController extends Controller
                 'earn_text' => __('Earn :amount', ['amount' => $currency_symbol.setting('referral_bonus', 'fee')]),
                 'wallets' => WalletResource::collectionWithDefault($wallets, $user),
                 'grant_data' => [
-                    'total_running_grant_amount' => $currency_symbol.$user->grant->whereIn('status', [GrantStatus::Running, GrantStatus::Due])->sum('total_grant_amount'),
-                    'running_grant_summary' => $user->grant->whereIn('status', [GrantStatus::Running, GrantStatus::Due])->map(function ($grant) {
+                    'total_running_grant_amount' => $currency_symbol.$user->grant->where('status', GrantStatus::Approved)->sum('net_amount'),
+                    'running_grant_summary' => $user->grant->where('status', GrantStatus::Approved)->map(function ($grant) {
                         return [
                             'name' => $grant->plan?->name,
-                            'end_date' => now()->parse($grant->last_date)->format('d M Y'),
+                            'approved_at' => $grant->approved_at?->format('d M Y'),
                         ];
                     })->values(),
                 ],

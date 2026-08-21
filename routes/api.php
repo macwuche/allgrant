@@ -138,8 +138,6 @@ Route::middleware('auth:sanctum', 'isActive')->group(function () {
     Route::get('grant/history', [GrantController::class, 'history']);
     Route::get('grant/details/{grant_id}', [GrantController::class, 'details']);
     Route::post('grant/cancel', [GrantController::class, 'cancel']);
-    Route::get('grant/installments/{grant_id}', [GrantController::class, 'installments']);
-    Route::post('grant/pay-installment', [GrantController::class, 'payInstallment']);
 
     // Pay Bill
     Route::post('pay-bill', [BillController::class, 'payNow'])->middleware('appDemo');

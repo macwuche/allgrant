@@ -20,7 +20,6 @@ enum TxnType: string
     case FundTransfer = 'fund_transfer';
     case Grant = 'grant';
     case GrantApply = 'grant_applied';
-    case GrantInstallment = 'grant_installment';
     case PayBill = 'pay_bill';
     case CardCreate = 'card_create';
     case CardLoad = 'card_load';

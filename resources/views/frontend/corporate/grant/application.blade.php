@@ -158,43 +158,43 @@
                                     <div class="fw-bold">{{ $request->amount }} {{ $currency }}</div>
                                 </div>
                             </div>
-                            <div class="site-table-list">
-                                <div class="site-table-col">
-                                    <div class="trx fw-bold">{{ __('Total Installments:') }}</div>
-                                </div>
-                                <div class="site-table-col">
-                                    <div class="fw-bold"><span
-                                            class="type site-badge badge-primary">{{ $plan->total_installment }}
-                                            {{ __('Times') }}</span></div>
-                                </div>
-                            </div>
                             @php
-                                $interestAmount = ($request->float('amount') / 100) * $plan->per_installment;
-                                $totalAmount = $interestAmount + $request->float('amount');
-                                $per_installment_fee = $totalAmount / $plan->total_installment;
+                                $applicationFee = $plan->applicationFee($request->float('amount'));
+                                $commissionAmount = $plan->commissionAmount($request->float('amount'));
+                                $netAmount = $request->float('amount') - $commissionAmount;
                             @endphp
                             <div class="site-table-list">
                                 <div class="site-table-col">
-                                    <div class="fw-bold">{{ __('Per Installment:') }}</div>
+                                    <div class="trx fw-bold">{{ __('Approval Time:') }}</div>
                                 </div>
                                 <div class="site-table-col">
-                                    <div class="fw-bold">{{ $per_installment_fee }} {{ $currency }}</div>
-                                </div>
-                            </div>
-                            <div class="site-table-list">
-                                <div class="site-table-col">
-                                    <div class="fw-bold">{{ __('Interest Amount:') }}</div>
-                                </div>
-                                <div class="site-table-col">
-                                    <div class="red-color fw-bold">{{ $interestAmount }} {{ $currency }}</div>
+                                    <div class="fw-bold"><span
+                                            class="type site-badge badge-primary">{{ $plan->approval_days ?? 0 }}
+                                            {{ __('Business Days') }}</span></div>
                                 </div>
                             </div>
                             <div class="site-table-list">
                                 <div class="site-table-col">
-                                    <div class="fw-bold">{{ __('Total Payable Amount:') }}</div>
+                                    <div class="fw-bold">{{ __('Application Charge:') }}</div>
                                 </div>
                                 <div class="site-table-col">
-                                    <div class="fw-bold">{{ $totalAmount }} {{ $currency }}</div>
+                                    <div class="red-color fw-bold">{{ $applicationFee }} {{ $currency }}</div>
+                                </div>
+                            </div>
+                            <div class="site-table-list">
+                                <div class="site-table-col">
+                                    <div class="fw-bold">{{ __('Commission Charge (est.):') }}</div>
+                                </div>
+                                <div class="site-table-col">
+                                    <div class="red-color fw-bold">{{ $commissionAmount }} {{ $currency }}</div>
+                                </div>
+                            </div>
+                            <div class="site-table-list">
+                                <div class="site-table-col">
+                                    <div class="fw-bold">{{ __("Net Amount You'll Receive (est.):") }}</div>
+                                </div>
+                                <div class="site-table-col">
+                                    <div class="fw-bold">{{ $netAmount }} {{ $currency }}</div>
                                 </div>
                             </div>
                         </div>

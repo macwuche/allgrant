@@ -4,10 +4,8 @@ namespace App\Enums;
 
 enum GrantStatus: string
 {
-    case Due = 'due';
-    case Running = 'running';
-    case Cancelled = 'cancelled';
-    case Completed = 'completed';
     case Reviewing = 'reviewing';
+    case Approved = 'approved';
     case Rejected = 'rejected';
+    case Cancelled = 'cancelled';
 }

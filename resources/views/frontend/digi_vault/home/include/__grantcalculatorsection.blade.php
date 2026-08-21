@@ -27,9 +27,11 @@
                                             data-name="{{ $grant_plan->name }}"
                                             data-min="{{ $grant_plan->minimum_amount }}"
                                             data-max="{{ $grant_plan->maximum_amount }}"
-                                            data-total-installment="{{ $grant_plan->total_installment }}"
-                                            data-per-installment="{{ $grant_plan->per_installment }}"
-                                            data-installment-interval="{{ $grant_plan->installment_intervel }}"
+                                            data-application-charge="{{ $grant_plan->grant_fee }}"
+                                            data-application-charge-type="{{ $grant_plan->grant_fee_type }}"
+                                            data-commission-charge="{{ $grant_plan->commission_charge }}"
+                                            data-commission-charge-type="{{ $grant_plan->commission_charge_type }}"
+                                            data-approval-days="{{ $grant_plan->approval_days }}"
                                         >
                                             {{ $grant_plan->name }}
                                         </option>
@@ -60,8 +62,8 @@
                 <h3 class="grant-title">{{ __('Calculation Result') }}</h3>
                 <div class="result-inner">
                     <div class="grant-amount">
-                    <div class="result-label">{{ __('Total Payable Amount') }}</div>
-                    <h4 class="result-value" id="showTotalPayableAmount">{{ setting('currency_symbol', 'global') }}0.00</h4>
+                    <div class="result-label">{{ __("Net Amount You'll Receive") }}</div>
+                    <h4 class="result-value" id="showNetAmount">{{ setting('currency_symbol', 'global') }}0.00</h4>
                     </div>
                     <div class="result-cards">
                     <div class="result-card">
@@ -70,8 +72,8 @@
                     </div>
 
                     <div class="result-card">
-                        <div class="result-label">{{ __('Interest Amount') }}</div>
-                        <div class="result-value" id="showInterestAmount">{{ setting('currency_symbol', 'global') }}0.00</div>
+                        <div class="result-label">{{ __('Application Charge') }}</div>
+                        <div class="result-value" id="showApplicationFee">{{ setting('currency_symbol', 'global') }}0.00</div>
                     </div>
 
                     </div>
@@ -81,8 +83,8 @@
                                 <img src="{{ asset('front/digi_vault') }}/images/grant/grant-icon-01.png" alt="Grant Icon">
                             </div>
                             <div class="contents">
-                                <div class="result-label">{{ __('Per Installment') }}</div>
-                                <h4 class="result-value" id="showPerInstallMent">{{ setting('currency_symbol', 'global') }}0.00</h4>
+                                <div class="result-label">{{ __('Commission Charge') }}</div>
+                                <h4 class="result-value" id="showCommissionAmount">{{ setting('currency_symbol', 'global') }}0.00</h4>
                             </div>
                         </div>
 
@@ -91,28 +93,8 @@
                                 <img src="{{ asset('front/digi_vault') }}/images/grant/grant-icon-02.png" alt="Grant Icon">
                             </div>
                             <div class="contents">
-                                <div class="result-label">{{ __('Total Installments') }}</div>
-                                <h4 class="result-value" id="showTotalInstallments">0 time</h4>
-                            </div>
-                        </div>
-
-                        <div class="installment-item">
-                            <div class="icon">
-                                <img src="{{ asset('front/digi_vault') }}/images/grant/grant-icon-03.png" alt="Grant Icon">
-                            </div>
-                            <div class="contents">
-                                <div class="result-label">{{ __('Installment Interval') }}</div>
-                                <h4 class="result-value" id="showInstallmentInterval">0 day</h4>
-                            </div>
-                        </div>
-
-                        <div class="installment-item">
-                            <div class="icon">
-                                <img src="{{ asset('front/digi_vault') }}/images/grant/grant-icon-04.png" alt="Grant Icon">
-                            </div>
-                            <div class="contents">
-                                <div class="result-label">{{ __('Grant Duration') }}</div>
-                                <h4 class="result-value" id="showGrantDuration">0 day</h4>
+                                <div class="result-label">{{ __('Approval Time') }}</div>
+                                <h4 class="result-value" id="showApprovalDays">0 days</h4>
                             </div>
                         </div>
                     </div>
@@ -137,18 +119,18 @@
         selectedPlanData = {
             min: parseFloat(selectedOption.data('min')),
             max: parseFloat(selectedOption.data('max')),
-            perInstallment: parseFloat(selectedOption.data('per-installment')),
-            totalInstallment: parseInt(selectedOption.data('total-installment')),
-            name: selectedOption.data('name'),
-            installmentInterval: selectedOption.data('installment-interval')
+            applicationChargeRate: parseFloat(selectedOption.data('application-charge')),
+            applicationChargeType: selectedOption.data('application-charge-type'),
+            commissionRate: parseFloat(selectedOption.data('commission-charge')),
+            commissionType: selectedOption.data('commission-charge-type'),
+            approvalDays: selectedOption.data('approval-days') || 0,
+            name: selectedOption.data('name')
         };
 
         $('#grantAmount').prop('disabled', false).val('');
 
         $('.min-max').text(`Minimum ${selectedPlanData.min} ${currency} and Maximum ${selectedPlanData.max} ${currency}`);
-        $('#showTotalInstallments').text(`${selectedPlanData.totalInstallment} times`);
-        $('#showInstallmentInterval').text(`${selectedPlanData.installmentInterval} days`);
-        $('#showGrantDuration').text(`${selectedPlanData.totalInstallment * selectedPlanData.installmentInterval} days`);
+        $('#showApprovalDays').text(`${selectedPlanData.approvalDays} days`);
 
         resetResults();
     });
@@ -172,24 +154,27 @@
     });
 
     function calculateGrant(grantAmount) {
-        const rate = selectedPlanData.perInstallment;
-        const totalInstallments = selectedPlanData.totalInstallment;
+        const applicationFee = selectedPlanData.applicationChargeType === 'percentage' ?
+            parseFloat(((grantAmount / 100) * selectedPlanData.applicationChargeRate).toFixed(2)) :
+            selectedPlanData.applicationChargeRate;
 
-        const interestAmount = parseFloat(((grantAmount / 100) * rate).toFixed(2));
-        const totalPayable = parseFloat((interestAmount + grantAmount).toFixed(2));
-        const perInstallmentFee = parseFloat((totalPayable / totalInstallments).toFixed(2));
+        const commissionAmount = selectedPlanData.commissionType === 'percentage' ?
+            parseFloat(((grantAmount / 100) * selectedPlanData.commissionRate).toFixed(2)) :
+            selectedPlanData.commissionRate;
+
+        const netAmount = parseFloat((grantAmount - commissionAmount).toFixed(2));
 
         $('#showGrantAmount').text(`${currencySymbol}${grantAmount.toFixed(2)}`);
-        $('#showPerInstallMent').text(`${currencySymbol}${perInstallmentFee.toFixed(2)}`);
-        $('#showInterestAmount').text(`${currencySymbol}${interestAmount.toFixed(2)}`);
-        $('#showTotalPayableAmount').text(`${currencySymbol}${totalPayable.toFixed(2)}`);
+        $('#showApplicationFee').text(`${currencySymbol}${applicationFee.toFixed(2)}`);
+        $('#showCommissionAmount').text(`${currencySymbol}${commissionAmount.toFixed(2)}`);
+        $('#showNetAmount').text(`${currencySymbol}${netAmount.toFixed(2)}`);
     }
 
     function resetResults() {
         $('#showGrantAmount').text(`${currencySymbol}0.00`);
-        $('#showPerInstallMent').text(`${currencySymbol}0.00`);
-        $('#showInterestAmount').text(`${currencySymbol}0.00`);
-        $('#showTotalPayableAmount').text(`${currencySymbol}0.00`);
+        $('#showApplicationFee').text(`${currencySymbol}0.00`);
+        $('#showCommissionAmount').text(`${currencySymbol}0.00`);
+        $('#showNetAmount').text(`${currencySymbol}0.00`);
     }
 </script>
 @endsection

@@ -59,10 +59,9 @@
                                 <div class="site-table-col">{{ __('Grant Name') }}</div>
                                 <div class="site-table-col">{{ __('Grant ID') }}</div>
                                 <div class="site-table-col">{{ __('Amount') }}</div>
-                                <div class="site-table-col">{{ __('Installment Amount') }}</div>
-                                <div class="site-table-col">{{ __('Next Payment') }}</div>
-                                <div class="site-table-col">{{ __('Installment') }}</div>
-                                <div class="site-table-col">{{ __('Paid') }}</div>
+                                <div class="site-table-col">{{ __('Application Charge') }}</div>
+                                <div class="site-table-col">{{ __('Commission') }}</div>
+                                <div class="site-table-col">{{ __('Net Amount') }}</div>
                                 <div class="site-table-col">{{ __('Status') }}</div>
                                 <div class="site-table-col">{{ __('Action') }}</div>
                             </div>
@@ -83,49 +82,24 @@
                                         <div class="trx fw-bold">{{ $grant->amount }} {{ $currency }}</div>
                                     </div>
                                     <div class="site-table-col">
-                                        <div class="description">
-                                            <div class="content">
-                                                <div class="title">
-                                                    {{ ($grant->amount / 100) * $grant->plan->per_installment }}
-                                                    {{ $currency }}</div>
-                                                <div class="date">Every {{ $grant->plan->installment_intervel }} Days
-                                                </div>
-                                            </div>
+                                        <div class="fw-bold">{{ $grant->plan->applicationFee($grant->amount) }}
+                                            {{ $currency }}</div>
+                                    </div>
+                                    <div class="site-table-col">
+                                        <div class="fw-bold">
+                                            {{ $grant->status == App\Enums\GrantStatus::Approved ? $grant->commission_amount.' '.$currency : '-' }}
                                         </div>
                                     </div>
                                     <div class="site-table-col">
                                         <div class="fw-bold">
-                                            @if ($grant->status == App\Enums\GrantStatus::Reviewing)
-                                                -
-                                            @else
-                                                {{ nextInstallment($grant->id, \App\Models\GrantTransaction::class, 'grant_id') }}
-                                            @endif
-
+                                            {{ $grant->status == App\Enums\GrantStatus::Approved ? $grant->net_amount.' '.$currency : '-' }}
                                         </div>
                                     </div>
                                     <div class="site-table-col">
-                                        <div class="description">
-                                            <div class="content">
-                                                <div class="title">{{ $grant->plan->total_installment }}</div>
-                                                <div class="date">Given: {{ $grant->givenInstallemnt() ?? 0 }}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="site-table-col">
-                                        <div class="fw-bold">{{ $grant->transactions->sum('amount') }} {{ $currency }}
-                                        </div>
-                                    </div>
-                                    <div class="site-table-col">
-                                        @if ($grant->status->value == 'running')
-                                            <div class="type site-badge badge-primary">{{ ucfirst($grant->status->value) }}
-                                            </div>
-                                        @elseif($grant->status->value == 'rejected' || $grant->status->value == 'cancelled')
-                                            <div class="type site-badge badge-failed">{{ ucfirst($grant->status->value) }}
-                                            </div>
-                                        @elseif($grant->status->value == 'completed')
+                                        @if ($grant->status->value == 'approved')
                                             <div class="type site-badge badge-success">{{ ucfirst($grant->status->value) }}
                                             </div>
-                                        @elseif($grant->status->value == 'due')
+                                        @elseif($grant->status->value == 'rejected' || $grant->status->value == 'cancelled')
                                             <div class="type site-badge badge-failed">{{ ucfirst($grant->status->value) }}
                                             </div>
                                         @elseif($grant->status->value == 'reviewing')

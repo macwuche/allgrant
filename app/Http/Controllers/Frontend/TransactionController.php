@@ -25,7 +25,7 @@ class TransactionController extends Controller
         $to_date = trim(@explode('-', request('daterange'))[1]);
 
         $types = match (request('type')) {
-            'grant' => [TxnType::Grant->value, TxnType::GrantApply, TxnType::GrantInstallment],
+            'grant' => [TxnType::Grant->value, TxnType::GrantApply->value],
             default => request('type')
         };
 

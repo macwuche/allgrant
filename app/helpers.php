@@ -395,15 +395,6 @@ if (! function_exists('grettings')) {
     }
 }
 
-if (! function_exists('nextInstallment')) {
-    function nextInstallment($id, $model, $field)
-    {
-        $trx = $model::where($field, $id)->where('given_date', null)->first();
-
-        return $trx !== null ? date('d M Y', strtotime($trx->installment_date)) : '--';
-    }
-}
-
 if (! function_exists('defaultLocale')) {
     function defaultLocale()
     {
@@ -435,8 +426,8 @@ if (! function_exists('isPlusTransaction')) {
     function isPlusTransaction($type)
     {
         if (
-            $type == TxnType::Subtract || $type == TxnType::GrantInstallment || $type == TxnType::FundTransfer ||
-            $type == TxnType::Withdraw || $type == TxnType::WithdrawAuto || $type == TxnType::GrantInstallment ||
+            $type == TxnType::Subtract || $type == TxnType::FundTransfer ||
+            $type == TxnType::Withdraw || $type == TxnType::WithdrawAuto ||
             $type == TxnType::GrantApply || $type == TxnType::CardCreate || $type == TxnType::CardLoad
         ) {
             return false;
@@ -449,7 +440,7 @@ if (! function_exists('isPlusTransaction')) {
 if (! function_exists('grantRunning')) {
     function grantRunning()
     {
-        $grant = \App\Models\Grant::running()->whereUserId(auth()->id())->count();
+        $grant = \App\Models\Grant::approved()->whereUserId(auth()->id())->count();
 
         return $grant;
     }

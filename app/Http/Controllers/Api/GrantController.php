@@ -6,13 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\GrantDetailsResource;
 use App\Http\Resources\GrantHistoryResource;
 use App\Http\Resources\GrantPlanResource;
-use App\Http\Resources\GrantTransactionResource;
 use App\Models\Grant;
 use App\Models\GrantPlan;
 use App\Services\GrantService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class GrantController extends Controller
 {
@@ -55,7 +52,7 @@ class GrantController extends Controller
 
     public function history(Request $request)
     {
-        $grants = Grant::with('transactions', 'plan', 'user')
+        $grants = Grant::with('plan', 'user')
             ->where('user_id', auth()->id())
             ->when($request->has('grant_id'), function ($query) use ($request) {
                 $query->where('grant_no', 'LIKE', '%'.$request->grant_id.'%');
@@ -80,7 +77,7 @@ class GrantController extends Controller
 
     public function details($grantId)
     {
-        $grant = Grant::with('transactions', 'plan', 'user')->where('grant_no', $grantId)->where('user_id', auth()->id())->firstOrFail();
+        $grant = Grant::with('plan', 'user')->where('grant_no', $grantId)->where('user_id', auth()->id())->firstOrFail();
 
         return response()->json([
             'status' => true,
@@ -100,68 +97,6 @@ class GrantController extends Controller
                 'message' => __('Grant request cancelled successfully!'),
             ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => $e->getMessage(),
-            ], 422);
-        }
-    }
-
-    public function installments($grant_id)
-    {
-        try {
-            $user = auth()->user();
-
-            $grant = Grant::where('grant_no', $grant_id)->where('user_id', $user->id)->firstOrFail();
-
-            $transactions = $grant->transactions()->get();
-
-            return response()->json([
-                'status' => true,
-                'data' => GrantTransactionResource::collection($transactions),
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => $e->getMessage(),
-            ], 422);
-        }
-    }
-
-    public function payInstallment(Request $request)
-    {
-        $grant_id = $request->grant_id;
-        $trans_id = $request->trans_id;
-
-        try {
-            DB::beginTransaction();
-
-            $user = Auth::user();
-
-            $grant = Grant::query()
-                ->with('transactions')
-                ->where('user_id', $user->id)
-                ->where('grant_no', $grant_id)
-                ->first();
-
-            foreach ($grant->transactions as $grantTransaction) {
-
-                if ($trans_id && $grantTransaction->id != $trans_id) {
-                    continue;
-                }
-
-                $this->grantService->payInstallment($user, $grant, $grantTransaction);
-            }
-
-            DB::commit();
-
-            return response()->json([
-                'status' => true,
-                'message' => __('User Grant Installment Successfully Done'),
-            ]);
-        } catch (\Throwable $e) {
-            DB::rollBack();
-
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),

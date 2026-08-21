@@ -42,16 +42,10 @@
                                 </div>
                                 <div class="site-table-col">
                                     <div class="fw-bold">
-                                        @if ($grant->status->value == 'running')
-                                            <div class="type site-badge badge-primary">{{ ucfirst($grant->status->value) }}
-                                            </div>
-                                        @elseif($grant->status->value == 'rejected' || $grant->status->value == 'cancelled')
-                                            <div class="type site-badge badge-failed">{{ ucfirst($grant->status->value) }}
-                                            </div>
-                                        @elseif($grant->status->value == 'completed')
+                                        @if ($grant->status->value == 'approved')
                                             <div class="type site-badge badge-success">{{ ucfirst($grant->status->value) }}
                                             </div>
-                                        @elseif($grant->status->value == 'due')
+                                        @elseif($grant->status->value == 'rejected' || $grant->status->value == 'cancelled')
                                             <div class="type site-badge badge-failed">{{ ucfirst($grant->status->value) }}
                                             </div>
                                         @elseif($grant->status->value == 'reviewing')
@@ -72,150 +66,42 @@
                             </div>
                             <div class="site-table-list">
                                 <div class="site-table-col">
-                                    <div class="fw-bold">{{ __('Per Installment:') }}</div>
+                                    <div class="trx fw-bold">{{ __('Application Charge Paid:') }}</div>
                                 </div>
                                 <div class="site-table-col">
-                                    <div class="fw-bold">
-                                        <div class="fw-bold">{{ $grant->perInstallment() . ' ' . $currency }} (Every
-                                            {{ $grant->plan->installment_intervel }} Days)</div>
+                                    <div class="fw-bold">{{ $grant->plan->applicationFee($grant->amount) . ' ' . $currency }}</div>
+                                </div>
+                            </div>
+                            @if ($grant->status == App\Enums\GrantStatus::Approved)
+                                <div class="site-table-list">
+                                    <div class="site-table-col">
+                                        <div class="trx fw-bold">{{ __('Commission Deducted:') }}</div>
+                                    </div>
+                                    <div class="site-table-col">
+                                        <div class="red-color fw-bold">{{ $grant->commission_amount . ' ' . $currency }}</div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="site-table-list">
-                                <div class="site-table-col">
-                                    <div class="trx fw-bold">{{ __('Number Of Installments:') }}</div>
-                                </div>
-                                <div class="site-table-col">
-                                    <div class="fw-bold">{{ $grant->plan->total_installment }} {{ __('Times') }}</div>
-                                </div>
-                            </div>
-                            <div class="site-table-list">
-                                <div class="site-table-col">
-                                    <div class="trx fw-bold">{{ __('Given Installments:') }}</div>
-                                </div>
-                                <div class="site-table-col">
-                                    <div class="fw-bold"><span
-                                            class="type site-badge badge-primary">{{ $grant->givenInstallemnt() ?? 0 }}</span>
+                                <div class="site-table-list">
+                                    <div class="site-table-col">
+                                        <div class="trx fw-bold">{{ __('Net Amount Received:') }}</div>
+                                    </div>
+                                    <div class="site-table-col">
+                                        <div class="fw-bold">{{ $grant->net_amount . ' ' . $currency }}</div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="site-table-list">
-                                <div class="site-table-col">
-                                    <div class="trx fw-bold">{{ __('Next Installment:') }}</div>
-                                </div>
-                                <div class="site-table-col">
-                                    <div class="fw-bold">
-                                        @if ($grant->status == App\Enums\GrantStatus::Reviewing)
-                                            -
-                                        @else
-                                            {{ nextInstallment($grant->id, \App\Models\GrantTransaction::class, 'grant_id') }}
-                                        @endif
+                                <div class="site-table-list">
+                                    <div class="site-table-col">
+                                        <div class="trx fw-bold">{{ __('Approved At:') }}</div>
+                                    </div>
+                                    <div class="site-table-col">
+                                        <div class="fw-bold">{{ $grant->approved_at?->format('d M Y h:i A') }}</div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="site-table-list">
-                                <div class="site-table-col">
-                                    <div class="trx fw-bold">{{ __('Deferment Charge:') }}</div>
-                                </div>
-                                <div class="site-table-col">
-                                    <div class="red-color fw-bold">{{ $grant->plan->charge }}
-                                        {{ $grant->plan->charge_type == 'percentage' ? '%' : $currency }} /
-                                        {{ $grant->plan->delay_days }} Day</div>
-                                </div>
-                            </div>
-                            <div class="site-table-list">
-                                <div class="site-table-col">
-                                    <div class="trx fw-bold">{{ __('Total Payable Amount:') }}</div>
-                                </div>
-                                <div class="site-table-col">
-                                    <div class="fw-bold">{{ $grant->totalPayableAmount() . ' ' . $currency }}</div>
-                                </div>
-                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>
             </div>
-            @if ($grant->transactions->count() > 0)
-                <div class="site-card">
-                    <div class="site-card-header">
-                        <div class="title-small">
-                            {{ __('Installments List') }}
-                        </div>
-                        @if ($grant->status == App\Enums\GrantStatus::Running || $grant->status == App\Enums\GrantStatus::Due)
-                            <div class="card-header-links d-flex">
-                                <button type="button"
-                                    data-url="{{ route('user.grant.pay.installment', ['grant_id' => encrypt($grant->id)]) }}"
-                                    class="site-btn-sm polis-btn payGrantInstallment">
-                                    <i data-lucide="send"></i>
-                                    {{ __('Full Installment Pay') }}
-                                </button>
-                            </div>
-                        @endif
-                    </div>
-                    <div class="site-card-body p-0 overflow-x-auto">
-                        <div class="site-custom-table">
-                            <div class="contents">
-                                <div class="site-table-list site-table-head">
-                                    <div class="site-table-col">
-                                        {{ __('Serial') }}
-                                    </div>
-                                    <div class="site-table-col">
-                                        {{ __('Installment Date') }}
-                                    </div>
-                                    <div class="site-table-col">
-                                        {{ __('Given Date') }}
-                                    </div>
-                                    <div class="site-table-col">
-                                        {{ __('Paid Amount') }}
-                                    </div>
-                                    <div class="site-table-col">
-                                        {{ __('Deferment') }}
-                                    </div>
-                                    <div class="site-table-col text-center">
-                                        {{ __('Action') }}
-                                    </div>
-                                </div>
-                                @foreach ($grant->transactions as $trx)
-                                    <div class="site-table-list">
-                                        <div class="site-table-col">
-                                            <div class="trx fw-bold">{{ $loop->iteration }}</div>
-                                        </div>
-                                        <div class="site-table-col">
-                                            <div class="trx fw-bold">{{ $trx->installment_date->format('d M Y') }}</div>
-                                        </div>
-                                        <div class="site-table-col">
-                                            <div class="trx fw-bold">
-                                                {{ $trx->given_date != null ? \Carbon\Carbon::parse($trx->given_date)->format('M d Y') : __('Yet to pay') }}
-                                            </div>
-                                        </div>
-                                        <div class="site-table-col">
-                                            <div class="trx fw-bold">
-                                                {{ $trx->given_date != null ? $trx->paid_amount . ' ' . $currency : __('Yet to pay') }}
-                                            </div>
-                                        </div>
-                                        <div class="site-table-col">
-                                            <div class="trx fw-bold">
-                                                {{ $trx->given_date != null ? $trx->deferment : 'None' }}</div>
-                                        </div>
-                                        <div class="site-table-col text-center">
-                                            @if ($trx->given_date == null)
-                                                <button type="button"
-                                                    data-url="{{ route('user.grant.pay.installment', ['grant_id' => encrypt($grant->id), 'trans_id' => encrypt($trx->id)]) }}"
-                                                    class="site-btn-sm polis-btn payGrantInstallment">
-                                                    <i data-lucide="send"></i>
-                                                    {{ __('Pay Installment') }}
-                                                </button>
-                                            @else
-                                                <div class="type site-badge badge-primary">{{ __('Success') }}</div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endif
 
             @if ($grant->status == App\Enums\GrantStatus::Reviewing)
                 <!-- Modal for Delete Box -->
@@ -254,41 +140,6 @@
                 </div>
                 <!-- Modal for Delete Box End-->
             @endif
-
-            <div class="modal fade" id="payGrantInstallmentModal" tabindex="-1" aria-labelledby="paygrantModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog modal-md modal-dialog-centered">
-                    <div class="modal-content site-table-modal">
-                        <div class="modal-body popup-body">
-                            <button type="button" class="modal-btn-close" data-bs-dismiss="modal" aria-label="Close">
-                                <i data-lucide="x"></i>
-                            </button>
-                            <div class="popup-body-text centered">
-                                <div class="info-icon">
-                                    <i data-lucide="alert-triangle"></i>
-                                </div>
-                                <div class="title">
-                                    <h4>{{ __('Are you sure?') }}</h4>
-                                </div>
-                                <p>
-                                    {{ __('You want to pay grant installment?') }}
-                                </p>
-                                <div class="action-btns">
-                                    <a href="" class="site-btn-sm primary-btn me-2 confirm_pay_installment_btn">
-                                        <i data-lucide="check"></i>
-                                        {{ __('Confirm') }}
-                                    </a>
-                                    <a href="" class="site-btn-sm red-btn" data-bs-dismiss="modal"
-                                        aria-label="Close">
-                                        <i data-lucide="x"></i>
-                                        {{ __('Cancel') }}
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
     @push('js')
@@ -307,13 +158,6 @@
                 $('.confirm_btn').attr('href', url);
 
                 $('#cancelGrant').modal('show');
-            });
-
-            $(document).on('click', '.payGrantInstallment', function(e) {
-                var url = $(this).data('url');
-                $('.confirm_pay_installment_btn').attr('href', url);
-
-                $('#payGrantInstallmentModal').modal('show');
             });
         </script>
     @endpush

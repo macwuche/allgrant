@@ -251,7 +251,7 @@
 
             {{-- ************************************************************* Grant
             ********************************************************* --}}
-            @canany(['pending-grant', 'running-grant', 'due-grant', 'paid-grant', 'rejected-grant', 'all-grant',
+            @canany(['pending-grant', 'running-grant', 'rejected-grant', 'all-grant',
                 'grant-plan-list', 'grant-plan-create', 'grant-plan-edit', 'grant-plan-delete'])
                 <li class="side-nav-item side-nav-dropdown {{ isActive(['admin.plan.grant*', 'admin.grant*']) }}">
                     <a href="javascript:void(0);" class="dropdown-link"><i
@@ -268,18 +268,6 @@
                             <li class="side-nav-item {{ isActive('admin.grant.approved*') }}">
                                 <a href="{{ route('admin.grant.approved') }}"><i
                                         data-lucide="user-check"></i><span>{{ __('Approved Grant') }}</span></a>
-                            </li>
-                        @endcan
-                        @can('due-grant')
-                            <li class="side-nav-item {{ isActive('admin.grant.payable*') }}">
-                                <a href="{{ route('admin.grant.payable') }}"><i
-                                        data-lucide="user-check"></i><span>{{ __('Payable Installment') }}</span></a>
-                            </li>
-                        @endcan
-                        @can('paid-grant')
-                            <li class="side-nav-item {{ isActive('admin.grant.completed*') }}">
-                                <a href="{{ route('admin.grant.completed') }}"><i
-                                        data-lucide="user-check"></i><span>{{ __('Completed Grant') }}</span></a>
                             </li>
                         @endcan
                         @can('rejected-grant')

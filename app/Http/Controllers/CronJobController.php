@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\GrantStatus;
 use App\Enums\TxnStatus;
 use App\Enums\TxnType;
 use App\Models\CronJob;
 use App\Models\CronJobLog;
-use App\Models\GrantTransaction;
 use App\Models\Portfolio;
 use App\Models\User;
 use App\Traits\NotifyTrait;
@@ -189,132 +187,6 @@ class CronJobController extends Controller
             DB::commit();
 
             return '........Inactive users disabled successfully.';
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            throw $th;
-        }
-    }
-
-    public function grant()
-    {
-
-        try {
-
-            DB::beginTransaction();
-
-            $today = Carbon::today();
-            $this->startCron();
-
-            GrantTransaction::with('grant.plan')->whereNull('given_date')
-                ->where('installment_date', '<=', $today)
-                ->whereRelation('grant', 'status', 'running')
-                ->chunk(500, function ($grantTransaction) use ($today) {
-                    foreach ($grantTransaction as $installment) {
-
-                        // Get grant data
-                        $grant = $installment->grant;
-                        // Get plan data
-                        $plan = $grant->plan;
-                        // Get user data
-                        $user = $grant->user;
-
-                        // Calculate per installment
-                        $perInstallment = $installment->paid_amount;
-
-                        // Calculate deferment charge
-                        if ($installment->deferment != 0 && $installment->deferment >= $plan->delay_days) {
-                            $charge = $plan->charge_type == 'percentage' ? (($plan->charge / 100) * $perInstallment) : $plan->charge;
-                        } else {
-                            $charge = 0;
-                        }
-
-                        // Retrieve installment amount
-                        $amount = $perInstallment;
-                        // Sum with charge.
-                        $finalAmount = $amount + $charge;
-
-                        // Check user balance and user balance is enough then completed installment.
-                        // Otherwise, deferment increase.
-                        if ($user->balance >= $finalAmount) {
-
-                            // Save grant info
-                            $installment->given_date = $today;
-                            $installment->paid_amount = $amount;
-                            $installment->charge = $charge;
-                            $installment->final_amount = $finalAmount;
-                            $installment->save();
-
-                            // Deduct installment amount from user balance
-                            $user->balance -= $finalAmount;
-                            $user->save();
-
-                            // Get Installments
-                            $totalInstallments = count($grant->transactions);
-                            $givenInstallments = $grant->transactions->whereNotNull('given_date')->count();
-
-                            Txn::new($amount, $charge, $finalAmount, 'System', 'Grant Installment #'.$grant->grant_no.'', TxnType::GrantInstallment, TxnStatus::Success, '', null, $user->id, null, 'User');
-
-                            $status = $totalInstallments == $givenInstallments ? GrantStatus::Completed : GrantStatus::Running;
-
-                            $grant->status = $status;
-                            $grant->save();
-
-                            // Shortcodes for notifications
-                            $shortcodes = [
-                                '[[site_title]]' => setting('site_title', 'global'),
-                                '[[site_url]]' => route('home'),
-                                '[[plan_name]]' => $grant->plan->name,
-                                '[[user_name]]' => $grant->user->full_name,
-                                '[[full_name]]' => $grant->user->full_name,
-                                '[[grant_id]]' => $grant->grant_no,
-                                '[[given_installment]]' => $givenInstallments,
-                                '[[total_installment]]' => count($grant->transactions),
-                                '[[next_installment_date]]' => nextInstallment($grant->id, GrantTransaction::class, 'grant_id'),
-                                '[[grant_amount]]' => $grant->amount.' '.setting('site_currency', 'global'),
-                                '[[installment_amount]]' => $perInstallment.' '.setting('site_currency', 'global'),
-                                '[[delay_charge]]' => $charge.' '.setting('site_currency', 'global'),
-                                '[[installment_interval]]' => $grant->plan->installment_intervel,
-                                '[[installment_rate]]' => $grant->plan->installment_rate,
-                            ];
-
-                            $this->smsNotify('grant_installment', $shortcodes, $grant->user->phone);
-                            $this->mailNotify($grant->user->email, 'grant_installment', $shortcodes);
-                            $this->pushNotify('grant_installment', $shortcodes, route('user.grant.details', $grant->grant_no), $grant->user_id);
-                            $this->pushNotify('grant_installment', $shortcodes, route('admin.grant.details', $grant->id), $grant->user_id, 'Admin');
-                        } else {
-                            $installment->deferment++;
-                            $installment->save();
-                            $grant->status = GrantStatus::Due;
-                            $grant->save();
-
-                            // Shortcodes for notifications
-                            $shortcodes = [
-                                '[[site_title]]' => setting('site_title', 'global'),
-                                '[[site_url]]' => route('home'),
-                                '[[plan_name]]' => $grant->plan->name,
-                                '[[user_name]]' => $grant->user->full_name,
-                                '[[full_name]]' => $grant->user->full_name,
-                                '[[grant_id]]' => $grant->grant_no,
-                                '[[given_installment]]' => $grant->transactions->whereNotNull('given_date')->count(),
-                                '[[total_installment]]' => count($grant->transactions),
-                                '[[next_installment_date]]' => nextInstallment($grant->id, \App\Models\GrantTransaction::class, 'grant_id'),
-                                '[[grant_amount]]' => $grant->amount.' '.setting('site_currency', 'global'),
-                                '[[installment_amount]]' => $perInstallment.' '.setting('site_currency', 'global'),
-                                '[[delay_charge]]' => $charge.' '.setting('site_currency', 'global'),
-                                '[[installment_interval]]' => $grant->plan->installment_intervel,
-                                '[[installment_rate]]' => $grant->plan->installment_rate,
-                            ];
-
-                            $this->smsNotify('grant_installment_due', $shortcodes, $grant->user->phone);
-                            $this->mailNotify($grant->user->email, 'grant_installment_due', $shortcodes);
-                            $this->pushNotify('grant_installment_due', $shortcodes, route('user.grant.details', $grant->grant_no), $grant->user_id);
-                        }
-                    }
-                });
-
-            DB::commit();
-
-            return '........User Grant Successfully!!.';
         } catch (\Throwable $th) {
             DB::rollBack();
             throw $th;

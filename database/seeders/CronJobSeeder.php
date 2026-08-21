@@ -29,14 +29,6 @@ class CronJobSeeder extends Seeder
                 'reserved_method' => 'userInactive',
                 'status' => 'running',
             ],
-            [
-                'name' => 'Grant',
-                'next_run_at' => now()->addMinutes(1),
-                'schedule' => 86400,
-                'type' => 'system',
-                'reserved_method' => 'grant',
-                'status' => 'running',
-            ],
         ];
 
         CronJob::insert($jobs);

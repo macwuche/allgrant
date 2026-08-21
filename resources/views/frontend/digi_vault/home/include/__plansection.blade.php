@@ -28,8 +28,8 @@
                                             <div class="inner">
                                                 <span class="info-badge">{{ $plan->badge }}</span>
                                                 <div class="plan-heading">
-                                                    <strong>{{ setting('currency_symbol', 'global') }}{{ $plan->per_installment }}</strong>
-                                                    <sub> /{{ $plan->interval }} {{ __('Days') }}</sub>
+                                                    <strong>{{ $plan->commission_charge }}{{ $plan->commission_charge_type == 'percentage' ? '%' : ' ' . setting('currency_symbol', 'global') }}</strong>
+                                                    <sub> {{ __('Commission') }}</sub>
                                                     <h5 class="title">{{ $plan->name }}</h5>
                                                 </div>
                                                 <div class="plan-lists">
@@ -38,32 +38,24 @@
                                                             <div class="list-info">
                                                                 <img src="{{ asset('front/digi_vault/images/icons/check.svg') }}"
                                                                     alt="check">
-                                                                <span>{{ __('Interest Rate') }} :
-                                                                    {{ $plan->per_installment }}</span>
+                                                                <span>{{ __('Approval Days') }} :
+                                                                    {{ $plan->approval_days ?? 0 }}</span>
                                                             </div>
                                                         </li>
                                                         <li>
                                                             <div class="list-info">
                                                                 <img src="{{ asset('front/digi_vault/images/icons/check.svg') }}"
                                                                     alt="check">
-                                                                <span>{{ __('Number of Installments') }} :
-                                                                    {{ $plan->total_installment }}</span>
+                                                                <span>{{ __('Application Charge') }} :
+                                                                    {{ $plan->grant_fee }}{{ $plan->grant_fee_type == 'percentage' ? '%' : ' ' . $currencySymbol }}</span>
                                                             </div>
                                                         </li>
                                                         <li>
                                                             <div class="list-info">
                                                                 <img src="{{ asset('front/digi_vault/images/icons/check.svg') }}"
                                                                     alt="check">
-                                                                <span>{{ __('Per Installment') }} :
-                                                                    {{ $currencySymbol . $plan->per_installment }}</span>
-                                                            </div>
-                                                        </li>
-                                                        <li>
-                                                            <div class="list-info">
-                                                                <img src="{{ asset('front/digi_vault/images/icons/check.svg') }}"
-                                                                    alt="check">
-                                                                <span>{{ __('Installment Slice') }} :
-                                                                    {{ $plan->interval }} {{ __('Days') }}</span>
+                                                                <span>{{ __('Commission Charge') }} :
+                                                                    {{ $plan->commission_charge }}{{ $plan->commission_charge_type == 'percentage' ? '%' : ' ' . $currencySymbol }}</span>
                                                             </div>
                                                         </li>
                                                         <li>

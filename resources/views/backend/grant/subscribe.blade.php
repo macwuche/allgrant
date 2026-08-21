@@ -157,23 +157,18 @@
                                         <div class="value" id="showGrantAmount"></div>
                                     </div>
                                     <div class="profile-text-data">
-                                        <div class="attribute">{{ __('Total Installments:') }}</div>
-                                        <div class="value">{{ $selectGrantPlan->total_installment }} {{ __('Times') }}
-                                        </div>
+                                        <div class="attribute">{{ __('Application Charge:') }}</div>
+                                        <div class="value" id="showApplicationFee"></div>
                                     </div>
                                     <div class="profile-text-data">
-                                        <div class="attribute">{{ __('Per Installment:') }}</div>
+                                        <div class="attribute">{{ __('Commission Charge:') }}</div>
+                                        <div class="value" id="showCommissionAmount"></div>
+                                    </div>
+                                    <div class="profile-text-data">
+                                        <div class="attribute">{{ __('Net Amount Disbursed:') }}</div>
                                         <div class="value">
-                                            <div class="site-badge success" id="showPerInstallMent"></div>
+                                            <div class="site-badge success" id="showNetAmount"></div>
                                         </div>
-                                    </div>
-                                    <div class="profile-text-data">
-                                        <div class="attribute">{{ __('Interest Amount:') }}</div>
-                                        <div class="value" id="showIntarestAmount"></div>
-                                    </div>
-                                    <div class="profile-text-data">
-                                        <div class="attribute">{{ __('Total Payable Amount:') }}</div>
-                                        <div class="value" id="showTotalPayableAmount"></div>
                                     </div>
                                 </div>
                             </div>
@@ -219,8 +214,10 @@
             $('#grantAmount').on('change', function(event) {
 
                 var grantAmount = parseFloat($("#grantAmount").val());
-                var per_installment = parseFloat("{{ $selectGrantPlan->per_installment }}");
-                var totalInstallment = parseFloat("{{ $selectGrantPlan->total_installment }}");
+                var applicationChargeRate = parseFloat("{{ $selectGrantPlan->grant_fee }}");
+                var applicationChargeType = "{{ $selectGrantPlan->grant_fee_type }}";
+                var commissionRate = parseFloat("{{ $selectGrantPlan->commission_charge }}");
+                var commissionType = "{{ $selectGrantPlan->commission_charge_type }}";
 
                 if (grantAmount < min) {
                     grantAmount = min;
@@ -230,19 +227,18 @@
                     $("#grantAmount").val(grantAmount);
                 }
 
-                var perInstallmentFee = Math.floor((per_installment / 100) * grantAmount * 100) / 100;
-                var interestAmount = Math.floor(((perInstallmentFee * totalInstallment) - grantAmount) * 100) / 100;
-                var totalPayAbleAmount = Math.floor((perInstallmentFee * totalInstallment) * 100) / 100;
+                var applicationFee = applicationChargeType === 'percentage' ?
+                    Math.round((applicationChargeRate / 100) * grantAmount * 100) / 100 :
+                    applicationChargeRate;
+                var commissionAmount = commissionType === 'percentage' ?
+                    Math.round((commissionRate / 100) * grantAmount * 100) / 100 :
+                    commissionRate;
+                var netAmount = Math.round((grantAmount - commissionAmount) * 100) / 100;
 
-                var grantAmountText = `${Math.floor(grantAmount * 10) / 10} ${currency}`;
-                var perInstallmentText = `${perInstallmentFee} ${currency}`;
-                var interestAmountText = `${interestAmount} ${currency}`;
-                var totalPayAbleAmountText = `${totalPayAbleAmount} ${currency}`;
-
-                $("#showGrantAmount").text(grantAmountText);
-                $("#showPerInstallMent").text(perInstallmentText);
-                $("#showIntarestAmount").text(interestAmountText);
-                $("#showTotalPayableAmount").text(totalPayAbleAmountText);
+                $("#showGrantAmount").text(`${Math.floor(grantAmount * 10) / 10} ${currency}`);
+                $("#showApplicationFee").text(`${applicationFee} ${currency}`);
+                $("#showCommissionAmount").text(`${commissionAmount} ${currency}`);
+                $("#showNetAmount").text(`${netAmount} ${currency}`);
             });
         </script>
     @endif

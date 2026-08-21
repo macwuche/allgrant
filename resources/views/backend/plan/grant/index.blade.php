@@ -35,8 +35,8 @@
                                             <th scope="col">{{ __('Plan Name') }}</th>
                                             <th scope="col">{{ __('Min. Amount') }}</th>
                                             <th scope="col">{{ __('Max. Amount') }}</th>
-                                            <th scope="col">{{ __('Per Installment') }}</th>
-                                            <th scope="col">{{ __('Total Installment') }}</th>
+                                            <th scope="col">{{ __('Application Charge') }}</th>
+                                            <th scope="col">{{ __('Commission Charge') }}</th>
                                             <th scope="col">{{ __('Status') }}</th>
                                             <th scope="col">{{ __('Action') }}</th>
                                         </tr>
@@ -52,10 +52,10 @@
                                                     <strong>{{ $currencySymbol }}{{ $plan->maximum_amount }} </strong>
                                                 </td>
                                                 <td>
-                                                    <strong>{{ $plan->per_installment }}{{ __('%') }}</strong>
+                                                    <strong>{{ $plan->grant_fee }}{{ $plan->grant_fee_type == 'percentage' ? __('%') : $currencySymbol }}</strong>
                                                 </td>
                                                 <td>
-                                                    <strong>{{ $plan->total_installment }} {{ __('Times') }}</strong>
+                                                    <strong>{{ $plan->commission_charge }}{{ $plan->commission_charge_type == 'percentage' ? __('%') : $currencySymbol }}</strong>
                                                 </td>
                                                 <td>
                                                     <div @class([

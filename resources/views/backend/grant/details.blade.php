@@ -28,12 +28,8 @@
                                 <div class="value">{{ $grant->plan->name }}</div>
                             </div>
                             <div class="profile-text-data">
-                                <div class="attribute">{{ __('Interval') }}</div>
-                                <div class="value">{{ $grant->plan->installment_intervel }} Days</div>
-                            </div>
-                            <div class="profile-text-data">
-                                <div class="attribute">{{ __('Total Installment') }}</div>
-                                <div class="value">{{ $grant->plan->total_installment }} {{ __('Times') }}</div>
+                                <div class="attribute">{{ __('Approval Days') }}</div>
+                                <div class="value">{{ $grant->plan->approval_days ?? 0 }} {{ __('Business Days') }}</div>
                             </div>
                             <div class="profile-text-data">
                                 <div class="attribute">{{ __('Grant Amount') }}</div>
@@ -42,22 +38,8 @@
                                 </div>
                             </div>
                             <div class="profile-text-data">
-                                <div class="attribute">{{ __('Per Installment') }}</div>
-                                <div class="value">{{ $currencySymbol . $grant->perInstallment() ?? 0 }}</div>
-                            </div>
-                            <div class="profile-text-data">
-                                <div class="attribute">{{ __('Given Installment') }}</div>
-                                <div class="value">{{ $grant->givenInstallemnt() ?? 0 }}</div>
-                            </div>
-                            <div class="profile-text-data">
-                                <div class="attribute">{{ __('Paid Amount') }}</div>
-                                <div class="value">
-                                    {{ $currencySymbol . $grant->transactions()->where('final_amount', '>', 0)->sum('paid_amount') ?? 0 }}
-                                </div>
-                            </div>
-                            <div class="profile-text-data">
-                                <div class="attribute">{{ __('Payable Amount') }}</div>
-                                <div class="value">{{ $currencySymbol . $grant->totalPayableAmount() }}</div>
+                                <div class="attribute">{{ __('Application Charge Paid') }}</div>
+                                <div class="value">{{ $currencySymbol . $grant->plan->applicationFee($grant->amount) }}</div>
                             </div>
                             <div class="profile-text-data">
                                 <div class="attribute">{{ __('Status') }}</div>
@@ -67,13 +49,22 @@
                                     ])
                                 </div>
                             </div>
-                            <div class="profile-text-data">
-                                <div class="attribute">{{ __('Bank Profit') }}</div>
-                                <div class="value">
-                                    <div class="site-badge success">
-                                        {{ $currencySymbol . $grant->totalPayableAmount() - $grant->amount }}</div>
+                            @if ($grant->status == App\Enums\GrantStatus::Approved)
+                                <div class="profile-text-data">
+                                    <div class="attribute">{{ __('Commission Deducted') }}</div>
+                                    <div class="value">{{ $currencySymbol . $grant->commission_amount }}</div>
                                 </div>
-                            </div>
+                                <div class="profile-text-data">
+                                    <div class="attribute">{{ __('Net Amount Disbursed') }}</div>
+                                    <div class="value">
+                                        <div class="site-badge success">{{ $currencySymbol . $grant->net_amount }}</div>
+                                    </div>
+                                </div>
+                                <div class="profile-text-data">
+                                    <div class="attribute">{{ __('Approved At') }}</div>
+                                    <div class="value">{{ $grant->approved_at?->format('d M Y h:i A') }}</div>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -102,61 +93,13 @@
                         </div>
                     </div>
                 </div>
-                @if (
-                    $grant->status != App\Enums\GrantStatus::Reviewing &&
-                        $grant->status != App\Enums\GrantStatus::Rejected &&
-                        $grant->status != App\Enums\GrantStatus::Cancelled)
-                    <div class="col-xl-12">
-                        <div class="site-table table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>{{ __('SERIAL') }}</th>
-                                        <th>{{ __('INSTALLMENT DATES') }}</th>
-                                        <th>{{ __('GIVEN DATE') }}</th>
-                                        <th>{{ __('DEFERMENT') }}</th>
-                                        <th>{{ __('PAID AMOUNT') }}</th>
-                                        <th>{{ __('CHARGE') }}</th>
-                                        <th>{{ __('FINAL AMOUNT') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($grant->transactions as $transaction)
-                                        <tr>
-                                            <td>
-                                                {{ $loop->iteration }}
-                                            </td>
-                                            <td>
-                                                {{ safe($transaction->installment_date) }}
-                                            </td>
-                                            <td>
-                                                {{ safe($transaction->given_date == null ? __('Yet To Pay') : $transaction->given_date) }}
-                                            </td>
-                                            <td>
-                                                {{ safe($transaction->given_date == null ? '--' : $transaction->deferment) }}
-                                            </td>
-                                            <td>
-                                                {{ safe($transaction->given_date == null ? '--' : $currencySymbol . $transaction->paid_amount) }}
-                                            </td>
-                                            <td>
-                                                {{ safe($transaction->given_date == null ? '--' : $currencySymbol . $transaction->charge) }}
-                                            </td>
-                                            <td>
-                                                {{ safe($transaction->given_date == null ? '--' : $currencySymbol . $transaction->final_amount) }}
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                @elseif($grant->status == App\Enums\GrantStatus::Reviewing)
+                @if ($grant->status == App\Enums\GrantStatus::Reviewing)
                     @can('grant-approval')
                         <form action="{{ route('admin.grant.approval.action', $grant->id) }}" method="post">
                             @csrf
 
                             <div class="action-btns">
-                                <button type="submit" name="status" value="running" class="site-btn-sm primary-btn me-2">
+                                <button type="submit" name="status" value="approved" class="site-btn-sm primary-btn me-2">
                                     <i data-lucide="check"></i>
                                     {{ __('Approve') }}
                                 </button>

@@ -2,17 +2,8 @@
     @case('reviewing')
         <div class="site-badge pending">{{ __('Reviewing') }}</div>
         @break
-    @case('running')
-        <div class="site-badge success">{{ __('Running') }}</div>
-        @break
-    @case('completed')
-        <div class="site-badge success">{{ __('Completed') }}</div>
-        @break
-    @case('paid')
-        <div class="site-badge success">{{ __('Paid') }}</div>
-        @break
-    @case('due')
-        <div class="site-badge danger">{{ __('Due') }}</div>
+    @case('approved')
+        <div class="site-badge success">{{ __('Approved') }}</div>
         @break
     @case('rejected')
         <div class="site-badge danger">{{ __('Rejected') }}</div>

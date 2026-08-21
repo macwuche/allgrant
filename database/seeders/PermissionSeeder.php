@@ -99,8 +99,6 @@ class PermissionSeeder extends Seeder
             ['category' => 'Grant Management', 'name' => 'grant-plan-delete'],
             ['category' => 'Grant Management', 'name' => 'pending-grant'],
             ['category' => 'Grant Management', 'name' => 'running-grant'],
-            ['category' => 'Grant Management', 'name' => 'due-grant'],
-            ['category' => 'Grant Management', 'name' => 'paid-grant'],
             ['category' => 'Grant Management', 'name' => 'rejected-grant'],
             ['category' => 'Grant Management', 'name' => 'all-grant'],
             ['category' => 'Grant Management', 'name' => 'view-grant-details'],

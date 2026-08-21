@@ -25,9 +25,9 @@
                                 <h3 class="title">{{ $plan->name }}</h3>
                             </div>
                             <div class="price-value">
-                                <h4 class="title">{{ $plan->per_installment }}</h4>
-                                <sup class="dollar">%</sup>
-                                <sub>/{{ $plan->installment_intervel }} {{ __('Days') }}</sub>
+                                <h4 class="title">{{ $plan->commission_charge }}</h4>
+                                <sup class="dollar">{{ $plan->commission_charge_type == 'percentage' ? '%' : $currencySymbol }}</sup>
+                                <sub>{{ __('Commission') }}</sub>
                             </div>
                             <div class="price-list">
                                 <ul>
@@ -57,8 +57,8 @@
                                                 <img src="{{ asset('front/theme-2') }}/images/icons/check-black.svg"
                                                     alt="check">
                                             </span>
-                                            <span class="title">{{ __('Installment Rate') }} :
-                                                {{ $plan->per_installment }}%</span>
+                                            <span class="title">{{ __('Approval Days') }} :
+                                                {{ $plan->approval_days ?? 0 }}</span>
                                         </div>
                                     </li>
                                     <li>
@@ -67,8 +67,8 @@
                                                 <img src="{{ asset('front/theme-2') }}/images/icons/check-black.svg"
                                                     alt="check">
                                             </span>
-                                            <span class="title">{{ __('Installment Slice') }} :
-                                                {{ $plan->installment_intervel }} {{ __('Days') }}</span>
+                                            <span class="title">{{ __('Application Charge') }} :
+                                                {{ $plan->grant_fee }}{{ $plan->grant_fee_type == 'percentage' ? '%' : ' ' . $currencySymbol }}</span>
                                         </div>
                                     </li>
                                     <li>
@@ -77,8 +77,8 @@
                                                 <img src="{{ asset('front/theme-2') }}/images/icons/check-black.svg"
                                                     alt="check">
                                             </span>
-                                            <span class="title">{{ __('Total Installment') }} :
-                                                {{ $plan->total_installment }}</span>
+                                            <span class="title">{{ __('Commission Charge') }} :
+                                                {{ $plan->commission_charge }}{{ $plan->commission_charge_type == 'percentage' ? '%' : ' ' . $currencySymbol }}</span>
                                         </div>
                                     </li>
                                 </ul>

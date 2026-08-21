@@ -14,17 +14,12 @@ class GrantPlan extends Model
         'name',
         'minimum_amount',
         'maximum_amount',
-        'interest_rate',
-        'per_installment',
-        'installment_intervel',
-        'total_installment',
-        'admin_profit',
+        'approval_days',
         'instructions',
-        'delay_days',
-        'charge',
-        'charge_type',
         'grant_fee',
         'grant_fee_type',
+        'commission_charge',
+        'commission_charge_type',
         'field_options',
         'status',
         'badge',
@@ -51,13 +46,23 @@ class GrantPlan extends Model
         return self::$activeCache;
     }
 
-    public function getTotalAmountAttribute()
+    /**
+     * The non-refundable fee charged when applying for this plan.
+     */
+    public function applicationFee($amount): float
     {
-        return $this->per_installment * $this->total_installment;
+        $fee = $this->grant_fee_type == 'percentage' ? ($amount / 100) * $this->grant_fee : $this->grant_fee;
+
+        return round((float) $fee, 2);
     }
 
-    public function getBankProfitAttribute()
+    /**
+     * The commission deducted from the grant amount at approval time.
+     */
+    public function commissionAmount($amount): float
     {
-        return ($this->total_amount * $this->interest_rate / 100) + $this->total_amount;
+        $commission = $this->commission_charge_type == 'percentage' ? ($amount / 100) * $this->commission_charge : $this->commission_charge;
+
+        return round((float) $commission, 2);
     }
 }

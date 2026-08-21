@@ -28,8 +28,8 @@
                                 @include('backend.filter.th',['label' => 'User','field' => 'user'])
                                 @include('backend.filter.th',['label' => 'Grant ID','field' => 'grant_no'])
                                 @include('backend.filter.th',['label' => 'Amount','field' => 'amount'])
-                                <th>{{ __('Installment Amount') }}</th>
-                                <th>{{ __('Next Installment') }}</th>
+                                <th>{{ __('Commission') }}</th>
+                                <th>{{ __('Net Amount') }}</th>
                                 @include('backend.filter.th',['label' => 'Requested At','field' => 'created_at'])
                                 @include('backend.filter.th',['label' => 'Status','field' => 'status'])
                                 <th>{{ __('Action') }}</th>
@@ -49,13 +49,17 @@
                                         {{ $currencySymbol.safe($item->amount)  }}
                                     </td>
                                     <td>
-                                        {{ $currencySymbol }}{{ safe(($item->amount / 100 ) * $item->plan->per_installment) }}
+                                        @if($item->status == App\Enums\GrantStatus::Approved)
+                                            {{ $currencySymbol.safe($item->commission_amount) }}
+                                        @else
+                                            -
+                                        @endif
                                     </td>
                                     <td>
-                                        @if($item->status == App\Enums\GrantStatus::Reviewing)
-                                            -
+                                        @if($item->status == App\Enums\GrantStatus::Approved)
+                                            {{ $currencySymbol.safe($item->net_amount) }}
                                         @else
-                                            {{ nextInstallment($item->id, \App\Models\GrantTransaction::class, 'grant_id') }}
+                                            -
                                         @endif
                                     </td>
                                     <td>

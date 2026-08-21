@@ -60,43 +60,18 @@
                                 <div class="col-xl-6">
                                     <div class="site-input-groups">
                                         <label class="box-input-label" for="">
-                                            {{ __('Interest Rate:') }}
-                                            <span class="text-danger">*</span>
+                                            {{ __('Approval Days:') }}
                                         </label>
                                         <div class="input-group joint-input">
-                                            <input type="number" name="per_installment" step="0.01" class="form-control" value="{{ $plan->per_installment }}" required/>
-                                            <span class="input-group-text">{{ __('%') }}</span>
+                                            <input type="number" name="approval_days" class="form-control" value="{{ old('approval_days', $plan->approval_days) }}"/>
+                                            <span class="input-group-text">{{ __('Business Days') }}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-xl-6">
                                     <div class="site-input-groups">
                                         <label class="box-input-label" for="">
-                                            {{ __('Installment Interval:') }}
-                                            <span class="text-danger">*</span>
-                                        </label>
-                                        <div class="input-group joint-input">
-                                            <input type="text" name="installment_intervel" class="form-control" value="{{ $plan->installment_intervel }}" required/>
-                                            <span class="input-group-text">{{ __('Days') }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xl-6">
-                                    <div class="site-input-groups">
-                                        <label class="box-input-label" for="">
-                                            {{ __('Total Installment:') }}
-                                            <span class="text-danger">*</span>
-                                        </label>
-                                        <div class="input-group joint-input">
-                                            <input type="text" name="total_installment" class="form-control" value="{{ $plan->total_installment }}" required/>
-                                            <span class="input-group-text">{{ __('Times') }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xl-6">
-                                    <div class="site-input-groups">
-                                        <label class="box-input-label" for="">
-                                            {{ __('Grant Processing Fee:') }}
+                                            {{ __('Application Charge:') }}
                                         </label>
                                         <div class="position-relative">
                                             <input step="0.05" type="number" class="box-input" name="grant_fee" value="{{ old('grant_fee',$plan->grant_fee) }}">
@@ -106,6 +81,26 @@
                                                         %
                                                     </option>
                                                     <option @selected($plan->grant_fee_type == 'fixed') value="fixed">
+                                                        {{ $currencySymbol }}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-6">
+                                    <div class="site-input-groups">
+                                        <label class="box-input-label" for="">
+                                            {{ __('Commission Charge:') }}
+                                        </label>
+                                        <div class="position-relative">
+                                            <input step="0.05" type="number" class="box-input" name="commission_charge" value="{{ old('commission_charge',$plan->commission_charge) }}">
+                                            <div class="prcntcurr">
+                                                <select name="commission_charge_type" class="form-select" id="">
+                                                    <option @selected($plan->commission_charge_type == 'percentage') value="percentage">
+                                                        %
+                                                    </option>
+                                                    <option @selected($plan->commission_charge_type == 'fixed') value="fixed">
                                                         {{ $currencySymbol }}
                                                     </option>
                                                 </select>
@@ -202,35 +197,6 @@
                                             <textarea class="summernote" name="instructions">
                                                 {!! $plan->instructions !!}
                                             </textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xl-6">
-                                    <div class="site-input-groups">
-                                        <label class="box-input-label" for="">
-                                            {{ __('Charge will Apply if Delay:') }}
-                                            <span class="text-danger">*</span>
-                                            </label>
-                                        <div class="input-group joint-input">
-                                            <input type="number" name="delay_days" class="form-control" value="{{ $plan->delay_days }}" required/>
-                                            <span class="input-group-text">{{ __('Day') }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xl-6">
-                                    <div class="site-input-groups">
-                                        <label class="box-input-label" for="">
-                                            {{ __('Delay Charge:') }}
-                                            <span class="text-danger">*</span>
-                                        </label>
-                                        <div class="position-relative">
-                                            <input step="0.01" type="number" class="box-input" placeholder="charge" name="charge" required value="{{ $plan->charge }}"/>
-                                            <div class="prcntcurr">
-                                                <select name="charge_type" class="form-select" id="">
-                                                    <option value="percentage" {{ $plan->charge_type == 'percentage' ? 'selected' : '' }}>{{ __('%') }}</option>
-                                                    <option value="fixed" {{ $plan->charge_type == 'fixed' ? 'selected' : '' }}>{{ $currencySymbol }}</option>
-                                                </select>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>

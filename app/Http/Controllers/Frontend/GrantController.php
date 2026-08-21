@@ -11,7 +11,6 @@ use App\Traits\NotifyTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class GrantController extends Controller
 {
@@ -95,7 +94,7 @@ class GrantController extends Controller
         $from_date = trim(@explode('-', request('daterange'))[0]);
         $to_date = trim(@explode('-', request('daterange'))[1]);
 
-        $grants = Grant::with('transactions', 'plan', 'user')
+        $grants = Grant::with('plan', 'user')
             ->where('user_id', auth()->id())
             ->when(request('grant_id'), function ($query) {
                 $query->where('grant_no', 'LIKE', '%'.request('grant_id').'%');
@@ -113,7 +112,7 @@ class GrantController extends Controller
 
     public function details($grantNo)
     {
-        $grant = Grant::with('transactions', 'plan', 'user')->where('grant_no', $grantNo)->where('user_id', auth()->id())->firstOrFail();
+        $grant = Grant::with('plan', 'user')->where('grant_no', $grantNo)->where('user_id', auth()->id())->firstOrFail();
 
         return view('frontend::grant.details', compact('grant'));
     }
@@ -133,39 +132,5 @@ class GrantController extends Controller
         }
 
         return redirect()->route('user.grant.history');
-    }
-
-    public function payInstallment($grant_id, $trans_id = null)
-    {
-        try {
-            DB::beginTransaction();
-
-            $user = Auth::user();
-
-            $grant = Grant::query()
-                ->with('transactions')
-                ->where('user_id', $user->id)
-                ->findOrFail(decrypt($grant_id));
-
-            foreach ($grant->transactions as $grantTransaction) {
-
-                if ($trans_id && $grantTransaction->id != decrypt($trans_id)) {
-                    continue;
-                }
-
-                $this->grantService->payInstallment($user, $grant, $grantTransaction);
-            }
-
-            DB::commit();
-
-            notify()->success(__('User Grant Installment Successfully Done'));
-
-            return redirect()->back();
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            notify()->error($e->getMessage(), 'Error');
-
-            return redirect()->back();
-        }
     }
 }

@@ -56,7 +56,7 @@ class PushNotificationSeeder extends Seeder
             //     'for' => 'Admin',
             //     'title' => '"[[plan_name]]" Grant Application From [[user_name]].',
             //     'message_body' => '"[[plan_name]]" Grant Application From [[user_name]].',
-            //     'short_codes' => '["[[user_name]]","[[plan_name]]","[[grant_id]]","[[installment_rate]]","[[grant_amount]]","[[installment_interval]]"'
+            //     'short_codes' => '["[[user_name]]","[[plan_name]]","[[grant_id]]","[[grant_amount]]","[[application_fee]]","[[approval_days]]"'
             // ],
             // [
             //     'icon' => 'alert-triangle',
@@ -65,7 +65,7 @@ class PushNotificationSeeder extends Seeder
             //     'for' => 'User',
             //     'title' => '"[[plan_name]]" Grant Approved.',
             //     'message_body' => '"[[plan_name]]" Grant Approved',
-            //     'short_codes' => '["[[plan_name]]","[[grant_id]]","[[installment_rate]]","[[grant_amount]]","[[given_installment]]","[[installment_interval]]","[[next_installment_date]]","[[total_installment]]"'
+            //     'short_codes' => '["[[plan_name]]","[[grant_id]]","[[grant_amount]]","[[commission_amount]]","[[net_amount]]"'
             // ],
             // [
             //     'icon' => 'alert-triangle',
@@ -74,26 +74,7 @@ class PushNotificationSeeder extends Seeder
             //     'for' => 'User',
             //     'title' => '"[[plan_name]]" Grant Rejected.',
             //     'message_body' => '"[[plan_name]]" Grant Rejected',
-            //     'short_codes' => '["[[plan_name]]","[[grant_id]]","[[installment_rate]]","[[grant_amount]]","[[installment_interval]]"'
-            // ],
-            // [
-            //     'icon' => 'alert-triangle',
-            //     'name' => 'Grant Installment',
-            //     'code' => 'grant_installment',
-            //     'for' => 'User',
-            //     'title' => '"[[plan_name]]" Grant Installment Fee Deducted From Balance.',
-            //     'message_body' => '"[[plan_name]]" Grant Installment Fee Deducted From Balance.',
-            //     'short_codes' => '["[[plan_name]]","[[grant_id]]","[[installment_rate]]","[[grant_amount]]","[[delay_charge]]","[[installment_amount]]","[[given_installment]]","[[installment_interval]]","[[next_installment_date]]","[[total_installment]]"'
-            // ],
-
-            // [
-            //     'icon' => 'alert-triangle',
-            //     'name' => 'Grant Installment',
-            //     'code' => 'grant_installment',
-            //     'for' => 'Admin',
-            //     'title' => '"[[user_name]]" \'s "[[plan_name]]" Grant Installment Completed.',
-            //     'message_body' => '"[[user_name]]" \'s "[[plan_name]]" Grant Installment Completed.',
-            //     'short_codes' => '["[[user_name]]","[[plan_name]]","[[grant_id]]","[[installment_rate]]","[[grant_amount]]","[[delay_charge]]","[[installment_amount]]","[[given_installment]]","[[installment_interval]]","[[next_installment_date]]","[[total_installment]]"'
+            //     'short_codes' => '["[[plan_name]]","[[grant_id]]","[[grant_amount]]"'
             // ],
             // [
             //     'icon' => 'credit-card',

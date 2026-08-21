@@ -138,8 +138,6 @@ Route::group(['prefix' => 'grant', 'as' => 'grant.', 'controller' => GrantContro
     Route::get('/request', 'request')->name('request');
     Route::get('/rejected', 'rejected')->name('rejected');
     Route::get('/approved', 'approved')->name('approved');
-    Route::get('/payable', 'payable')->name('payable');
-    Route::get('/completed', 'completed')->name('completed');
     Route::get('/details/{id}', 'details')->name('details');
     Route::post('status', 'status')->name('status');
     Route::get('/subscribe/grant', 'createGrantRequest')->name('subscribe.preview');

@@ -60,15 +60,15 @@
                         <div class="gh-chip">
                             <i data-lucide="calendar"></i>
                             <span>
-                                {{ $heroGrantPlan->installment_intervel ?? 0 }} {{ __('days') }}
-                                <span class="gh-chip-sub">{{ __('Period') }}</span>
+                                {{ $heroGrantPlan->approval_days ?? 0 }} {{ __('days') }}
+                                <span class="gh-chip-sub">{{ __('Approval') }}</span>
                             </span>
                         </div>
                         <div class="gh-chip">
-                            <i data-lucide="trending-up"></i>
+                            <i data-lucide="percent"></i>
                             <span>
-                                &gt;{{ $heroGrantPlan->per_installment ?? 0 }}% {{ __('day') }}
-                                <span class="gh-chip-sub">{{ __('Interest period') }}</span>
+                                {{ $heroGrantPlan->commission_charge ?? 0 }}%
+                                <span class="gh-chip-sub">{{ __('Commission') }}</span>
                             </span>
                         </div>
                     </div>

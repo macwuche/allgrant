@@ -121,7 +121,6 @@ Route::group(['middleware' => ['auth', '2fa', 'isActive', setting('otp_verificat
         Route::get('/history', [GrantController::class, 'history'])->name('history');
         Route::get('/details/{id}', [GrantController::class, 'details'])->name('details');
         Route::get('/cancel/{id}', [GrantController::class, 'cancel'])->name('cancel');
-        Route::get('installment/pay/{grant_id}/{trans_id?}', [GrantController::class, 'payInstallment'])->name('pay.installment');
     });
 
     // Pay Bill

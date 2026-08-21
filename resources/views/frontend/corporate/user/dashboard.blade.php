@@ -63,10 +63,10 @@
                             <div class="text">
                                 @if ($total_running_grant > 0)
                                     <p>
-                                        @foreach ($user->grant->whereIn('status', [\App\Enums\GrantStatus::Running, \App\Enums\GrantStatus::Due])->take(4) ?? [] as $grant)
+                                        @foreach ($user->grant->where('status', \App\Enums\GrantStatus::Approved)->take(4) ?? [] as $grant)
                                             {{ $grant->plan?->name }} -
-                                            @if ($grant->last_date)
-                                                <strong>{{ $grant->last_date->format('d M Y') }}</strong>
+                                            @if ($grant->approved_at)
+                                                <strong>{{ $grant->approved_at->format('d M Y') }}</strong>
                                             @else
                                                 <strong>N/A</strong>
                                             @endif
