@@ -29,7 +29,10 @@ class GrantService
         }
 
         $validator = Validator::make($request->all(), [
-            'submitted_data' => 'required|array',
+            // Plans with no custom fields configured (field_options: []) render no
+            // submitted_data[...] inputs at all, so this must tolerate an absent/empty
+            // value rather than require it — subscribe() already defaults it to [].
+            'submitted_data' => 'nullable|array',
             'amount' => ['required', 'regex:/^[0-9]+(\.[0-9][0-9]?)?$/'],
         ]);
 
