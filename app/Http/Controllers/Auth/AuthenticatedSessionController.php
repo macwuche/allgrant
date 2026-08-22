@@ -58,6 +58,14 @@ class AuthenticatedSessionController extends Controller
         LoginActivities::add();
         session()->put('site-color-mode', $oldTheme);
 
+        // A stale intended URL left over from an earlier, unauthenticated attempt to
+        // visit the admin panel in this same browser session must not be honored here
+        // — it would send this regular user straight back into the admin area, which
+        // immediately bounces them to /admin/login since they're not an admin.
+        if (intendedUrlHasPrefix(setting('site_admin_prefix', 'global'))) {
+            session()->forget('url.intended');
+        }
+
         return redirect()->intended(RouteServiceProvider::HOME);
     }
 

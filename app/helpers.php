@@ -575,3 +575,29 @@ if (! function_exists('transaction_currency')) {
         return strtoupper($transaction->currency) ?? setting('site_currency', 'global');
     }
 }
+
+if (! function_exists('intendedUrlHasPrefix')) {
+    /**
+     * Laravel's `url.intended` session key is shared across guards: if a visitor is
+     * bounced off an admin-only page while logged out, then logs in as a regular user
+     * (or vice versa) in the same browser session, redirect()->intended() would send
+     * them straight back into the *other* guard's protected area, which immediately
+     * bounces them to that guard's login page again — looking like a broken/insecure
+     * redirect loop even though no unauthorized access ever actually happens.
+     *
+     * Call this right before redirect()->intended(...) to check whether the currently
+     * stored intended URL belongs to the given prefix's realm, and forget() it first
+     * if it doesn't belong where you're about to send the user.
+     */
+    function intendedUrlHasPrefix(string $prefix): bool
+    {
+        $prefix = trim($prefix, '/');
+        $intendedPath = trim(parse_url(session('url.intended', ''), PHP_URL_PATH) ?? '', '/');
+
+        if ($intendedPath === '' || $prefix === '') {
+            return false;
+        }
+
+        return str_starts_with($intendedPath, $prefix);
+    }
+}

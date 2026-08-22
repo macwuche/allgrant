@@ -43,6 +43,14 @@ class AuthController extends Controller
         if ($this->guard()->attempt($credentials)) {
             $request->session()->regenerate();
 
+            // Same guard-mismatch issue as the user login flow, in reverse: a stale
+            // intended URL from an earlier unauthenticated visit to a user-only page in
+            // this same browser session must not be honored here, or this admin gets
+            // sent into the user area and immediately bounced back to /login.
+            if (! intendedUrlHasPrefix(setting('site_admin_prefix', 'global'))) {
+                $request->session()->forget('url.intended');
+            }
+
             return redirect()->intended('admin');
         }
 
