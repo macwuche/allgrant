@@ -281,9 +281,15 @@
 /* Quick Action cards */
 .grant-home .gh-quick-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 16px;
     margin-bottom: 28px;
+}
+
+@media (max-width: 991px) {
+    .grant-home .gh-quick-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 @media (max-width: 767px) {

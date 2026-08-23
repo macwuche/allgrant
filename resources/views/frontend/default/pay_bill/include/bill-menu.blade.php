@@ -1,6 +1,4 @@
 <div class="transfer-top-btns mb-4">
-    <a href="{{ route('user.pay.bill.airtime') }}" class="site-btn-sm {{ isActive('user.pay.bill.airtime') }}"><i
-            data-lucide="phone"></i>{{ __('Airtime') }}</a>
     <a href="{{ route('user.pay.bill.electricity') }}" class="site-btn-sm {{ isActive('user.pay.bill.electricity') }}"><i
             data-lucide="zap"></i>{{ __('Electricity') }}</a>
     <a href="{{ route('user.pay.bill.internet') }}" class="site-btn-sm {{ isActive('user.pay.bill.internet') }}"><i
