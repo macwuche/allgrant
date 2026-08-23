@@ -3,7 +3,7 @@
     {{ __('Dashboard') }}
 @endsection
 @push('style')
-    <link rel="stylesheet" href="{{ asset('front/css/grant-home.css') }}?v=10" />
+    <link rel="stylesheet" href="{{ asset('front/css/grant-home.css') }}?v=11" />
 @endpush
 @section('content')
 
@@ -100,6 +100,23 @@
                 </div>
                 <div class="gh-quick-amount">{{ $currencySymbol . number_format($total_withdraw, 2) }}</div>
                 <div class="gh-quick-amount-label">{{ __('Total Withdrawn') }}</div>
+            </div>
+
+            <div class="gh-quick-card">
+                <div class="gh-quick-watermark" style="background: rgba(21, 114, 64, 0.12); color: #157240">
+                    <i data-lucide="chevrons-down"></i>
+                </div>
+                <div class="gh-quick-top">
+                    <div class="gh-quick-identity">
+                        <div class="gh-quick-logo" style="background: #157240">
+                            <i data-lucide="chevrons-down"></i>
+                        </div>
+                        <div class="gh-quick-name">{{ __('Deposit') }}</div>
+                    </div>
+                    <a href="{{ route('user.deposit.amount') }}" class="gh-btn-black-sm">{{ __('Deposit') }}</a>
+                </div>
+                <div class="gh-quick-amount">{{ $currencySymbol . number_format($total_deposit, 2) }}</div>
+                <div class="gh-quick-amount-label">{{ __('Successful Deposit') }}</div>
             </div>
 
             <div class="gh-quick-card">
