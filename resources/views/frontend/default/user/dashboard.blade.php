@@ -3,7 +3,7 @@
     {{ __('Dashboard') }}
 @endsection
 @push('style')
-    <link rel="stylesheet" href="{{ asset('front/css/grant-home.css') }}?v=11" />
+    <link rel="stylesheet" href="{{ asset('front/css/grant-home.css') }}?v=12" />
 @endpush
 @section('content')
 
@@ -56,6 +56,8 @@
                     <div class="gh-amount-label">{{ __('Current maximum amount') }}</div>
                     <div class="gh-amount-value">
                         {{ $currencySymbol . number_format($user->balance, 2) }}</div>
+                    <div class="gh-total-grant">{{ __('Total Grant') }}:
+                        {{ $currencySymbol . number_format($total_grant_amount, 2) }}</div>
                     <div class="gh-chip-row">
                         <div class="gh-chip">
                             <i data-lucide="calendar"></i>
