@@ -75,6 +75,23 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => env('DB_SSLMODE', 'require'),
+            // Reuses the underlying TCP+TLS connection to Postgres across
+            // requests within the same PHP worker instead of paying a fresh
+            // handshake + auth round trip every single page load. This is
+            // what actually matters for a DB that's now remote (Supabase)
+            // instead of local (old MySQL) — the query time itself didn't
+            // change much, the per-request connection setup did.
+            //
+            // Only helps on a worker model that reuses PHP processes
+            // (PHP-FPM). Under classic per-request CGI/suPHP hosting nothing
+            // persists between requests regardless of this setting, so it's
+            // a no-op there rather than harmful — safe to leave on. Default
+            // on; set DB_PERSISTENT=false in .env to turn it off (e.g. if
+            // the host's max Postgres/pooler connections start getting
+            // exhausted by idle persistent connections piling up).
+            'options' => extension_loaded('pdo_pgsql') ? array_filter([
+                PDO::ATTR_PERSISTENT => env('DB_PERSISTENT', true),
+            ]) : [],
         ],
 
         'sqlsrv' => [
