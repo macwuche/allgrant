@@ -3,6 +3,7 @@
 @include('backend.include.__head')
 
 <body>
+@include('global._skeleton_loader')
 <!--Full Layout-->
 <div class="layout">
     <!--Notification-->

@@ -12,6 +12,7 @@
     'rtl_mode' => $isRtl,
     'auth-bg'
 ])>
+    @include('global._skeleton_loader', ['mode' => 'lottie'])
 
     <!--Notification-->
     @include('global._notify')
