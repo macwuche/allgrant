@@ -178,7 +178,7 @@
                                     <div class="fw-bold">{{ __('Application Charge:') }}</div>
                                 </div>
                                 <div class="site-table-col">
-                                    <div class="red-color fw-bold">{{ $applicationFee }} {{ $currency }}</div>
+                                    <div class="red-color fw-bold">{{ $applicationFee > 0 ? '-' : '' }}{{ number_format($applicationFee, 2) }} {{ $currency }}</div>
                                 </div>
                             </div>
                             <div class="site-table-list">

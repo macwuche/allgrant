@@ -48,9 +48,12 @@ class GrantService
             throw ValidationException::withMessages(['error' => __('You can grant minimum :minimum_amount and maximum :maximum_amount', ['minimum_amount' => $plan->minimum_amount, 'maximum_amount' => $plan->maximum_amount])]);
         }
 
-        if ($user->balance < $plan->applicationFee($amount)) {
-            throw ValidationException::withMessages(['error' => __('Insufficient balance!')]);
-        }
+        // Deliberately no balance check here: applying is always allowed regardless of
+        // current balance, even $0 — subscribe() below deducts the Application Charge
+        // unconditionally, which is allowed to take the balance negative. This is the
+        // user's own self-service apply flow only; the admin-initiated "Create Grant
+        // Request" flow (Backend\GrantController::subscribeGrantRequest()) keeps its own
+        // separate "User balance is low." check.
     }
 
     public function subscribe(User $user, GrantPlan $plan, $amount, $request)
