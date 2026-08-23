@@ -98,7 +98,7 @@
                     </div>
                     <a href="{{ route('user.withdraw.view') }}" class="gh-btn-black-sm">{{ __('Withdraw') }}</a>
                 </div>
-                <div class="gh-quick-amount">{{ $currencySymbol . number_format($user->totalWithdraw(), 2) }}</div>
+                <div class="gh-quick-amount">{{ $currencySymbol . number_format($total_withdraw, 2) }}</div>
                 <div class="gh-quick-amount-label">{{ __('Total Withdrawn') }}</div>
             </div>
 
@@ -115,7 +115,7 @@
                     </div>
                     <a href="{{ route('user.fund_transfer.index') }}" class="gh-btn-black-sm">{{ __('Transfer') }}</a>
                 </div>
-                <div class="gh-quick-amount">{{ $currencySymbol . number_format($user->totalTransfer(), 2) }}</div>
+                <div class="gh-quick-amount">{{ $currencySymbol . number_format($total_transfer, 2) }}</div>
                 <div class="gh-quick-amount-label">{{ __('Total Transferred') }}</div>
             </div>
         </div>

@@ -216,6 +216,55 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
         return round($sum, 2);
     }
 
+    /**
+     * All the dashboard "total_*" figures in one round trip instead of six.
+     *
+     * totalDeposit()/totalProfit()/totalProfit($days)/totalWithdraw()/
+     * totalTransfer()/totalReferralProfit()/totalDepositBonus() each ran
+     * their own SUM(amount) scan over the same transactions table. This
+     * does the same math with one conditional-aggregation query. Those
+     * individual methods are left in place (other call sites still use
+     * them one-off), this is for callers that need several at once.
+     */
+    public function transactionSummary($profitDays = 7)
+    {
+        $profitTypes = [TxnType::Referral->value, TxnType::SignupBonus->value, TxnType::PortfolioBonus->value, TxnType::RewardRedeem->value];
+        $depositTypes = [TxnType::Deposit->value, TxnType::ManualDeposit->value];
+        $withdrawTypes = [TxnType::Withdraw->value, TxnType::WithdrawAuto->value];
+        $since = Carbon::now()->subDays((int) $profitDays);
+
+        $row = $this->transaction()
+            ->where('status', TxnStatus::Success->value)
+            ->selectRaw(
+                'COALESCE(SUM(CASE WHEN type IN (?, ?) THEN amount END), 0) as total_deposit,
+                 COALESCE(SUM(CASE WHEN type IN (?, ?, ?, ?) THEN amount END), 0) as total_profit,
+                 COALESCE(SUM(CASE WHEN type IN (?, ?, ?, ?) AND created_at >= ? THEN amount END), 0) as profit_last_days,
+                 COALESCE(SUM(CASE WHEN type IN (?, ?) THEN amount END), 0) as total_withdraw,
+                 COALESCE(SUM(CASE WHEN type = ? THEN amount END), 0) as total_transfer,
+                 COALESCE(SUM(CASE WHEN type = ? THEN amount END), 0) as total_referral_profit,
+                 COALESCE(SUM(CASE WHEN type = ? AND target_type = ? AND target_id IS NOT NULL THEN amount END), 0) as deposit_bonus',
+                [
+                    ...$depositTypes,
+                    ...$profitTypes,
+                    ...$profitTypes, $since,
+                    ...$withdrawTypes,
+                    TxnType::FundTransfer->value,
+                    TxnType::Referral->value,
+                    TxnType::Referral->value, 'deposit',
+                ]
+            )->first();
+
+        return [
+            'total_deposit' => round((float) ($row->total_deposit ?? 0), 2),
+            'total_profit' => round((float) ($row->total_profit ?? 0), 2),
+            'profit_last_days' => round((float) ($row->profit_last_days ?? 0), 2),
+            'total_withdraw' => round((float) ($row->total_withdraw ?? 0), 2),
+            'total_transfer' => round((float) ($row->total_transfer ?? 0), 2),
+            'total_referral_profit' => round((float) ($row->total_referral_profit ?? 0), 2),
+            'deposit_bonus' => round((float) ($row->deposit_bonus ?? 0), 2),
+        ];
+    }
+
     public function rejectedKycs()
     {
         return $this->kycs()->where('status', 'rejected');
@@ -233,9 +282,20 @@ class User extends Authenticatable implements CanUseTickets, MustVerifyEmail
 
     public function getReferrals()
     {
-        return ReferralProgram::all()->map(function ($program) {
-            return ReferralLink::getReferral($this, $program);
-        });
+        // Every call site does ->first() on the result, so there's no need
+        // to firstOrCreate() a ReferralLink for every ReferralProgram row
+        // (that was N+1: 1 query to list programs, then 1 more per program).
+        // Only fetch/create the one that's actually used. orderBy('id') also
+        // fixes a latent bug: MySQL's default row order happened to match
+        // insertion order, but Postgres makes no such guarantee without an
+        // explicit ORDER BY, so "the first program" could change silently.
+        $program = ReferralProgram::query()->orderBy('id')->first();
+
+        if (! $program) {
+            return collect();
+        }
+
+        return collect([ReferralLink::getReferral($this, $program)]);
     }
 
     public function referrals()
