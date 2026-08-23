@@ -8,6 +8,7 @@
     'dark-theme' => session()->get('site-color-mode',setting('default_mode')) == 'dark',
     'rtl_mode' => $isRtl
 ])>
+@include('global._skeleton_loader')
 
 <!--Notification-->
 @include('global._notify')

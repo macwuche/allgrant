@@ -4,7 +4,7 @@
 @include('backend.include.__head')
 <!--/Head-->
 <body>
-
+@include('global._skeleton_loader', ['mode' => 'lottie'])
 
 <!--Auth Page-->
 <div class="admin-auth">

@@ -4,6 +4,7 @@
 @include('frontend::include.__head')
 
 <body>
+@include('global._skeleton_loader', ['mode' => 'lottie'])
 
 <!--[if lte IE 9]>
 <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
