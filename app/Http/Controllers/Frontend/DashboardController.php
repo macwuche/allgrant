@@ -35,9 +35,14 @@ class DashboardController extends Controller
         $stats = cache()->remember("dashboard_stats_{$user->id}", 15, function () use ($user) {
             $summary = $user->transactionSummary(7);
 
-            $transactions = Transaction::where('user_id', $user->id);
-            $recentTransactions = $transactions->latest()->take(5)->get();
-            $totalTransaction = $transactions->count();
+            // Two separate queries, deliberately not one builder reused across both:
+            // ->latest()->take(5) mutates the builder in place (adds ORDER BY/LIMIT),
+            // and Postgres rejects a bare COUNT(*) with a leftover ORDER BY on a
+            // non-aggregated column ("must appear in the GROUP BY clause or be used
+            // in an aggregate function") — MySQL silently tolerated it, Postgres
+            // doesn't. This was throwing a 500 on every dashboard load.
+            $recentTransactions = Transaction::where('user_id', $user->id)->latest()->take(5)->get();
+            $totalTransaction = Transaction::where('user_id', $user->id)->count();
 
             $referral = $user->getReferrals()->first();
             $totalReferral = $referral?->relationships()->count() ?? 0;
