@@ -224,6 +224,47 @@
     var globalData;
     var currency = @json($currency);
 
+    // Click-to-copy for buttons an admin has inserted into a manual gateway's Payment Details.
+    $(document).on('click', '.copy-clipboard-btn', function(e) {
+        e.preventDefault();
+        var $btn = $(this);
+        var text = $btn.data('copyText');
+        if (text === undefined) {
+            text = $.trim($btn.text());
+            $btn.data('copyText', text);
+        }
+
+        var showCopied = function() {
+            $btn.text('{{ __('Copied!') }}');
+            setTimeout(function() {
+                $btn.text(text);
+            }, 1500);
+        };
+
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(showCopied).catch(function() {
+                copyViaFallback(text, showCopied);
+            });
+        } else {
+            copyViaFallback(text, showCopied);
+        }
+    });
+
+    function copyViaFallback(text, done) {
+        var $tmp = $('<textarea readonly></textarea>').val(text).css({
+            position: 'fixed',
+            opacity: 0
+        }).appendTo('body');
+        $tmp[0].select();
+        $tmp[0].setSelectionRange(0, 999999);
+        try {
+            document.execCommand('copy');
+        } catch (err) {
+        }
+        $tmp.remove();
+        done();
+    }
+
     $('#walletSelect').on('change', function() {
         "use strict";
         getGateways();
@@ -305,3 +346,29 @@
     });
 </script>
 @endsection
+
+@push('style')
+    <style>
+        /* Self-contained styling for admin-inserted Payment Details copy buttons — not
+           relying on `.site-btn-xs` (admin-panel only, not defined in this theme's CSS). */
+        .copy-clipboard-btn {
+            display: inline-block;
+            padding: 6px 16px;
+            border: none;
+            border-radius: 4px;
+            background: var(--td-primary, #6c3beb);
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1.5;
+            cursor: pointer;
+            transition: opacity .15s ease;
+        }
+
+        .copy-clipboard-btn:hover,
+        .copy-clipboard-btn:focus {
+            opacity: .85;
+            color: #ffffff;
+        }
+    </style>
+@endpush
