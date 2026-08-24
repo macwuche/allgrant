@@ -26,6 +26,12 @@ return [
     'settings' => [
         'default' => [
             'HTML.Doctype' => 'HTML 4.01 Transitional',
+            // `button` lives in HTMLPurifier's Forms module, which is marked unsafe and
+            // excluded from the element set entirely unless HTML.Forms is on — listing
+            // button[...] in HTML.Allowed alone isn't enough. Without this, `Purifier::clean()`
+            // hits an unrecognized-element warning that Laravel's error handler escalates into a
+            // real 500 the moment payment_details contains a copy button.
+            'HTML.Forms' => true,
             'HTML.Allowed' => 'h1 , h2 , h3 , h4 , h5 , h6 ,div,b,strong,i,em,u,a[href|title],ul,ol,li,p[style],br,span[style],img[style|class|width|height|alt|src],button[class|type]',
 
             'CSS.AllowedProperties' => 'font,font-size,font-weight,font-style,font-family,text-decoration,padding-left,color,background-color,text-align,float,width',
