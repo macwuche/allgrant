@@ -167,7 +167,7 @@
                                     <div class="site-input-groups fw-normal">
                                         <label for="" class="box-input-label">{{ __('Payment Details:') }}</label>
                                         <div class="site-editor">
-                                            <textarea class="summernote" name="payment_details"></textarea>
+                                            <textarea class="summernote-payment-details" name="payment_details"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -214,6 +214,48 @@
         (function ($) {
             var i = 0;
             "use strict";
+
+            // Payment Details editor: kept off the shared `.summernote` init so this
+            // custom "Copy Button" toolbar option stays scoped to this one field.
+            $('.summernote-payment-details').summernote({
+                toolbar: [
+                    ['style', ['style']],
+                    ['font', ['bold', 'italic', 'underline', 'clear']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['insert', ['link', 'picture']],
+                    ['copy', ['copyButton']],
+                    ['view', ['codeview']],
+                ],
+                buttons: {
+                    copyButton: function (context) {
+                        var ui = $.summernote.ui;
+                        var button = ui.button({
+                            contents: '<i class="fas fa-clone"></i>',
+                            tooltip: '{{ __('Insert Copy Button') }}',
+                            click: function () {
+                                var text = window.prompt('{{ __('Button text (this is exactly what the user copies when they click it):') }}');
+                                if (text === null) {
+                                    return;
+                                }
+                                text = $.trim(text);
+                                if (text === '') {
+                                    return;
+                                }
+                                var escaped = $('<div>').text(text).html();
+                                context.invoke('editor.pasteHTML', '<button type="button" class="site-btn-xs primary-btn copy-clipboard-btn">' + escaped + '</button>&nbsp;');
+                            }
+                        });
+                        return button.render();
+                    }
+                },
+                styleTags: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+                placeholder: '{{ __('Write...') }}',
+                tabsize: 2,
+                height: 220,
+                codeviewFilter: false,
+                codeviewIframeFilter: true
+            });
 
             let currency = null;
             $("#currency").on('change', function () {
