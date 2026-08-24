@@ -33,8 +33,6 @@
                     @include('frontend::include.__menu-item',['navigation' => $navigation])
                 @elseif ($navigation->type == 'fund_transfer' && setting('transfer_status', 'permission') && auth()->user()->transfer_status)
                     @include('frontend::include.__menu-item',['navigation' => $navigation])
-                @elseif ($navigation->type == 'pay_bill' && setting('user_pay_bill', 'permission') && auth()->user()->pay_bill_status)
-                    @include('frontend::include.__menu-item',['navigation' => $navigation])
                 @elseif ($navigation->type == 'dashboard' || $navigation->type == 'support' || $navigation->type == 'transactions' || $navigation->type == 'settings' || $navigation->type == 'logout')
                     @include('frontend::include.__menu-item',['navigation' => $navigation])
                 @endif
