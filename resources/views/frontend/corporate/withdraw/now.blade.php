@@ -10,9 +10,6 @@
                     <div class="title">{{ __('Withdraw Money') }}</div>
                     <div class="card-header-links">
                         <div class="d-flex">
-                            <a href="{{ route('user.withdraw.account.index') }}" class="card-header-link"
-                            ><i data-lucide="alert-circle"></i>{{ __('Withdraw Account') }}</a
-                            >
                             <a href="{{ route('user.withdraw.log') }}" class="card-header-link">
                                 <i data-lucide="alert-circle"></i>
                                 {{ __('Withdraw History') }}
@@ -20,10 +17,8 @@
                         </div>
                     </div>
                 </div>
-                <form action="{{ route('user.withdraw.now') }}" method="post" enctype="multipart/form-data">
+                <form action="{{ route('user.withdraw.now') }}" method="post" enctype="multipart/form-data" id="withdrawForm">
                     @csrf
-                    <input type="hidden" name="withdraw_account" id="withdrawAccountInput" value="">
-                    <input type="hidden" name="withdraw_method_id" id="withdrawMethodInput" value="">
                     <div class="site-card-body">
                         <div class="step-details-form mb-4">
 
@@ -31,26 +26,18 @@
                                 <div class="col-xl-6 col-lg-6 col-md-6">
                                     <div class="inputs">
                                         <label for="" class="input-label">
-                                            {{ __('Select') }}
+                                            {{ __('Withdraw Method') }}
                                             <span class="required">*</span>
                                         </label>
                                         <select
+                                            name="withdraw_method_id"
                                             class="box-input select2-basic-active"
-                                            id="withdrawAccountId"
+                                            id="withdrawMethodId"
                                         >
-                                            <option selected disabled>{{ __('Select Account') }}</option>
-                                            @if($accounts->count())
-                                                <optgroup label="{{ __('Saved Accounts') }}">
-                                                    @foreach($accounts as $account)
-                                                        <option value="{{ $account->id }}" data-type="account">{{ $account->method_name }}</option>
-                                                    @endforeach
-                                                </optgroup>
-                                            @endif
-                                            <optgroup label="{{ __('Withdraw To A New Account') }}">
-                                                @foreach($withdrawMethods as $method)
-                                                    <option value="{{ $method->id }}" data-type="method">{{ $method->name }} ({{ ucwords($method->type) }})</option>
-                                                @endforeach
-                                            </optgroup>
+                                            <option selected disabled>{{ __('Select Method') }}</option>
+                                            @foreach($withdrawMethods as $method)
+                                                <option value="{{ $method->id }}">{{ $method->name }} ({{ ucwords($method->type) }})</option>
+                                            @endforeach
                                         </select>
                                         <div class="input-info-text processing-time">
 
@@ -222,50 +209,28 @@
             $('#logo').html(info.logo);
         }
 
-        $("#withdrawAccountId").on('change', function (e) {
+        $("#withdrawMethodId").on('change', function (e) {
             e.preventDefault();
 
             $('.dynamic-fields').remove();
-            $('#withdrawAccountInput').val('');
-            $('#withdrawMethodInput').val('');
 
-            var selected = $(this).find(':selected');
-            var type = selected.data('type');
             var id = $(this).val();
-            var amount = $('.withdrawAmount').val();
 
             if (isNaN(id)) {
                 return;
             }
 
-            if (type === 'account') {
-                // Existing saved withdraw account — nothing more to fill in, just preview it.
-                $('#withdrawAccountInput').val(id);
+            // No saved accounts anymore — every withdrawal fills its destination fields fresh,
+            // right here, the moment a method is picked.
+            var url = '{{ route("user.withdraw.method.details", ':id') }}';
+            url = url.replace(':id', id);
 
-                var url = '{{ route("user.withdraw.details",['accountId' => ':accountId', 'amount' => ':amount']) }}';
-                url = url.replace(':accountId', id);
-                url = url.replace(':amount', amount);
-
-                $.get(url, function (data) {
-                    info = data.info;
-                    showMethodPreview(info);
-                })
-            } else if (type === 'method') {
-                // No saved account for this method yet — load its credential fields inline so
-                // the account gets created and the withdrawal submitted together, in one go.
-                $('#withdrawMethodInput').val(id);
-
-                var url = '{{ route("user.withdraw.method.details", ':id') }}';
-                url = url.replace(':id', id);
-
-                $.get(url, function (data) {
-                    $(data.html).addClass('dynamic-fields').insertAfter(".amountCol");
-                    imagePreview();
-                    info = data.info;
-                    showMethodPreview(info);
-                })
-            }
-
+            $.get(url, function (data) {
+                $(data.html).addClass('dynamic-fields').insertAfter(".amountCol");
+                imagePreview();
+                info = data.info;
+                showMethodPreview(info);
+            })
         })
 
         $(".withdrawAmount").on('keyup', function (e) {
@@ -279,6 +244,16 @@
             $('.conversion-rate').text('1' + ' ' + currency + ' = ' + info.rate + ' ' + info.pay_currency)
             $('.withdrawAmountRange').text(info.range)
             $('.pay-amount').text(amount * info.rate + ' ' + info.pay_currency)
+        });
+
+        // Reveal the site's shared full-page loading screen the instant this form is actually
+        // submitted (either directly, or after the passcode modal confirms), so the wait for the
+        // withdraw result is covered the same way a normal link navigation already is —
+        // page-scoped here rather than touching the shared loader partial, so it can't affect
+        // any other page's forms.
+        document.getElementById('withdrawForm').addEventListener('submit', function () {
+            var loader = document.getElementById('page-skeleton-loader');
+            if (loader) loader.classList.remove('pskl-hide');
         });
 
     </script>

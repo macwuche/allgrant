@@ -61,27 +61,35 @@ class WithdrawController extends Controller
     }
 
     /**
-     * Persist a new WithdrawAccount from raw request input (shared by the standalone
-     * "Add New Withdraw Account" page and the inline first-time-withdraw flow).
+     * Persist a new WithdrawAccount from raw request input — used only by the standalone
+     * "Add New Withdraw Account" page/edit page. The withdraw-now flow doesn't save an account
+     * at all (see withdrawNow()); it processes credentials directly via processCredentialUploads().
      */
     private function createWithdrawAccount(array $input): WithdrawAccount
     {
-        $credentials = $input['credentials'];
-        foreach ($credentials as $key => $value) {
+        $data = [
+            'user_id' => auth()->id(),
+            'withdraw_method_id' => $input['withdraw_method_id'],
+            'method_name' => $input['method_name'],
+            'credentials' => json_encode(self::processCredentialUploads($input['credentials'])),
+        ];
 
+        return WithdrawAccount::create($data);
+    }
+
+    /**
+     * Swap any uploaded-file credential values for their stored path. Shared by
+     * createWithdrawAccount() and withdrawNow()'s account-less flow.
+     */
+    private function processCredentialUploads(array $credentials): array
+    {
+        foreach ($credentials as $key => $value) {
             if (isset($value['value']) && is_file($value['value'])) {
                 $credentials[$key]['value'] = self::imageUploadTrait($value['value']);
             }
         }
 
-        $data = [
-            'user_id' => auth()->id(),
-            'withdraw_method_id' => $input['withdraw_method_id'],
-            'method_name' => $input['method_name'],
-            'credentials' => json_encode($credentials),
-        ];
-
-        return WithdrawAccount::create($data);
+        return $credentials;
     }
 
     public function create()
@@ -203,8 +211,10 @@ class WithdrawController extends Controller
 
     /**
      * Same shape as details(), but keyed on a WithdrawMethod directly instead of an existing
-     * WithdrawAccount — lets the withdraw form load a method's credential fields + charge/range
-     * info before the user has ever saved a withdraw account for it.
+     * WithdrawAccount — lets the withdraw form load a method's destination-credential fields +
+     * charge/range info the moment it's picked, with nothing saved beforehand. Doesn't render
+     * the "Method Name:" input __account.blade.php normally leads with — there's no saved
+     * account here to label.
      */
     public function methodDetails($id)
     {
@@ -224,7 +234,7 @@ class WithdrawController extends Controller
             'logo' => "<img class='table-icon' src='" . asset($withdrawMethod->icon) . "' />",
         ];
 
-        $html = view('frontend::withdraw.include.__account', compact('withdrawMethod'))->render();
+        $html = view('frontend::withdraw.include.__account', ['withdrawMethod' => $withdrawMethod, 'showMethodName' => false])->render();
 
         return [
             'html' => $html,
@@ -253,8 +263,8 @@ class WithdrawController extends Controller
 
         $validator = Validator::make($request->all(), [
             'amount' => ['required', 'regex:/^[0-9]+(\.[0-9][0-9]?)?$/'],
-            'withdraw_account' => 'required_without:withdraw_method_id',
-            'withdraw_method_id' => 'required_without:withdraw_account',
+            'withdraw_method_id' => 'required',
+            'credentials' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -275,32 +285,13 @@ class WithdrawController extends Controller
         $input = $request->all();
         $amount = (float) $input['amount'];
 
-        if (!empty($input['withdraw_account'])) {
-            $withdrawAccount = WithdrawAccount::where('user_id', auth()->id())->find($input['withdraw_account']);
+        $withdrawMethod = WithdrawMethod::where('status', true)->find($input['withdraw_method_id']);
 
-            if (!$withdrawAccount) {
-                notify()->error(__('Invalid withdraw account'), 'Error');
+        if (!$withdrawMethod) {
+            notify()->error(__('Invalid withdraw method'), 'Error');
 
-                return redirect()->back();
-            }
-        } else {
-            // First-time-for-this-method withdrawal: no saved account yet, create one inline
-            // from the credential fields submitted on the withdraw form itself.
-            $newAccountValidator = Validator::make($request->all(), [
-                'method_name' => 'required',
-                'credentials' => 'required',
-            ]);
-
-            if ($newAccountValidator->fails()) {
-                notify()->error($newAccountValidator->errors()->first(), 'Error');
-
-                return redirect()->back();
-            }
-
-            $withdrawAccount = self::createWithdrawAccount($input);
+            return redirect()->back();
         }
-
-        $withdrawMethod = $withdrawAccount->method;
 
         if ($amount < $withdrawMethod->min_withdraw || $amount > $withdrawMethod->max_withdraw) {
             $currencySymbol = setting('currency_symbol', 'global');
@@ -325,6 +316,17 @@ class WithdrawController extends Controller
             return redirect()->back();
         }
 
+        // Process credential uploads (imageUploadTrait() can abort on a bad file) before
+        // touching the balance — a rejected upload must never leave a decrement with no
+        // corresponding transaction.
+        $credentials = self::processCredentialUploads($input['credentials']);
+        // The destination the money is actually going to — the first credential field's own
+        // value (Bitcoin Address, USDT Address, account number, whatever the method asks for
+        // first), used to word the success message concretely rather than generically. Skip a
+        // file-type first field (a stored image path isn't an "address" worth showing).
+        $firstCredential = array_values($credentials)[0] ?? [];
+        $destination = ($firstCredential['type'] ?? null) !== 'file' ? data_get($firstCredential, 'value', '') : '';
+
         $user->decrement('balance', $totalAmount);
 
         $payAmount = $amount * $withdrawMethod->rate;
@@ -336,7 +338,7 @@ class WithdrawController extends Controller
             $charge,
             $totalAmount,
             $withdrawMethod->name,
-            'Withdraw With ' . $withdrawAccount->method_name,
+            'Withdraw With ' . $withdrawMethod->name,
             $type,
             TxnStatus::Pending,
             $withdrawMethod->currency,
@@ -344,7 +346,7 @@ class WithdrawController extends Controller
             $user->id,
             null,
             'User',
-            json_decode($withdrawAccount->credentials, true)
+            $credentials
         );
 
         if ($withdrawMethod->type == 'auto') {
@@ -356,11 +358,11 @@ class WithdrawController extends Controller
         $symbol = setting('currency_symbol', 'global');
         $notify = [
             'card-header' => 'Withdraw Money',
-            'title' => $symbol . $txnInfo->amount . ' Withdraw Request Successful',
-            'p' => 'The Withdraw Request has been successfully sent',
+            'title' => $symbol . $txnInfo->amount . ' Withdrawal Requested',
+            'p' => $destination !== '' ? __('Your money is on its way to :destination', ['destination' => $destination]) : __('Your withdrawal request has been sent'),
             'strong' => 'Transaction ID: ' . $txnInfo->tnx,
             'action' => route('user.withdraw.view'),
-            'a' => 'WITHDRAW REQUEST AGAIN',
+            'a' => 'WITHDRAW AGAIN',
             'view_name' => 'withdraw',
         ];
 
@@ -393,14 +395,9 @@ class WithdrawController extends Controller
             return to_route('user.dashboard');
         }
 
-        $accounts = WithdrawAccount::with('method')->where('user_id', \Auth::id())->get();
-        $accounts = $accounts->reject(function ($value, $key) {
-            return !$value->method->status;
-        });
-
         $withdrawMethods = WithdrawMethod::where('status', true)->get();
 
-        return view('frontend::withdraw.now', compact('accounts', 'withdrawMethods'));
+        return view('frontend::withdraw.now', compact('withdrawMethods'));
     }
 
     public function withdrawLog()
