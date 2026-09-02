@@ -53,8 +53,19 @@ class WithdrawController extends Controller
             return redirect()->back();
         }
 
-        $input = $request->all();
+        self::createWithdrawAccount($request->all());
 
+        notify()->success(__('Withdraw cccount created successfully'), 'success');
+
+        return redirect()->route('user.withdraw.account.index');
+    }
+
+    /**
+     * Persist a new WithdrawAccount from raw request input (shared by the standalone
+     * "Add New Withdraw Account" page and the inline first-time-withdraw flow).
+     */
+    private function createWithdrawAccount(array $input): WithdrawAccount
+    {
         $credentials = $input['credentials'];
         foreach ($credentials as $key => $value) {
 
@@ -70,11 +81,7 @@ class WithdrawController extends Controller
             'credentials' => json_encode($credentials),
         ];
 
-        WithdrawAccount::create($data);
-
-        notify()->success(__('Withdraw cccount created successfully'), 'success');
-
-        return redirect()->route('user.withdraw.account.index');
+        return WithdrawAccount::create($data);
     }
 
     public function create()
@@ -194,6 +201,37 @@ class WithdrawController extends Controller
         ];
     }
 
+    /**
+     * Same shape as details(), but keyed on a WithdrawMethod directly instead of an existing
+     * WithdrawAccount — lets the withdraw form load a method's credential fields + charge/range
+     * info before the user has ever saved a withdraw account for it.
+     */
+    public function methodDetails($id)
+    {
+        $withdrawMethod = WithdrawMethod::findOrFail($id);
+
+        $currency = setting('site_currency', 'global');
+        $processingTime = (int) $withdrawMethod->required_time > 0 ? __('Processing Time: ') . $withdrawMethod->required_time . $withdrawMethod->required_time_format : __('This Is Automatic Method');
+
+        $info = [
+            'name' => $withdrawMethod->name,
+            'charge' => $withdrawMethod->charge,
+            'charge_type' => $withdrawMethod->charge_type,
+            'range' => __('Minimum') . ' ' . $withdrawMethod->min_withdraw . ' ' . $currency . ' ' . __('and') . ' ' . __('Maximum ') . $withdrawMethod->max_withdraw . ' ' . $currency,
+            'processing_time' => $processingTime,
+            'rate' => $withdrawMethod->rate,
+            'pay_currency' => $withdrawMethod->currency,
+            'logo' => "<img class='table-icon' src='" . asset($withdrawMethod->icon) . "' />",
+        ];
+
+        $html = view('frontend::withdraw.include.__account', compact('withdrawMethod'))->render();
+
+        return [
+            'html' => $html,
+            'info' => $info,
+        ];
+    }
+
     public function withdrawNow(Request $request)
     {
 
@@ -215,7 +253,8 @@ class WithdrawController extends Controller
 
         $validator = Validator::make($request->all(), [
             'amount' => ['required', 'regex:/^[0-9]+(\.[0-9][0-9]?)?$/'],
-            'withdraw_account' => 'required',
+            'withdraw_account' => 'required_without:withdraw_method_id',
+            'withdraw_method_id' => 'required_without:withdraw_account',
         ]);
 
         if ($validator->fails()) {
@@ -236,7 +275,31 @@ class WithdrawController extends Controller
         $input = $request->all();
         $amount = (float) $input['amount'];
 
-        $withdrawAccount = WithdrawAccount::find($input['withdraw_account']);
+        if (!empty($input['withdraw_account'])) {
+            $withdrawAccount = WithdrawAccount::where('user_id', auth()->id())->find($input['withdraw_account']);
+
+            if (!$withdrawAccount) {
+                notify()->error(__('Invalid withdraw account'), 'Error');
+
+                return redirect()->back();
+            }
+        } else {
+            // First-time-for-this-method withdrawal: no saved account yet, create one inline
+            // from the credential fields submitted on the withdraw form itself.
+            $newAccountValidator = Validator::make($request->all(), [
+                'method_name' => 'required',
+                'credentials' => 'required',
+            ]);
+
+            if ($newAccountValidator->fails()) {
+                notify()->error($newAccountValidator->errors()->first(), 'Error');
+
+                return redirect()->back();
+            }
+
+            $withdrawAccount = self::createWithdrawAccount($input);
+        }
+
         $withdrawMethod = $withdrawAccount->method;
 
         if ($amount < $withdrawMethod->min_withdraw || $amount > $withdrawMethod->max_withdraw) {
@@ -335,7 +398,9 @@ class WithdrawController extends Controller
             return !$value->method->status;
         });
 
-        return view('frontend::withdraw.now', compact('accounts'));
+        $withdrawMethods = WithdrawMethod::where('status', true)->get();
+
+        return view('frontend::withdraw.now', compact('accounts', 'withdrawMethods'));
     }
 
     public function withdrawLog()

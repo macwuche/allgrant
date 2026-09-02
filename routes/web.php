@@ -147,6 +147,7 @@ Route::group(['middleware' => ['auth', '2fa', 'isActive', setting('otp_verificat
         // Withdraw
         Route::get('/', 'withdraw')->name('view');
         Route::get('details/{accountId}/{amount?}', 'details')->name('details');
+        Route::get('method-details/{id}', 'methodDetails')->name('method.details');
         Route::get('method/{id}', 'withdrawMethod')->name('method');
         Route::post('now', 'withdrawNow')->name('now')->middleware('passcode:withdraw');
         Route::get('log', 'withdrawLog')->name('log');
