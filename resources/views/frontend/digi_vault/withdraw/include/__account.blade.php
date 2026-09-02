@@ -1,15 +1,17 @@
-<div class="col-xl-6 col-md-12">
-    <div class="inputs">
-        <label for="" class="input-label"
-        >{{ __('Method Name:') }}<span class="required"
-            >*</span
-            ></label
-        >
-        <div class="input-group">
-            <input type="text" class="form-control" name="method_name" value="{{ $withdrawMethod->name .'-'. $withdrawMethod->currency}}" />
+@if($showMethodName ?? true)
+    <div class="col-xl-6 col-md-12">
+        <div class="inputs">
+            <label for="" class="input-label"
+            >{{ __('Method Name:') }}<span class="required"
+                >*</span
+                ></label
+            >
+            <div class="input-group">
+                <input type="text" class="form-control" name="method_name" value="{{ $withdrawMethod->name .'-'. $withdrawMethod->currency}}" />
+            </div>
         </div>
     </div>
-</div>
+@endif
 
 
 

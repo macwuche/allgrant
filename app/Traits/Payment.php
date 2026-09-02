@@ -66,13 +66,16 @@ trait Payment
         }
 
         $symbol = setting('currency_symbol', 'global');
+        $credentials = json_decode($txnInfo->manual_field_data ?? '[]', true) ?: [];
+        $destination = data_get(array_values($credentials)[0] ?? [], 'value', '');
+
         $notify = [
             'card-header' => 'Withdraw Money',
-            'title' => $symbol . $txnInfo->amount . ' Withdraw Request Successful',
-            'p' => 'The Withdraw Request has been successfully sent',
+            'title' => $symbol . $txnInfo->amount . ' Withdrawal Requested',
+            'p' => $destination !== '' ? __('Your money is on its way to :destination', ['destination' => $destination]) : __('Your withdrawal request has been sent'),
             'strong' => 'Transaction ID: ' . $txnInfo->tnx,
             'action' => route('user.withdraw.view'),
-            'a' => 'WITHDRAW REQUEST AGAIN',
+            'a' => 'WITHDRAW AGAIN',
             'view_name' => 'withdraw',
         ];
 
