@@ -51,6 +51,21 @@ class Email extends Model
         return $query->where('direction', 'inbound');
     }
 
+    /**
+     * Who this message is with, from the admin's point of view, regardless
+     * of which direction it happens to be: the sender for an inbound
+     * message, the recipient(s) for one we sent. Used anywhere the inbox
+     * needs to label a thread/message by "the other party" rather than
+     * whichever address happens to be in from_address (which is one of
+     * *our own* addresses for outbound messages).
+     */
+    public function otherParty(): string
+    {
+        return $this->direction === 'inbound'
+            ? $this->from_address
+            : implode(', ', $this->to_addresses ?: [$this->from_address]);
+    }
+
     public function scopeForAddress($query, $emailAddressId)
     {
         return $query->when($emailAddressId, fn ($q) => $q->where('email_address_id', $emailAddressId));

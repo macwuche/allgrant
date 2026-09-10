@@ -53,6 +53,26 @@ class ResendMailService
     }
 
     /**
+     * Retrieve a previously-sent email by the id POST /emails returned.
+     * Unlike the send response (which only contains `id`, Resend's own
+     * internal id), this returns the actual RFC 2822 `Message-ID` header
+     * value that went out on the wire, e.g. "<111-222-333@email.example.com>"
+     * -- the value a recipient's reply will echo back in In-Reply-To. We
+     * must store *this*, not the send-response id, or thread matching
+     * against inbound replies silently fails (see email.md section 10).
+     */
+    public function getSentEmail(string $id): array
+    {
+        $response = $this->client()->get("/emails/{$id}");
+
+        if ($response->failed()) {
+            throw new RuntimeException("Resend getSentEmail({$id}) failed: ".$response->body());
+        }
+
+        return $response->json();
+    }
+
+    /**
      * Full content of a received email -- the webhook payload only carries
      * metadata, this is the follow-up call for html/text/headers. Passing
      * html_format=data_uri (the default, made explicit here) makes Resend

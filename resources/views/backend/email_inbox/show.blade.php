@@ -84,7 +84,8 @@
                                 <form action="{{ route('admin.email-inbox.reply', $email->id) }}" method="post" enctype="multipart/form-data">
                                     @csrf
                                     <p class="small text-muted">
-                                        {{ __('Replying to') }} <strong>{{ $email->from_address }}</strong>
+                                        {{ __('Replying to') }}
+                                        <strong>{{ $email->otherParty() }}</strong>
                                         {{ __('as') }} <strong>{{ $email->emailAddress->email ?? '' }}</strong>
                                     </p>
                                     <div class="site-input-groups">

@@ -24,10 +24,9 @@ class EmailInboxController extends Controller
     public function index(Request $request)
     {
         $addresses = EmailAddress::active()->orderByDesc('is_default')->get();
+        $addressId = $request->get('address_id');
 
-        $emails = Email::query()
-            ->withCount('attachments')
-            ->forAddress($request->get('address_id'))
+        $emails = $this->latestPerThread($addressId)
             ->when($request->get('q'), fn ($q) => $q->where(function ($q) use ($request) {
                 $q->where('subject', 'like', '%'.$request->get('q').'%')
                     ->orWhere('from_address', 'like', '%'.$request->get('q').'%')
@@ -37,40 +36,117 @@ class EmailInboxController extends Controller
             ->paginate(20)
             ->withQueryString();
 
+        $this->attachThreadCounts($emails->getCollection());
+
         $unreadCount = Email::inbound()->where('is_read', false)
-            ->forAddress($request->get('address_id'))
+            ->forAddress($addressId)
             ->count();
 
         return view('backend.email_inbox.index', compact('emails', 'addresses', 'unreadCount'));
     }
 
     /**
+     * Base query for "one row per thread" -- the thread's most recent
+     * message (highest id, which for an append-only conversation is always
+     * the most recently created one too), filtered/ordered the same way a
+     * flat message list would be. Grouping happens via a MAX(id)-per-
+     * thread_key subquery rather than e.g. Postgres's DISTINCT ON, since
+     * this app runs on both Postgres and MySQL across its two live hosts
+     * (see email.md section 9) and this stays portable across both.
+     */
+    protected function latestPerThread(?string $addressId)
+    {
+        return Email::query()
+            ->withCount('attachments')
+            ->whereIn('id', function ($query) {
+                $query->selectRaw('MAX(id)')->from('emails')->groupBy('thread_key');
+            })
+            ->forAddress($addressId);
+    }
+
+    /**
+     * Sets thread_message_count / thread_unread_count on each (head-of-
+     * thread) Email in $emails -- the index/poll rows need these to show a
+     * "3 messages" style count and to bold a thread when any message in it
+     * (not just the latest one) is unread, even if the latest one happens
+     * to be our own outbound reply.
+     */
+    protected function attachThreadCounts($emails): void
+    {
+        $threadKeys = $emails->pluck('thread_key')->unique()->values();
+
+        if ($threadKeys->isEmpty()) {
+            return;
+        }
+
+        $counts = Email::query()
+            ->whereIn('thread_key', $threadKeys)
+            ->selectRaw('thread_key, COUNT(*) as message_count')
+            ->groupBy('thread_key')
+            ->pluck('message_count', 'thread_key');
+
+        $unread = Email::inbound()
+            ->whereIn('thread_key', $threadKeys)
+            ->where('is_read', false)
+            ->selectRaw('thread_key, COUNT(*) as unread_count')
+            ->groupBy('thread_key')
+            ->pluck('unread_count', 'thread_key');
+
+        $emails->each(function (Email $email) use ($counts, $unread) {
+            $email->thread_message_count = (int) ($counts[$email->thread_key] ?? 1);
+            $email->thread_unread_count = (int) ($unread[$email->thread_key] ?? 0);
+        });
+    }
+
+    /**
      * Lightweight JSON feed the index page polls (and the Refresh button
      * calls on demand) to surface newly arrived mail without a full page
-     * reload. Returns anything with an id greater than `after_id`.
+     * reload. One row per thread that has any new message (id greater than
+     * `after_id`) -- an existing thread bumped by a new reply is meant to
+     * move to the top and refresh in place client-side, not duplicate.
      */
     public function poll(Request $request)
     {
         $addressId = $request->get('address_id');
+        $afterId = $request->integer('after_id');
 
-        $new = Email::query()
-            ->withCount('attachments')
+        $activeThreadKeys = Email::query()
             ->forAddress($addressId)
-            ->when($request->get('after_id'), fn ($q) => $q->where('id', '>', $request->integer('after_id')))
-            ->orderByDesc('created_at')
-            ->limit(50)
-            ->get()
-            ->map(fn (Email $email) => [
-                'id' => $email->id,
-                'direction' => $email->direction,
-                'from' => $email->from_address,
-                'subject' => $email->subject,
-                'snippet' => $email->snippet,
-                'is_read' => $email->is_read,
-                'has_attachments' => $email->attachments_count > 0,
-                'created_at' => $email->created_at->diffForHumans(),
-                'url' => route('admin.email-inbox.show', $email->id),
-            ]);
+            ->when($afterId, fn ($q) => $q->where('id', '>', $afterId))
+            ->pluck('thread_key')
+            ->unique()
+            ->values();
+
+        $threads = collect();
+
+        if ($activeThreadKeys->isNotEmpty()) {
+            $threads = Email::query()
+                ->withCount('attachments')
+                ->whereIn('thread_key', $activeThreadKeys)
+                ->whereIn('id', function ($query) use ($activeThreadKeys) {
+                    $query->selectRaw('MAX(id)')->from('emails')
+                        ->whereIn('thread_key', $activeThreadKeys)
+                        ->groupBy('thread_key');
+                })
+                ->orderByDesc('created_at')
+                ->get();
+
+            $this->attachThreadCounts($threads);
+        }
+
+        $new = $threads->map(fn (Email $email) => [
+            'id' => $email->id,
+            'thread_key' => $email->thread_key,
+            'direction' => $email->direction,
+            'from' => $email->otherParty(),
+            'subject' => $email->subject,
+            'snippet' => $email->snippet,
+            'unread' => $email->thread_unread_count > 0,
+            'message_count' => $email->thread_message_count,
+            'has_attachments' => $email->attachments_count > 0,
+            'created_at' => $email->created_at->diffForHumans(),
+            'url' => route('admin.email-inbox.show', $email->id),
+        ]);
 
         $unreadCount = Email::inbound()->where('is_read', false)->forAddress($addressId)->count();
 
@@ -129,7 +205,11 @@ class EmailInboxController extends Controller
             return redirect()->back();
         }
 
-        $data['to'] = $original->from_address;
+        // Reply must always go to "the other party," not whichever address
+        // happens to be in from_address -- for an outbound row, that's one
+        // of *our own* addresses, and replying from one of those used to
+        // send the reply back to ourselves instead of the recipient.
+        $data['to'] = $original->otherParty();
         $data['subject'] = Str::startsWith(Str::lower((string) $original->subject), 're:')
             ? $original->subject
             : 'Re: '.$original->subject;
@@ -189,11 +269,30 @@ class EmailInboxController extends Controller
 
         try {
             $result = $resend->send($payload);
+            $sentId = $result['id'] ?? null;
+
+            // POST /emails only returns Resend's own internal id, not the RFC
+            // 2822 Message-ID header actually put on the outgoing mail -- and
+            // it's *that* header a recipient's mail client echoes back in
+            // In-Reply-To when they reply. Storing the send-response id here
+            // instead was the bug behind replies coming back in as new,
+            // unthreaded messages (email.md section 10): a quick follow-up
+            // GET /emails/{id} gets us the real value to match against later.
+            $realMessageId = null;
+
+            if ($sentId) {
+                try {
+                    $realMessageId = $resend->getSentEmail($sentId)['message_id'] ?? null;
+                } catch (\Throwable $e) {
+                    // Non-fatal -- fall back to the send-response id below
+                    // rather than failing a mail that already went out.
+                }
+            }
 
             $email->update([
-                'resend_id' => $result['id'] ?? null,
-                'message_id' => $result['id'] ?? null,
-                'thread_key' => $email->thread_key ?: ($result['id'] ?? (string) $email->id),
+                'resend_id' => $sentId,
+                'message_id' => $realMessageId ?: $sentId,
+                'thread_key' => $email->thread_key ?: ($realMessageId ?: $sentId ?: (string) $email->id),
                 'status' => 'sent',
             ]);
 

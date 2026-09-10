@@ -313,14 +313,13 @@ Repeat for **both** `novabridgegrant` and `futurenestfund`, once the code is dep
   compose, no separate backend path planned.
 - Standalone per-message search is out of scope for the first pass; the list filters by
   address/read-state only initially.
-- **Threading edge case, not yet resolved**: for a message *we* send, `emails.message_id`
-  is set to the `id` Resend's `POST /emails` response returns (a Resend-internal id) — not
-  confirmed to be the same value Resend puts in the RFC `Message-ID` header on the actual
-  outgoing mail. If it differs, then when an external recipient replies to *our* message,
-  the inbound `In-Reply-To` we get back won't match what we stored, and
-  `resolveThreadKey()` will start a new thread instead of merging into the existing one
-  (harmless — the reply just doesn't get grouped, nothing breaks or is lost). Needs a real
-  send → external reply → confirm-it-grouped test to close out.
+- **Threading edge case — fixed 2026-09-10 (see §11).** Confirmed via Resend's live docs
+  (`GET /emails/{id}` retrieve-email reference) that `POST /emails` really does return only
+  its own internal id, not the RFC `Message-ID` header — exactly the suspected mismatch.
+  Fixed by calling `GET /emails/{id}` right after send to fetch the real `message_id` and
+  storing *that* instead. Still wants a real send → external reply → confirm-it-grouped
+  test on a live host to fully close out (unverified live, code-traced only, per the usual
+  no-`php`-here caveat).
 - Rich HTML email rendering uses a dedicated, more permissive Purifier profile
   (`email_inbox` in `config/purifier.php`) than the rest of the app's `default` profile —
   allows table-based layouts (near-universal in real email) and a few more inline-style
@@ -411,3 +410,52 @@ Repeat for **both** `novabridgegrant` and `futurenestfund`, once the code is dep
     Cloudflare DNS records, turning the feature flag on, adding an address, live
     send/receive verification (§7 Steps C-E) -- all still ahead.
   - novabridgegrant: not yet started this rollout.
+- **2026-09-10** — Removed the "Manage Addresses" button from the Mailboxes widget on the
+  inbox index page (`backend/email_inbox/index.blade.php`) per user request. The address
+  management screen itself is untouched, still reachable via Settings > Email Inbox.
+- **2026-09-10** — User reported broken threading in both directions: a recipient's reply
+  to our sent mail shows up as a new, ungrouped message in the admin inbox; and our reply
+  to an inbound message shows up as a new, unthreaded message in the recipient's own
+  mailbox. Root-caused and fixed two bugs:
+  - **The §10 threading edge case, confirmed real** (verified against Resend's live
+    `GET /emails/{id}` retrieve-email docs this session, not memory): `deliver()` was
+    storing `POST /emails`'s response `id` (Resend's own internal id) as `emails.message_id`
+    instead of the actual RFC `Message-ID` header put on the outgoing mail. A recipient's
+    reply echoes back the *real* header value in `In-Reply-To`, which never matched what we
+    had stored, so `resolveThreadKey()` always fell through to "start a new thread" for any
+    reply to something we sent — this is what explains the reply showing up as a new
+    message in the admin inbox. Fixed in `EmailInboxController::deliver()` and
+    `ResendMailService` (new `getSentEmail()`): after a successful send, follow up with
+    `GET /emails/{id}` and store its real `message_id` instead of the send-response id.
+  - **A second, separate bug**: the flat inbox list shows every individual message —
+    inbound *and* our own outbound sends — as its own row, and the Reply form on the
+    thread/detail page always targets whichever specific message the admin opened, not
+    necessarily the latest inbound one. If an admin opened one of *our own* sent rows and
+    hit Reply, `reply()` set `to` from that row's `from_address` — which for an outbound row
+    is one of *our* addresses, not the recipient's — so the reply would be addressed back to
+    ourselves rather than the actual other party. Fixed in `EmailInboxController::reply()`
+    to resolve "the other party" based on the opened message's `direction` (inbound →
+    `from_address`, outbound → `to_addresses`); also fixed the "Replying to" label in
+    `show.blade.php` which had the same mismatch.
+  - Not yet live-verified (no `php` here, per §9) — needs a real cross-account send/reply
+    round trip on a deployed host to fully confirm both directions now group correctly.
+- **2026-09-10** — Grouped the inbox index by thread instead of listing every individual
+  message as its own row (this is what made it easy to open one of *our own* sent messages
+  and hit Reply, triggering the bug above). Each row is now a thread's latest message, with
+  a "N messages" badge when a thread has more than one, and bolded only when *any* message
+  in the thread is unread (not just the latest). `EmailInboxController`: new
+  `latestPerThread()` (MAX(id)-per-`thread_key` subquery — portable across Postgres and
+  MySQL, since novabridgegrant runs Postgres/Supabase and futurenestfund's cPanel host is
+  unconfirmed, deliberately not using Postgres-only `DISTINCT ON`) and `attachThreadCounts()`
+  shared by `index()` and `poll()`; `poll()` now returns one summary row per thread with new
+  activity, keyed by `thread_key`. `Email::otherParty()` (new model helper, also used by
+  `reply()`'s `to` fix and the show-page label) centralizes "who this thread is with"
+  regardless of which direction the latest/opened message happens to be. Client-side poll
+  merge in `index.blade.php` now keys off `data-thread-key` and replaces (rather than
+  duplicates) a thread's existing row when it gets bumped by a new message. Not yet
+  live-verified for the same reason as above.
+- **2026-09-10** — Pushed to GitHub (`main`) and deploying to **futurenestfund** via
+  `scripts/deploy-email-threading-fix-2026-09-10.sh` (code-only, no new tables/permissions —
+  6 files: `EmailInboxController.php`, `Email.php`, `ResendMailService.php`,
+  `email_inbox/index.blade.php`, `email_inbox/show.blade.php`, this doc). novabridgegrant not
+  yet on this fix.

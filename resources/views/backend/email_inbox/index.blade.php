@@ -54,11 +54,6 @@
                                     </li>
                                 @endforeach
                             </ul>
-                            @can('email-inbox-manage-addresses')
-                                <a href="{{ route('admin.settings.email-inbox') }}" class="site-btn-sm primary-btn w-100 mt-2">
-                                    <i data-lucide="settings"></i> {{ __('Manage Addresses') }}
-                                </a>
-                            @endcan
                         </div>
                     </div>
                 </div>
@@ -78,14 +73,18 @@
                         <div class="site-card-body">
                             <div class="notification-list" id="emailList">
                                 @forelse($emails as $email)
-                                    <div @class(['single-list', 'read' => $email->is_read]) data-email-id="{{ $email->id }}">
+                                    <div @class(['single-list', 'read' => $email->thread_unread_count === 0])
+                                         data-email-id="{{ $email->id }}" data-thread-key="{{ $email->thread_key }}">
                                         <a href="{{ route('admin.email-inbox.show', $email->id) }}" class="cont text-decoration-none text-reset">
                                             <div class="icon">
                                                 <i data-lucide="{{ $email->direction === 'inbound' ? 'mail' : 'send' }}"></i>
                                             </div>
                                             <div class="contents">
-                                                <strong>{{ $email->direction === 'inbound' ? $email->from_address : implode(', ', $email->to_addresses ?? []) }}</strong>
+                                                <strong>{{ $email->otherParty() }}</strong>
                                                 — {{ $email->subject ?: __('(no subject)') }}
+                                                @if($email->thread_message_count > 1)
+                                                    <span class="site-badge">{{ $email->thread_message_count }}</span>
+                                                @endif
                                                 @if($email->attachments_count > 0)
                                                     <i data-lucide="paperclip" style="width:14px;height:14px;"></i>
                                                 @endif
@@ -128,12 +127,20 @@
                             if (email.id > highestId) {
                                 highestId = email.id;
                             }
+                            // Each row here is a whole thread's latest message, not a lone
+                            // email -- if that thread is already showing (e.g. it just got a
+                            // new reply), drop the old row so the fresh one replaces it at
+                            // the top instead of appearing twice.
+                            $('#emailList .single-list[data-thread-key="' + email.thread_key + '"]').remove();
+
                             var attachmentIcon = email.has_attachments ? '<i data-lucide="paperclip" style="width:14px;height:14px;"></i>' : '';
-                            var row = '<div class="single-list" data-email-id="' + email.id + '">' +
+                            var countBadge = email.message_count > 1 ? ' <span class="site-badge">' + email.message_count + '</span>' : '';
+                            var readClass = email.unread ? '' : ' read';
+                            var row = '<div class="single-list' + readClass + '" data-email-id="' + email.id + '" data-thread-key="' + email.thread_key + '">' +
                                 '<a href="' + email.url + '" class="cont text-decoration-none text-reset">' +
                                 '<div class="icon"><i data-lucide="' + (email.direction === 'inbound' ? 'mail' : 'send') + '"></i></div>' +
                                 '<div class="contents"><strong>' + $('<div>').text(email.from).html() + '</strong> — ' +
-                                $('<div>').text(email.subject || '{{ __('(no subject)') }}').html() + ' ' + attachmentIcon +
+                                $('<div>').text(email.subject || '{{ __('(no subject)') }}').html() + countBadge + ' ' + attachmentIcon +
                                 '<div class="text-muted small">' + $('<div>').text(email.snippet || '').html() + '</div>' +
                                 '<div class="time">' + email.created_at + '</div></div></a></div>';
                             $('#emailList').prepend(row);
