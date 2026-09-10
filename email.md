@@ -454,8 +454,19 @@ Repeat for **both** `novabridgegrant` and `futurenestfund`, once the code is dep
   merge in `index.blade.php` now keys off `data-thread-key` and replaces (rather than
   duplicates) a thread's existing row when it gets bumped by a new message. Not yet
   live-verified for the same reason as above.
-- **2026-09-10** — Pushed to GitHub (`main`) and deploying to **futurenestfund** via
-  `scripts/deploy-email-threading-fix-2026-09-10.sh` (code-only, no new tables/permissions —
-  6 files: `EmailInboxController.php`, `Email.php`, `ResendMailService.php`,
-  `email_inbox/index.blade.php`, `email_inbox/show.blade.php`, this doc). novabridgegrant not
-  yet on this fix.
+- **2026-09-10** — Pushed to GitHub (`main`, `f3377db`) and deployed to
+  **futurenestfund** via `scripts/deploy-email-threading-fix-2026-09-10.sh`, user-run from
+  cPanel Terminal: all 6 files pulled clean, `optimize:clear` ran with no errors. Code-only
+  (no new tables/permissions) — **futurenestfund is now live on the threading + grouped-inbox
+  fix.**
+  - **Correction to the "not yet done" Resend/Cloudflare runbook note logged earlier in this
+    section**: the bug report that prompted this whole fix (recipient replies arriving
+    unthreaded, and vice versa) was from the user testing real send/receive on
+    futurenestfund, so §7's runbook must already be complete there in practice — that
+    earlier log entry was stale/never updated after the runbook was actually finished. Not
+    re-confirmed step-by-step from this session; noting the discrepancy rather than
+    asserting either status without evidence.
+  - Still not yet done from here: a real send → external reply → confirm-it-groups check
+    against this specific fix (this session has no live access to futurenestfund to run
+    that itself — needs the user to try it and report back).
+  - novabridgegrant: not yet on this fix.
