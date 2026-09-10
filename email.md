@@ -524,6 +524,8 @@ Repeat for **both** `novabridgegrant` and `futurenestfund`, once the code is dep
   - Read thread rows: `opacity: 0.65`, back to `1` on hover — a visible but not heavy fade.
   - New `.thread-count-badge` class (added alongside `.site-badge` in both the server-rendered
     row and the `poll()` JS row-builder) giving the message-count badge an actual background.
+  - Pushed to GitHub and deployed to futurenestfund via `scripts/deploy-2026-09-10c.sh`
+    (two files: the view, this doc). Deploy ran clean, no errors — **live on futurenestfund.**
 
 ## 12. Outbound email template — header, footer, responsive (build plan, 2026-09-10)
 
