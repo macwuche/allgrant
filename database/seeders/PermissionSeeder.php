@@ -166,6 +166,11 @@ class PermissionSeeder extends Seeder
             ['category' => 'Setting Management', 'name' => 'sms-setting'],
             ['category' => 'Setting Management', 'name' => 'push-notification-setting'],
             ['category' => 'Setting Management', 'name' => 'notification-tune-setting'],
+            ['category' => 'Setting Management', 'name' => 'email-inbox-setting'],
+
+            ['category' => 'Email Inbox Management', 'name' => 'email-inbox-view'],
+            ['category' => 'Email Inbox Management', 'name' => 'email-inbox-send'],
+            ['category' => 'Email Inbox Management', 'name' => 'email-inbox-manage-addresses'],
 
             ['category' => 'App Setting Management', 'name' => 'app-settings'],
 

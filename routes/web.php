@@ -242,3 +242,9 @@ Route::get('site-cron', [CronJobController::class, 'runCronJobs'])->name('cron.j
 
 // stripe webhook
 Route::stripeWebhooks('stripe-webhook');
+
+// Resend inbound email webhook (email.received) -- public, Svix-signed instead
+// of CSRF/auth protected. See email.md section 3/6 and
+// App\Http\Controllers\ResendInboundWebhookController.
+Route::post('webhook/resend/inbound', \App\Http\Controllers\ResendInboundWebhookController::class)
+    ->name('webhook.resend.inbound');

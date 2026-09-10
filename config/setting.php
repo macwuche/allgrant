@@ -785,4 +785,45 @@ return [
             ],
         ],
     ],
+
+    // Admin Email Inbox system (send/receive via Resend). See email.md at the
+    // project root for the full design doc. Unrelated to the 'mail' section
+    // above, which configures outbound-only transactional SMTP.
+    'email_inbox' => [
+        'title' => 'Email Inbox',
+        'elements' => [
+            [
+                'type' => 'checkbox', // rendered as the Enable/Disabled switch, same as site_maintenance.maintenance_mode
+                'data' => 'boolean',
+                'name' => 'email_inbox_enabled',
+                'label' => 'Email Inbox System',
+                'rules' => 'required',
+                'value' => 0, // off by default until an admin configures Resend and turns it on
+            ],
+            [
+                'type' => 'text',
+                'data' => 'string',
+                'name' => 'email_inbox_domain',
+                'label' => 'Verified Receiving Domain',
+                'rules' => 'nullable|string|max:255',
+                'value' => '', // e.g. mail.novabridgegrant.org -- must already be verified in Resend, see email.md section 7
+            ],
+            [
+                'type' => 'password',
+                'data' => 'string',
+                'name' => 'email_inbox_api_key',
+                'label' => 'Resend API Key',
+                'rules' => 'nullable|string|max:255',
+                'value' => '',
+            ],
+            [
+                'type' => 'password',
+                'data' => 'string',
+                'name' => 'email_inbox_webhook_secret',
+                'label' => 'Resend Webhook Signing Secret',
+                'rules' => 'nullable|string|max:255',
+                'value' => '', // the whsec_... secret from the Resend webhook (event: email.received), used to verify inbound requests
+            ],
+        ],
+    ],
 ];

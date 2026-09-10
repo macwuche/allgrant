@@ -7,6 +7,15 @@
                         data-lucide="layout-dashboard"></i><span>{{ __('Dashboard') }}</span></a>
             </li>
 
+            @if(setting('email_inbox_enabled', 'email_inbox'))
+                @can('email-inbox-view')
+                    <li class="side-nav-item {{ isActive('admin.email-inbox.*') }}">
+                        <a href="{{ route('admin.email-inbox.index') }}"><i
+                                data-lucide="mail"></i><span>{{ __('Emails') }}</span></a>
+                    </li>
+                @endcan
+            @endif
+
             {{-- ************************************************************* Customer Management
             ********************************************************* --}}
             @canany(['customer-list', 'customer-login', 'customer-mail-send', 'customer-basic-manage',

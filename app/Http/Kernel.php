@@ -78,5 +78,6 @@ class Kernel extends HttpKernel
         'otp' => \App\Http\Middleware\OtpVerify::class,
         'passcode' => \App\Http\Middleware\VerifyPasscode::class,
         'appDemo' => \App\Http\Middleware\AppDemo::class,
+        'email-inbox-enabled' => \App\Http\Middleware\EnsureEmailInboxEnabled::class,
     ];
 }

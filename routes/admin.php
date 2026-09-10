@@ -14,6 +14,8 @@ use App\Http\Controllers\Backend\CurrencyController;
 use App\Http\Controllers\Backend\CustomCssController;
 use App\Http\Controllers\Backend\DashboardController;
 use App\Http\Controllers\Backend\DepositController;
+use App\Http\Controllers\Backend\EmailAddressController;
+use App\Http\Controllers\Backend\EmailInboxController;
 use App\Http\Controllers\Backend\EmailTemplateController;
 use App\Http\Controllers\Backend\FundTransferController;
 use App\Http\Controllers\Backend\GatewayController;
@@ -332,6 +334,7 @@ Route::group(['prefix' => 'settings', 'as' => 'settings.', 'controller' => Setti
     Route::get('seo-meta', 'seoMeta')->name('seo.meta');
     Route::get('mail', 'mailSetting')->name('mail');
     Route::post('mail-connection-test', 'mailConnectionTest')->name('mail.connection.test');
+    Route::get('email-inbox', 'emailInboxSetting')->name('email-inbox');
     Route::post('update', 'update')->name('update');
 
     Route::get('plugin/{name}', [PluginController::class, 'plugin'])->name('plugin');
@@ -343,6 +346,29 @@ Route::group(['prefix' => 'settings', 'as' => 'settings.', 'controller' => Setti
         Route::get('tune', 'setTune')->name('tune');
         Route::get('tune/status/{id}', 'status')->name('tune.status');
     });
+});
+
+// Email Inbox "add multiple addresses" (Gmail-alias style) management -- top
+// level (not nested under settings.*) so route names stay admin.email-addresses.*;
+// only ever linked to from the Email Inbox settings tab.
+Route::group(['prefix' => 'email-addresses', 'as' => 'email-addresses.', 'controller' => EmailAddressController::class], function () {
+    Route::post('store', 'store')->name('store');
+    Route::post('{id}/default', 'setDefault')->name('default');
+    Route::post('{id}/toggle-status', 'toggleStatus')->name('toggle-status');
+    Route::delete('{id}', 'destroy')->name('destroy');
+});
+
+// ===============================  Email Inbox (send/receive via Resend) ==========
+// See email.md for the full design doc. Feature-flag gated (Settings > Email Inbox)
+// via the 'email-inbox-enabled' middleware applied in the controllers themselves.
+Route::group(['prefix' => 'email-inbox', 'as' => 'email-inbox.', 'controller' => EmailInboxController::class], function () {
+    Route::get('/', 'index')->name('index');
+    Route::get('poll', 'poll')->name('poll');
+    Route::get('compose', 'compose')->name('compose');
+    Route::post('send', 'send')->name('send');
+    Route::get('{id}', 'show')->name('show');
+    Route::post('{id}/reply', 'reply')->name('reply');
+    Route::get('attachment/{attachmentId}/download', 'download')->name('attachment.download');
 });
 
 // App Settings
