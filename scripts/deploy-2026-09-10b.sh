@@ -17,7 +17,10 @@
 # needed -- see Setting::getDefaultValueForField).
 #
 # Run this from the app's docroot on each host.
-# Usage: bash deploy-email-template-and-double-submit-fix-2026-09-10.sh
+# Usage: bash deploy-2026-09-10b.sh
+# (renamed short from deploy-email-template-and-double-submit-fix-2026-09-10.sh
+# after a long curl command got mis-split when pasted into the futurenestfund
+# terminal -- see email.md's terminal-paste lesson, section 11)
 set -e
 BASE="https://raw.githubusercontent.com/macwuche/allgrant/main"
 FAIL=0
