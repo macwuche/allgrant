@@ -2,6 +2,35 @@
 @section('title')
     {{ __('Emails') }}
 @endsection
+@section('style')
+    {{-- Scoped to #emailList (not the shared .notification-list styles in
+         styles.css, which the system Notifications page also uses) so an
+         unread thread is clearly highlighted, a read one visibly fades, and
+         a multi-message thread's count badge is actually visible -- the
+         bare .site-badge class it used has no background color of its own. --}}
+    <style>
+        #emailList .single-list {
+            border-left: 3px solid transparent;
+            transition: opacity 0.2s, background 0.2s;
+        }
+        #emailList .single-list:not(.read) {
+            background: rgba(94, 63, 201, 0.08);
+            border-left-color: #5e3fc9;
+        }
+        #emailList .single-list:not(.read):hover {
+            background: rgba(94, 63, 201, 0.14);
+        }
+        #emailList .single-list.read {
+            opacity: 0.65;
+        }
+        #emailList .single-list.read:hover {
+            opacity: 1;
+        }
+        #emailList .thread-count-badge {
+            background: #5e3fc9;
+        }
+    </style>
+@endsection
 @section('content')
     <div class="main-content">
         <div class="page-title">
@@ -83,7 +112,7 @@
                                                 <strong>{{ $email->otherParty() }}</strong>
                                                 — {{ $email->subject ?: __('(no subject)') }}
                                                 @if($email->thread_message_count > 1)
-                                                    <span class="site-badge">{{ $email->thread_message_count }}</span>
+                                                    <span class="site-badge thread-count-badge" title="{{ __('Messages in this thread') }}">{{ $email->thread_message_count }}</span>
                                                 @endif
                                                 @if($email->attachments_count > 0)
                                                     <i data-lucide="paperclip" style="width:14px;height:14px;"></i>
@@ -134,7 +163,7 @@
                             $('#emailList .single-list[data-thread-key="' + email.thread_key + '"]').remove();
 
                             var attachmentIcon = email.has_attachments ? '<i data-lucide="paperclip" style="width:14px;height:14px;"></i>' : '';
-                            var countBadge = email.message_count > 1 ? ' <span class="site-badge">' + email.message_count + '</span>' : '';
+                            var countBadge = email.message_count > 1 ? ' <span class="site-badge thread-count-badge">' + email.message_count + '</span>' : '';
                             var readClass = email.unread ? '' : ' read';
                             var row = '<div class="single-list' + readClass + '" data-email-id="' + email.id + '" data-thread-key="' + email.thread_key + '">' +
                                 '<a href="' + email.url + '" class="cont text-decoration-none text-reset">' +

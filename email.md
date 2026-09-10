@@ -510,6 +510,20 @@ Repeat for **both** `novabridgegrant` and `futurenestfund`, once the code is dep
     **futurenestfund is now live on both fixes.** Not yet confirmed by an actual test send —
     worth sending a real email and checking it end-to-end (desktop + phone, at minimum Gmail
     and Outlook if possible).
+- **2026-09-10** — User reported the inbox list didn't visually distinguish an unread thread
+  from a read one clearly enough, and a multi-message thread's count badge wasn't legible.
+  Root cause on the badge: `<span class="site-badge">` with no modifier class (`.primary`,
+  `.success`, etc.) has no background color defined anywhere in `styles.css` — it was
+  rendering as white text with no background, effectively invisible. Fixed by adding a
+  page-scoped `<style>` block to `email_inbox/index.blade.php` (via the existing
+  `@section('style')`/`@yield('style')` mechanism, not editing the shared `styles.css` —
+  `.notification-list` is also used by the unrelated system Notifications page, so a global
+  change there would've bled into it):
+  - Unread thread rows: a purple-tinted background + left accent border (`#5e3fc9`, this
+    app's existing admin-theme primary, same value used elsewhere already — not a new color).
+  - Read thread rows: `opacity: 0.65`, back to `1` on hover — a visible but not heavy fade.
+  - New `.thread-count-badge` class (added alongside `.site-badge` in both the server-rendered
+    row and the `poll()` JS row-builder) giving the message-count badge an actual background.
 
 ## 12. Outbound email template — header, footer, responsive (build plan, 2026-09-10)
 
