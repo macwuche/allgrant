@@ -15,6 +15,7 @@ class VerifyCsrfToken extends Middleware
         '*gateway/coingate/callback',
         '*ipn*',
         'stripe-webhook',
+        'webhook/resend/inbound',
         'api/*',
     ];
 }

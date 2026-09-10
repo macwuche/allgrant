@@ -35,6 +35,13 @@
                                 </li>
                             @endcan
 
+                            @can('email-inbox-setting')
+                                <li class="{{ isActive('admin.settings.email-inbox') }}">
+                                    <a href="{{ route('admin.settings.email-inbox') }}"><i
+                                            data-lucide="inbox"></i>{{ __('Email Inbox') }}</a>
+                                </li>
+                            @endcan
+
                             @can('site-setting')
                                 <li class="{{ isActive('admin.settings.seo.meta') }} ">
                                     <a href="{{ route('admin.settings.seo.meta') }}"><i

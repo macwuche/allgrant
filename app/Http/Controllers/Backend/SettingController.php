@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\EmailAddress;
 use App\Models\Setting;
 use App\Traits\ImageUpload;
 use Exception;
@@ -25,9 +26,10 @@ class SettingController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('permission:site-setting|email-setting', ['only' => ['update']]);
+        $this->middleware('permission:site-setting|email-setting|email-inbox-setting', ['only' => ['update']]);
         $this->middleware('permission:site-setting', ['only' => ['siteSetting', 'seoMeta']]);
         $this->middleware('permission:email-setting', ['only' => ['mailSetting']]);
+        $this->middleware('permission:email-inbox-setting', ['only' => ['emailInboxSetting']]);
 
     }
 
@@ -45,6 +47,16 @@ class SettingController extends Controller
     public static function mailSetting()
     {
         return view('backend.setting.mail');
+    }
+
+    /**
+     * @return Application|Factory|View
+     */
+    public static function emailInboxSetting()
+    {
+        $addresses = EmailAddress::orderByDesc('is_default')->get();
+
+        return view('backend.setting.email_inbox', compact('addresses'));
     }
 
     public static function mailConnectionTest(Request $request)

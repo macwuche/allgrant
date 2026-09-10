@@ -47,6 +47,27 @@ return [
         'test' => [
             'Attr.EnableID' => 'true',
         ],
+        // Used only for rendering received email bodies (see
+        // ResendInboundWebhookController / email.md section 4). Real-world HTML
+        // email is almost always table-laid-out, which the strict 'default'
+        // profile above would gut -- this profile is 'default' plus table
+        // elements and a couple more inline-style properties senders commonly
+        // use, still with no script/iframe/style/on*-handler allowance at all,
+        // so it's no less safe against XSS, just more readable for real mail.
+        'email_inbox' => [
+            'HTML.Doctype' => 'HTML 4.01 Transitional',
+            'HTML.Allowed' => 'h1,h2,h3,h4,h5,h6,div[style],b,strong,i,em,u,a[href|title|target],ul,ol,li,p[style],br,span[style],img[style|class|width|height|alt|src],table[style|width|border|cellpadding|cellspacing],thead,tbody,tfoot,tr[style],td[style|colspan|rowspan|align|valign|width],th[style|colspan|rowspan|align|valign|width],hr,blockquote',
+            'CSS.AllowedProperties' => 'font,font-size,font-weight,font-style,font-family,text-decoration,padding,padding-left,padding-right,padding-top,padding-bottom,margin,color,background-color,text-align,vertical-align,float,width,height,border,border-collapse',
+            'CSS.MaxImgLength' => null,
+            'AutoFormat.AutoParagraph' => false,
+            'AutoFormat.RemoveEmpty' => true,
+            'URI.AllowedSchemes' => [
+                'data' => true,
+                'http' => true,
+                'https' => true,
+                'mailto' => true,
+            ],
+        ],
         'youtube' => [
             'HTML.SafeIframe' => 'true',
             'URI.SafeIframeRegexp' => '%^(http://|https://|//)(www.youtube.com/embed/|player.vimeo.com/video/)%',
