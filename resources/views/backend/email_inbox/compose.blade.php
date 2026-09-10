@@ -23,7 +23,7 @@
                 <div class="col-xl-8 col-lg-12 col-12">
                     <div class="site-card">
                         <div class="site-card-body">
-                            <form action="{{ route('admin.email-inbox.send') }}" method="post" enctype="multipart/form-data">
+                            <form action="{{ route('admin.email-inbox.send') }}" method="post" enctype="multipart/form-data" class="js-single-submit">
                                 @csrf
                                 @include('backend.email_inbox.include.__compose_form', ['addresses' => $addresses])
                                 <button type="submit" class="site-btn primary-btn w-100"><i data-lucide="send"></i> {{ __('Send') }}</button>

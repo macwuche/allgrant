@@ -81,7 +81,7 @@
                                 <h3 class="title">{{ __('Reply') }}</h3>
                             </div>
                             <div class="site-card-body">
-                                <form action="{{ route('admin.email-inbox.reply', $email->id) }}" method="post" enctype="multipart/form-data">
+                                <form action="{{ route('admin.email-inbox.reply', $email->id) }}" method="post" enctype="multipart/form-data" class="js-single-submit">
                                     @csrf
                                     <p class="small text-muted">
                                         {{ __('Replying to') }}

@@ -239,13 +239,26 @@ class EmailInboxController extends Controller
             $headers['References'] = trim(($inReplyTo->raw_headers['references'] ?? '').' '.$inReplyTo->message_id);
         }
 
+        // Outgoing copy only -- the admin's own body (unwrapped) is what we store
+        // and show in our thread view; recipients get it wrapped in the branded
+        // header/footer template. See email.md section 12 for the full plan.
+        $wrappedBody = view('backend.email_inbox.mail.wrapper', [
+            'subject' => $data['subject'],
+            'bodyHtml' => $data['body'],
+            'siteLogo' => setting('site_logo', 'global') ? asset(setting('site_logo', 'global')) : null,
+            'siteTitle' => setting('site_title', 'global'),
+            'siteLink' => route('home'),
+            'brandColor' => setting('email_inbox_brand_color', 'email_inbox') ?: '#6c3beb',
+            'footerText' => setting('email_inbox_footer_text', 'email_inbox'),
+        ])->render();
+
         $payload = array_filter([
             'from' => $from->email,
             'to' => $to,
             'cc' => ! empty($data['cc']) ? array_map('trim', explode(',', $data['cc'])) : null,
             'bcc' => ! empty($data['bcc']) ? array_map('trim', explode(',', $data['bcc'])) : null,
             'subject' => $data['subject'],
-            'html' => $data['body'],
+            'html' => $wrappedBody,
             'headers' => ! empty($headers) ? $headers : null,
             'attachments' => ! empty($attachments) ? $attachments : null,
         ], fn ($v) => ! is_null($v));

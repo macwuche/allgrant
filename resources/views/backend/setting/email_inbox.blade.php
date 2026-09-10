@@ -74,6 +74,26 @@
                         </div>
                     </div>
 
+                    <div class="site-input-groups row">
+                        <div class="col-sm-4 col-label">{{ __('Outbound Email Accent Color') }}
+                            <i data-lucide="info" data-bs-toggle="tooltip" title=""
+                               data-bs-original-title="Header accent bar on outbound mail (compose/reply). Solid color, not a gradient -- see email.md section 12."></i>
+                        </div>
+                        <div class="col-sm-8">
+                            <input type="color" class="box-input" style="max-width:80px;padding:4px;" name="email_inbox_brand_color"
+                                   value="{{ old('email_inbox_brand_color', setting('email_inbox_brand_color','email_inbox') ?: '#6c3beb') }}"/>
+                        </div>
+                    </div>
+
+                    <div class="site-input-groups row">
+                        <div class="col-sm-4 col-label">{{ __('Outbound Email Footer Text') }}</div>
+                        <div class="col-sm-8">
+                            <input type="text" class="box-input" name="email_inbox_footer_text"
+                                   placeholder="{{ __('Leave blank for “© ') }}{{ date('Y') }} {{ setting('site_title','global') }}{{ __('. All rights reserved.”') }}"
+                                   value="{{ old('email_inbox_footer_text', setting('email_inbox_footer_text','email_inbox')) }}"/>
+                        </div>
+                    </div>
+
                     <div class="offset-sm-4 col-sm-8 col-12">
                         <button type="submit" class="site-btn-sm primary-btn w-100">
                             {{ __(' Save Changes') }}

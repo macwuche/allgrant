@@ -470,3 +470,119 @@ Repeat for **both** `novabridgegrant` and `futurenestfund`, once the code is dep
     against this specific fix (this session has no live access to futurenestfund to run
     that itself — needs the user to try it and report back).
   - novabridgegrant: not yet on this fix.
+- **2026-09-10** — User confirmed live on **futurenestfund**: the send/receive round trip
+  now groups into one thread correctly on both the recipient-replies-to-us and
+  we-reply-to-them directions. Closes out the open verification note above and the §10
+  threading caveat for real (was code-verified only until now).
+- **2026-09-10** — User reported a second bug: clicking "Send Reply" (or Send, on compose)
+  multiple times while the body field has text sends the same email multiple times — a
+  double-submit, not a Resend/threading issue. Root cause: none of the three email-inbox
+  forms (reply, compose page, compose modal) had any guard against a second submit firing
+  before the page navigates away on the first one's redirect. Fixed with a small, opt-in,
+  reusable guard added to the existing theme JS (`assets/backend/js/main.js`): a delegated
+  `submit` handler on `form.js-single-submit` that disables the submit button and blocks a
+  second `submit` event via a data-flag on the form. Applied that class to all three forms
+  (`email_inbox/show.blade.php`'s reply form, `email_inbox/compose.blade.php`, and
+  `email_inbox/include/__compose.blade.php`'s modal form). Scoped to just these forms
+  (opt-in class, not a global form handler) rather than changing every form's behavior
+  site-wide. No server-side idempotency guard added (e.g. a per-request nonce) — the
+  client-side fix directly addresses what was reported; flagging as a possible follow-up if
+  a duplicate-send is ever seen despite this (slow network + JS disabled is the one gap it
+  doesn't cover).
+- **2026-09-10** — Built the outbound email template plan (§12) written just above: new
+  `resources/views/backend/email_inbox/mail/wrapper.blade.php`, `deliver()` now renders it
+  around the admin's body for the copy sent to Resend (stored/displayed copy stays
+  unwrapped), two new `email_inbox` settings (`email_inbox_brand_color`,
+  `email_inbox_footer_text`) added to `config/setting.php` and exposed on the Settings >
+  Email Inbox page. Pushed to GitHub and deploying to futurenestfund via
+  `scripts/deploy-email-template-and-double-submit-fix-2026-09-10.sh` alongside the
+  double-submit fix above (bundled into the same deploy since neither needs a schema change
+  and both landed in the same session). Not yet live-verified — worth sending a real test
+  email and checking it end-to-end (desktop + phone, at minimum Gmail and Outlook if
+  possible) once deployed.
+
+## 12. Outbound email template — header, footer, responsive (build plan, 2026-09-10)
+
+User request: outbound mail sent from the admin inbox (compose *and* reply — the same
+`deliver()` path handles both) should go out wrapped in a branded template with a header and
+a footer, and it must render correctly on desktop, tablet, and mobile mail clients. Reference
+given: a screenshot of a template built in a third-party tool for futurenestfund showing a
+colored header banner, a centered circular logo, a heading + short underline accent, body
+copy, and a dark footer bar with a "© {year} {name}. All Rights Reserved." line.
+
+**This is a *new* wrapper, not a reuse of the existing `app/Mail/MailSend` +
+`backend.mail.user-mail-send.blade.php` template.** That pair already exists in this codebase
+(the `EmailTemplate` model/`config/setting.php` `email_template` section, edited at Settings >
+Email Templates) and renders *system* notification emails (registration, KYC, deposits, etc.)
+with its own header/banner/footer — checked first since reusing it would've been less work,
+but it doesn't structurally match what's needed here (it expects a `banner` *image* upload per
+template, a fixed purple page background, and a `bottom`/newsletter block that doesn't apply
+to a person-to-person reply) and, more importantly, it's driven by `EmailTemplate` rows keyed
+by `code` (one per system event) — there's no natural "code" for an ad-hoc admin reply. Rather
+than bend that system to fit, or fork it awkwardly, this is a small dedicated wrapper purely
+for email-inbox outbound mail.
+
+**Decisions (defaults chosen to avoid a round-trip before building; both are Settings fields
+so they're a same-page edit to change, not a redeploy, if the defaults are wrong):**
+- **Branding stays per-host**, matching every other decision in this doc: the header logo,
+  alt text, and link reuse the *existing* `site_logo` / `site_title` / `home` route settings
+  (the same ones `NotifyTrait::mailNotify()` already reads) — no new logo upload needed, and
+  each host automatically shows its own.
+- **Accent color**: a new `email_inbox_brand_color` setting (hex, defaults to `#6c3beb` — this
+  app's own existing admin-theme primary purple, i.e. a neutral in-house default rather than a
+  guess at either host's brand color) used as a solid top accent bar. Deliberately **solid,
+  not the screenshot's gradient** — Outlook desktop (the Word rendering engine, not a browser
+  engine) does not support CSS `linear-gradient()` backgrounds at all, and this doc's whole
+  premise is genuine cross-client responsiveness, not a preview that only looks right in one
+  client. A solid brand-color bar reads as "branded header" just as well and actually renders
+  everywhere.
+- **Footer**: a new `email_inbox_footer_text` setting (nullable) for a custom line; when blank,
+  falls back to a generated "© {current year} {site_title}. All rights reserved." Dark bar
+  (`#1f2937`), centered light text, small link back to the site.
+- **Wraps only the outgoing copy, not our stored copy**: `EmailInboxController::deliver()`
+  renders the admin's Purifier-cleaned body through the new wrapper view and sends *that* HTML
+  to Resend, but keeps storing/rendering the admin's unwrapped body as `emails.html_body` for
+  our own thread view (`show.blade.php` already has its own header per message — sender,
+  date — wrapping it in the branded chrome again there would be redundant, not clearer).
+
+**Responsive technique** (the actual "works on desktop/tablet/mobile" mechanism, not just a
+media query — most of the effort here is making it survive Outlook desktop and Gmail, which
+between them ignore or strip a lot of plain CSS):
+- Fluid-hybrid single-column layout: outer `<table role="presentation" width="100%">` →
+  inner `<table>` capped `max-width:600px; width:100%` — this alone reflows correctly on any
+  screen with zero media-query support required, which covers the mail clients that don't run
+  `@media` at all.
+- An MSO conditional comment (`<!--[if mso]>...<![endif]-->`) forces the inner table to a
+  fixed 600px in Outlook desktop specifically, since its Word engine does not honor
+  `max-width` on tables.
+- A `<style>` block in `<head>` with `@media (max-width:600px)` rules as a *progressive
+  enhancement* on top of the fluid base — smaller heading size, tighter padding, smaller logo
+  — for the clients that do support it (iOS/Android Mail, Apple Mail, most webmail).
+  `<meta name="viewport" content="width=device-width, initial-scale=1.0">` set.
+- All layout via `<table>`/`<td>`, all styling inline (`style="..."` attributes) in addition to
+  the `<style>` block, since Gmail strips `<style>` blocks in some contexts (it still applies
+  the media-query enhancements where it doesn't, so this is belt-and-suspenders, not a
+  contradiction) — the inline styles alone already produce a correct, just non-breakpoint-
+  optimized, layout everywhere.
+- `table{border-collapse:collapse}`, `mso-table-lspace:0pt`, `mso-table-rspace:0pt` resets —
+  standard email-HTML boilerplate to stop Outlook adding phantom cell spacing.
+
+**New/changed files:**
+- `resources/views/backend/email_inbox/mail/wrapper.blade.php` (new) — the template above,
+  taking `subject`, `bodyHtml`, `siteLogo`, `siteTitle`, `siteLink`, `brandColor`,
+  `footerText`.
+- `app/Http/Controllers/Backend/EmailInboxController.php` — `deliver()` renders the wrapper
+  around `$data['body']` for the `'html'` sent to Resend only.
+- `config/setting.php` — `email_inbox` section gains `email_inbox_brand_color` and
+  `email_inbox_footer_text`.
+- `resources/views/backend/setting/email_inbox.blade.php` — two new fields (a color input and
+  a text input) on the existing settings form, same pattern as the fields already there.
+
+**Not doing (out of scope for this pass, flagging rather than silently deciding):**
+- No per-address or per-template branding override — one brand color/footer per host, same as
+  every other `email_inbox` setting.
+- Not touching the *received*-mail rendering path at all — inbound HTML is the sender's own,
+  untouched (still just Purifier-sanitized as before).
+- Not reusing/merging with the `EmailTemplate` system explained above; if the two are ever
+  meant to converge, that's a separate, bigger decision to make deliberately, not a side effect
+  of this fix.

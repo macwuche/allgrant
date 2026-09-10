@@ -117,4 +117,20 @@
         });
     });
 
+    // Prevent double-submit -- opt-in via class="js-single-submit" on a
+    // <form>. Guards against a fast double-click (or a slow request before
+    // the page navigates away) firing the same action twice, e.g. sending
+    // an email reply/compose form twice. The data flag blocks a second
+    // submit event outright; disabling the button is the visible half.
+    $(document).on('submit', 'form.js-single-submit', function () {
+        var $form = $(this);
+
+        if ($form.data('submitted')) {
+            return false;
+        }
+
+        $form.data('submitted', true);
+        $form.find('button[type="submit"]').prop('disabled', true);
+    });
+
 })(jQuery);

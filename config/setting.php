@@ -824,6 +824,22 @@ return [
                 'rules' => 'nullable|string|max:255',
                 'value' => '', // the whsec_... secret from the Resend webhook (event: email.received), used to verify inbound requests
             ],
+            [
+                'type' => 'text',
+                'data' => 'string',
+                'name' => 'email_inbox_brand_color',
+                'label' => 'Outbound Email Accent Color',
+                'rules' => 'nullable|string|max:20',
+                'value' => '#6c3beb', // solid accent bar in the outbound template header -- see email.md section 12 for why solid, not a gradient
+            ],
+            [
+                'type' => 'text',
+                'data' => 'string',
+                'name' => 'email_inbox_footer_text',
+                'label' => 'Outbound Email Footer Text',
+                'rules' => 'nullable|string|max:255',
+                'value' => '', // blank falls back to "(c) {year} {site_title}. All rights reserved." at send time, see email.md section 12
+            ],
         ],
     ],
 ];
