@@ -494,12 +494,22 @@ Repeat for **both** `novabridgegrant` and `futurenestfund`, once the code is dep
   around the admin's body for the copy sent to Resend (stored/displayed copy stays
   unwrapped), two new `email_inbox` settings (`email_inbox_brand_color`,
   `email_inbox_footer_text`) added to `config/setting.php` and exposed on the Settings >
-  Email Inbox page. Pushed to GitHub and deploying to futurenestfund via
-  `scripts/deploy-email-template-and-double-submit-fix-2026-09-10.sh` alongside the
-  double-submit fix above (bundled into the same deploy since neither needs a schema change
-  and both landed in the same session). Not yet live-verified — worth sending a real test
-  email and checking it end-to-end (desktop + phone, at minimum Gmail and Outlook if
-  possible) once deployed.
+  Email Inbox page. Pushed to GitHub and deployed to futurenestfund via
+  `scripts/deploy-2026-09-10b.sh` alongside the double-submit fix above (bundled into the
+  same deploy since neither needs a schema change and both landed in the same session).
+  - **Deploy script had to be renamed mid-flight**: the original filename
+    (`deploy-email-template-and-double-submit-fix-2026-09-10.sh`) made the one-line `curl -O`
+    command long enough that it got mis-split when pasted into the futurenestfund terminal
+    (`curl -O` ran with no URL, then the bare URL ran as its own bogus command) — the same
+    class of issue as the paste lesson already logged above, just triggered by line length
+    this time rather than flags/substitutions. Renamed to the short `deploy-2026-09-10b.sh`
+    (89adf8c/81d6ffb), which then pulled clean. **Added lesson: keep deploy-script filenames
+    short, not just the instructions around them** — the filename is part of the one-line
+    curl command's total length.
+  - Deploy confirmed clean: all 9 files pulled, `optimize:clear` ran with no errors.
+    **futurenestfund is now live on both fixes.** Not yet confirmed by an actual test send —
+    worth sending a real email and checking it end-to-end (desktop + phone, at minimum Gmail
+    and Outlook if possible).
 
 ## 12. Outbound email template — header, footer, responsive (build plan, 2026-09-10)
 
