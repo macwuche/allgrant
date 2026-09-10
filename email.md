@@ -379,8 +379,35 @@ Repeat for **both** `novabridgegrant` and `futurenestfund`, once the code is dep
     `include/__compose_form.blade.php` partial, body field using the theme's existing
     Summernote integration (`class="summernote"`, auto-initialized by
     `assets/backend/js/main.js` — no new JS library needed).
-  - Not done yet: nothing has been deployed, no schema applied to either live database, no
-    Resend/Cloudflare setup has happened (that's on the user per §2/§7), and none of this
-    has been exercised against a real request — next steps are schema application on
-    novabridgegrant (§9), a deploy script, and the user's manual Resend/Cloudflare runbook
-    (§7) before any live verification is possible.
+- **2026-09-10** — Deployed to **futurenestfund**, user-driven from cPanel Terminal
+  (this workspace has no shell/DB access to that host):
+  - Code: `scripts/deploy-email-inbox-system-2026-09-10.sh` ran clean, all 26 files pulled,
+    `optimize:clear` no errors.
+  - Schema: rather than the raw-SQL file (§9), used `php artisan migrate
+    --path=database/migrations/2026_09_10_000000_create_email_inbox_tables.php --force` --
+    this host has a working `php`/`artisan`, and scoping `migrate` to just the one new
+    migration file sidesteps the pre-existing broken migration entirely. Confirmed all 4
+    tables exist via `Schema::hasTable()`. **This is now the preferred method over raw SQL
+    wherever a host has artisan access** (novabridgegrant included) -- more reliable than
+    hand-written DDL, no drift risk.
+  - Permissions: the tinker one-liner approach failed repeatedly and confusingly (flaky
+    3-of-4 counts that changed which one was "missing" between checks) -- root-caused to
+    the user's terminal reflowing long pasted single-line commands into multiple physical
+    lines, which silently dropped `--execute=...` and left bare `php artisan tinker`
+    entering the interactive shell instead. Fixed by shipping
+    `scripts/email-inbox-seed-permissions.php`, a standalone idempotent script fetched via
+    `curl` (sidesteps paste entirely) and run directly -- hit one more bug in it
+    (`__DIR__/../vendor/autoload.php` assumed the script lives in a `scripts/` subfolder,
+    but `curl -O` drops it straight into the docroot, so the path pointed one level too
+    high; fixed to use `getcwd()` instead, pushed as `6ed4818`). Confirmed all 4
+    permissions present via the script's own output.
+  - **Lesson for the rest of this rollout and any future one**: this user's terminal does
+    not reliably survive long single-line pasted commands (multi-flag, long URLs, shell
+    substitutions) -- it silently reflows/splits them. Keep every instruction to short,
+    single-purpose command lines; prefer a fetched script over a pasted one-liner for
+    anything nontrivial.
+  - **futurenestfund status: code + schema + permissions all confirmed live.** Not yet
+    done: Resend domain verification/receiving/webhook for `mail.futurenestfund.org`,
+    Cloudflare DNS records, turning the feature flag on, adding an address, live
+    send/receive verification (§7 Steps C-E) -- all still ahead.
+  - novabridgegrant: not yet started this rollout.
