@@ -7,11 +7,15 @@
  * fail re-running against permissions that already exist). Safe to run
  * more than once.
  *
- * Run from the app's docroot: php scripts/email-inbox-seed-permissions.php
+ * Run from the app's docroot: php email-inbox-seed-permissions.php
+ * (paths below are relative to the current working directory, not this
+ * file's location -- deliberately, since `curl -O` drops this file
+ * directly into whatever directory you run it from, not a scripts/
+ * subfolder to match)
  */
-require __DIR__.'/../vendor/autoload.php';
+require getcwd().'/vendor/autoload.php';
 
-$app = require __DIR__.'/../bootstrap/app.php';
+$app = require getcwd().'/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
