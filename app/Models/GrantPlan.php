@@ -18,8 +18,10 @@ class GrantPlan extends Model
         'instructions',
         'grant_fee',
         'grant_fee_type',
+        'application_charge_text',
         'commission_charge',
         'commission_charge_type',
+        'commission_charge_text',
         'field_options',
         'status',
         'badge',
@@ -64,5 +66,23 @@ class GrantPlan extends Model
         $commission = $this->commission_charge_type == 'percentage' ? ($amount / 100) * $this->commission_charge : $this->commission_charge;
 
         return round((float) $commission, 2);
+    }
+
+    /**
+     * Admin-editable explanation shown under "Application Charge:" on the plan card.
+     * Falls back to the original built-in wording when the admin hasn't set one.
+     */
+    public function applicationChargeText(): string
+    {
+        return $this->application_charge_text ?: __('A non-refundable fee is required to process and review your application. This covers administrative and verification costs.');
+    }
+
+    /**
+     * Admin-editable explanation shown under "Commission Charge:" on the plan card.
+     * Falls back to the original built-in wording when the admin hasn't set one.
+     */
+    public function commissionChargeText(): string
+    {
+        return $this->commission_charge_text ?: __('A fee is applied once your grant is approved. This covers organization fees and administration for managing and supporting your grant process to success.');
     }
 }

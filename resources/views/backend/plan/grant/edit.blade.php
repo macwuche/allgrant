@@ -108,6 +108,26 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-xl-6">
+                                    <div class="site-input-groups">
+                                        <label class="box-input-label" for="">
+                                            {{ __('Application Charge Description:') }}
+                                        </label>
+                                        <textarea name="application_charge_text" class="box-input" rows="3"
+                                            placeholder="{{ __('A non-refundable fee is required to process and review your application. This covers administrative and verification costs.') }}">{{ old('application_charge_text', $plan->application_charge_text) }}</textarea>
+                                        <small class="text-muted">{{ __('Shown under "Application Charge" on the plan card. Leave blank to use the default wording.') }}</small>
+                                    </div>
+                                </div>
+                                <div class="col-xl-6">
+                                    <div class="site-input-groups">
+                                        <label class="box-input-label" for="">
+                                            {{ __('Commission Charge Description:') }}
+                                        </label>
+                                        <textarea name="commission_charge_text" class="box-input" rows="3"
+                                            placeholder="{{ __('A fee is applied once your grant is approved. This covers organization fees and administration for managing and supporting your grant process to success.') }}">{{ old('commission_charge_text', $plan->commission_charge_text) }}</textarea>
+                                        <small class="text-muted">{{ __('Shown under "Commission Charge" on the plan card. Leave blank to use the default wording.') }}</small>
+                                    </div>
+                                </div>
                                 <div class="col-xl-12">
                                     <a href="javascript:void(0)" id="generate" class="site-btn-xs primary-btn mb-3">{{ __('Add Field option') }}</a>
                                 </div>

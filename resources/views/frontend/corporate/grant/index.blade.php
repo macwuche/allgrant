@@ -54,7 +54,7 @@
                         <div class="gp-row-body">
                             <div class="gp-row-label">{{ __('Application Charge:') }}</div>
                             <div class="gp-row-desc">
-                                {{ __('A non-refundable fee is required to process and review your application. This covers administrative and verification costs.') }}
+                                {{ $plan->applicationChargeText() }}
                             </div>
                         </div>
                         <div class="gp-row-value">
@@ -70,7 +70,7 @@
                         <div class="gp-row-body">
                             <div class="gp-row-label">{{ __('Commission Charge:') }}</div>
                             <div class="gp-row-desc">
-                                {{ __('A fee is applied once your grant is approved. This covers organization fees and administration for managing and supporting your grant process to success.') }}
+                                {{ $plan->commissionChargeText() }}
                             </div>
                         </div>
                         <div class="gp-row-value">

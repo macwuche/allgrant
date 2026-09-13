@@ -23,7 +23,9 @@ class GrantPlanResource extends JsonResource
             'maximum_amount' => $this->maximum_amount.' '.$currency,
             'approval_days' => $this->approval_days,
             'application_charge' => $this->grant_fee.($this->grant_fee_type == 'percentage' ? '%' : ' '.$currency),
+            'application_charge_text' => $this->applicationChargeText(),
             'commission_charge' => $this->commission_charge.($this->commission_charge_type == 'percentage' ? '%' : ' '.$currency),
+            'commission_charge_text' => $this->commissionChargeText(),
             'fields' => $this->field_options,
             'instructions' => strip_tags($this->instructions),
             'plan_data' => [
